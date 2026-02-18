@@ -64,10 +64,10 @@ const CallForPapers: React.FC = () => (
     <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
       <div className="max-w-2xl">
         <h6 className="text-xs font-bold text-science-red uppercase tracking-[0.2em] mb-3">Call for Papers / 征稿启事</h6>
-        <h3 className="text-2xl font-serif font-bold text-charcoal mb-2">Topic: "The Metabolic Paradox" / 主题：“代谢悖论”</h3>
+        <h3 className="text-2xl font-serif font-bold text-charcoal mb-2">Topic: "The Grand Pursuit of Uselessness" / 主题：“无用之大用”</h3>
         <p className="text-base text-gray-500 font-sans">
-          Submissions challenging the boundary between "Contribution" and "Excrement." <br/>
-          挑战“贡献”与“排泄物”界限的投稿。
+          Submissions Challenging the Boundary Between "Academic Breakthrough" and "Pure Rubbish <br/>
+          我们寻找那些横跨在“学术突破”与“纯粹垃圾”边界上的灵魂创作。
         </p>
       </div>
       <button className="flex-shrink-0 w-full md:w-auto px-8 py-4 bg-white border-2 border-charcoal text-xs font-bold uppercase tracking-widest hover:bg-charcoal hover:text-white transition-all shadow-md">
