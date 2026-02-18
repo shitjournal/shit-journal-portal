@@ -66,8 +66,8 @@ const CallForPapers: React.FC = () => (
         <h6 className="text-xs font-bold text-science-red uppercase tracking-[0.2em] mb-3">Call for Papers / 征稿启事</h6>
         <h3 className="text-2xl font-serif font-bold text-charcoal mb-2">Topic: "DISCHARGE NOW" / 主题：“立即排泄”</h3>
         <p className="text-base text-gray-500 font-sans">
-          Turning the grey area between 'Brilliant' and 'Rubbish' into a final discharge. <br/>
-          将游走在‘天才’与‘垃圾’之间的灰色地带，进行一次彻底的排泄。
+          Collecting the soul-remnants floating between 'Academic Breakthrough' and 'Pure Rubbish'. <br/>
+          我们收容那些介于‘学术突破’与‘纯粹垃圾’之间的灵魂边角料。
         </p>
       </div>
       <button className="flex-shrink-0 w-full md:w-auto px-8 py-4 bg-white border-2 border-charcoal text-xs font-bold uppercase tracking-widest hover:bg-charcoal hover:text-white transition-all shadow-md">
