@@ -111,7 +111,7 @@ const Footer: React.FC = () => (
           <ul className="space-y-4 font-serif text-gray-400 text-sm">
             <li><a className="hover:text-white transition-colors" href="#">Submission Ethics / 投稿伦理</a></li>
             <li><a className="hover:text-white transition-colors" href="#">Scooper Review / 铲屎官评审</a></li>
-            <li><a className="hover:text-white transition-colors" href="#">Open Stink / 开放获取</a></li>
+            <li><a className="hover:text-white transition-colors" href="#">Open Stink / 开放嗅探</a></li>
           </ul>
         </div>
 
@@ -126,7 +126,7 @@ const Footer: React.FC = () => (
       </div>
 
       <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-widest text-gray-500">
-        <p>© 2026 SHIT JOURNAL ACADEMIC. ALL RIGHTS WASTED. / 版权所有：浪费一生</p>
+        <p>© 2026 SHIT JOURNAL ACADEMIC. ALL RIGHTS WASTED. / 版权所有：没有版权</p>
         <div className="flex gap-8 mt-4 md:mt-0">
           <a className="hover:text-white transition-colors" href="#">Privacy / 隐私</a>
           <a className="hover:text-white transition-colors" href="#">Terms / 条款</a>
