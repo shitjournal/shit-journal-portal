@@ -93,7 +93,7 @@ const Footer: React.FC = () => (
             <div>
               <h2 className="text-2xl font-bold italic tracking-wider">SHIT PORTAL</h2>
               <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-bold">
-                Digital Library of Inner Trash / 内在糟粕数字图书馆
+                Studies of High Inner Trash / 高阶内在糟粕研究
               </p>
             </div>
           </div>
