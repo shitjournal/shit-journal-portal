@@ -1,65 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>SHIT Journal: Studies in High Inner Trash</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        "paper": "#F9F9F9",
-                        "charcoal": "#333333",
-                        "charcoal-light": "#555555",
-                        "accent-gold": "#C5A02F",
-                        "science-red": "#D12F2F",
-                    },
-                    fontFamily: {
-                        sans: ["Inter", "system-ui", "sans-serif"],
-                        serif: ["'Playfair Display'", "serif"],
-                        chineseSerif: ["'Noto Serif SC'", "serif"],
-                    },
-                    animation: {
-                        slideDown: 'slideDown 0.3s ease-out forwards',
-                    },
-                    keyframes: {
-                        slideDown: {
-                            '0%': { transform: 'translateY(-100%)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
-                    },
-                },
-            },
-        }
-    </script>
-    <style type="text/css">
-        body {
-            background-color: #F9F9F9;
-        }
-        .chinese-serif {
-            font-family: 'Noto Serif SC', serif;
-        }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
-<script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

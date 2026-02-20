@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #F9F9F9;
+  --color-charcoal: #333333;
+  --color-charcoal-light: #555555;
+  --color-accent-gold: #C5A02F;
+  --color-border-light: #E0E0E0;
+  --color-science-red: #D12F2F;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-chinese-serif: "Noto Serif SC", serif;
+
+  --shadow-subtle: 0 1px 2px rgba(0,0,0,0.05);
+
+  --animate-slideDown: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+  0% { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-charcoal font-sans antialiased;
+  }
+  .chinese-serif {
+    font-family: 'Noto Serif SC', serif;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@layer components {
+  .nav-item {
+    @apply text-charcoal-light hover:text-science-red text-[11px] font-sans font-bold uppercase tracking-wider px-4 border-r border-gray-300 last:border-r-0 leading-none transition-colors whitespace-nowrap;
+  }
+  .step-active {
+    @apply text-accent-gold border-accent-gold;
+  }
+  .step-inactive {
+    @apply text-gray-300 border-gray-300;
+  }
+  .form-input {
+    @apply w-full bg-white border border-gray-300 px-4 py-3 focus:ring-1 focus:ring-accent-gold focus:border-accent-gold outline-none transition-all font-sans text-sm;
+  }
+  .form-label {
+    @apply block text-[11px] font-bold uppercase tracking-widest text-charcoal-light mb-2;
+  }
+}
