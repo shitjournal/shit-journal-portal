@@ -100,7 +100,7 @@ export function useSubmissionForm() {
       const ext = file.name.split('.').pop() || 'docx';
 
       // Use author name + email as filename
-      const safeName = formData.authorName.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_');
+      const safeName = formData.authorName.replace(/[^a-zA-Z0-9]/g, '_');
       const safeEmail = formData.email.replace(/[@.]/g, '_');
       const filePath = `${submissionId}/${safeName}_${safeEmail}.${ext}`;
 
