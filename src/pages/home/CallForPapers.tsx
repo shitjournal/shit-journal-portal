@@ -13,7 +13,7 @@ export const CallForPapers: React.FC = () => (
         </p>
       </div>
       <Link to="/submit" className="flex-shrink-0 w-full md:w-auto px-8 py-4 bg-white border-2 border-charcoal text-xs font-bold uppercase tracking-widest hover:bg-charcoal hover:text-white transition-all shadow-md text-center">
-        Submit Manuscript / 提交手稿
+        SUBMIT SHIT / 提交手稿
       </Link>
     </div>
   </section>

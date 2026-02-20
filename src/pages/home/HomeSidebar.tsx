@@ -38,7 +38,7 @@ export const HomeSidebar: React.FC = () => (
     </section>
 
     <Link to="/submit" className="block w-full py-5 bg-accent-gold text-white text-xs font-bold uppercase tracking-[0.25em] hover:bg-[#B18E26] transition-colors shadow-lg text-center">
-      Submit Research / 提交研究
+      SUBMIT SHIT / 提交研究
     </Link>
   </aside>
 );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StepIndicator } from './StepIndicator';
 import { IdentitySection } from './IdentitySection';
+import { CoAuthorsSection } from './CoAuthorsSection';
 import { ViscositySection } from './ViscositySection';
 import { PayloadSection } from './PayloadSection';
 import { useSubmissionForm } from './useSubmissionForm';
@@ -39,11 +40,29 @@ export const SubmissionForm: React.FC = () => {
           <IdentitySection
             email={formData.email}
             manuscriptTitle={formData.manuscriptTitle}
+            authorName={formData.authorName}
+            institution={formData.institution}
+            socialMedia={formData.socialMedia}
             onEmailChange={v => updateField('email', v)}
             onTitleChange={v => updateField('manuscriptTitle', v)}
+            onAuthorNameChange={v => updateField('authorName', v)}
+            onInstitutionChange={v => updateField('institution', v)}
+            onSocialMediaChange={v => updateField('socialMedia', v)}
           />
-          {(errors.email || errors.manuscriptTitle) && (
-            <p className="text-science-red text-xs mt-2 font-bold">{errors.email || errors.manuscriptTitle}</p>
+          {(errors.authorName || errors.email || errors.manuscriptTitle || errors.institution) && (
+            <p className="text-science-red text-xs mt-2 font-bold">
+              {errors.authorName || errors.email || errors.manuscriptTitle || errors.institution}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <CoAuthorsSection
+            coAuthors={formData.coAuthors}
+            onChange={v => updateField('coAuthors', v)}
+          />
+          {errors.coAuthors && (
+            <p className="text-science-red text-xs mt-2 font-bold">{errors.coAuthors}</p>
           )}
         </div>
 

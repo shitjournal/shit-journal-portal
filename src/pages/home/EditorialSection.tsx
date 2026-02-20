@@ -31,7 +31,7 @@ export const EditorialSection: React.FC = () => (
         </p>
         <div className="mt-auto border-t border-gray-100 pt-4">
           <span className="text-accent-gold font-bold uppercase text-xs tracking-widest">
-            —— 首席奥力给院士：Dr. Ouligei
+            —— 首席奥力给院士：Dr. Shit
           </span>
         </div>
       </div>
