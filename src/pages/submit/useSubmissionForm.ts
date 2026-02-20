@@ -70,7 +70,8 @@ export function useSubmissionForm() {
     try {
       const file = formData.file!;
       const submissionId = crypto.randomUUID();
-      const filePath = `${submissionId}/${file.name}`;
+      const ext = file.name.split('.').pop() || 'docx';
+      const filePath = `${submissionId}/manuscript.${ext}`;
 
       // Upload file to Supabase Storage
       const { error: uploadError } = await supabase.storage
