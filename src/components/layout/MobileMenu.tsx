@@ -1,17 +1,69 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { NAV_LINKS_FULL } from './navData';
 import { useAuth } from '../../hooks/useAuth';
 
 export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { user } = useAuth();
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
   const links = NAV_LINKS_FULL.filter(l => !l.authRequired || user);
+
+  const handleSignOut = async () => {
+    onClose();
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose} />
       <div className="fixed top-0 left-0 right-0 bg-black z-50 md:hidden shadow-xl pt-14">
         <div className="px-6 py-6 flex flex-col gap-1">
+          {/* User section at top */}
+          {user ? (
+            <div className="pb-4 mb-2 border-b border-gray-700">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="material-symbols-outlined text-white text-2xl">person</span>
+                <span className="text-white text-sm font-bold uppercase tracking-wider">
+                  {profile?.display_name || user.email}
+                </span>
+              </div>
+              <div className="flex gap-3">
+                <Link
+                  to="/dashboard"
+                  onClick={onClose}
+                  className="px-4 py-2 border border-gray-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent-gold hover:border-accent-gold transition-all"
+                >
+                  Dashboard / 仪表台
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="px-4 py-2 border border-gray-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-science-red hover:border-science-red transition-all cursor-pointer"
+                >
+                  Log Out / 登出
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="pb-4 mb-2 border-b border-gray-700 flex gap-3">
+              <Link
+                to="/login"
+                onClick={onClose}
+                className="px-5 py-2.5 bg-accent-gold text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-colors"
+              >
+                Log In / 登录
+              </Link>
+              <Link
+                to="/register"
+                onClick={onClose}
+                className="px-5 py-2.5 border border-gray-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+              >
+                Register / 注册
+              </Link>
+            </div>
+          )}
+
+          {/* Nav links */}
           {links.map(link =>
             link.to ? (
               <Link key={link.label} to={link.to} onClick={onClose} className="py-3 border-b border-gray-800 text-white text-sm font-bold uppercase tracking-wider hover:text-accent-gold transition-colors">
