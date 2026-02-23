@@ -43,13 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(data);
   };
 
-  // Link old anonymous submissions to this user by email
-  const linkOldSubmissions = async (userId: string, email: string) => {
-    await supabase
-      .from('submissions')
-      .update({ user_id: userId })
-      .eq('email', email)
-      .is('user_id', null);
+  // Link old anonymous submissions to this user by email (uses SECURITY DEFINER function to bypass RLS)
+  const linkOldSubmissions = async () => {
+    await supabase.rpc('link_submissions_by_email');
   };
 
   useEffect(() => {
@@ -59,9 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       if (currentUser) {
         fetchProfile(currentUser.id);
-        if (currentUser.email) {
-          linkOldSubmissions(currentUser.id, currentUser.email);
-        }
+        linkOldSubmissions();
       }
       setLoading(false);
     });
@@ -72,9 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       if (currentUser) {
         fetchProfile(currentUser.id);
-        if (currentUser.email) {
-          linkOldSubmissions(currentUser.id, currentUser.email);
-        }
+        linkOldSubmissions();
       } else {
         setProfile(null);
       }
