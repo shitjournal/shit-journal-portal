@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../hooks/useAuth';
 import type { CoAuthor } from './CoAuthorsSection';
 
 export interface SubmissionFormData {
@@ -25,12 +26,13 @@ interface FormErrors {
 }
 
 export function useSubmissionForm() {
+  const { user, profile } = useAuth();
   const [formData, setFormData] = useState<SubmissionFormData>({
-    email: '',
+    email: user?.email || '',
     manuscriptTitle: '',
-    authorName: '',
-    institution: '',
-    socialMedia: '',
+    authorName: profile?.display_name || '',
+    institution: profile?.institution || '',
+    socialMedia: profile?.social_media || '',
     coAuthors: [],
     viscosity: '',
     file: null,
@@ -118,6 +120,7 @@ export function useSubmissionForm() {
         .from('submissions')
         .insert({
           id: submissionId,
+          user_id: user?.id || null,
           email: formData.email,
           manuscript_title: formData.manuscriptTitle,
           author_name: formData.authorName,

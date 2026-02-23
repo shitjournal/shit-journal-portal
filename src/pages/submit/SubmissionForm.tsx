@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { StepIndicator } from './StepIndicator';
 import { IdentitySection } from './IdentitySection';
 import { CoAuthorsSection } from './CoAuthorsSection';
@@ -19,9 +20,15 @@ export const SubmissionForm: React.FC = () => {
           Your manuscript has been flushed into our Scooper Review pipeline.
           You will receive a confirmation at <strong>{formData.email}</strong>.
         </p>
-        <p className="chinese-serif text-gray-400 mt-2">
+        <p className="chinese-serif text-gray-400 mt-2 mb-8">
           您的稿件已进入铲屎官评审管道。确认函将发送至您的邮箱。
         </p>
+        <Link
+          to="/dashboard"
+          className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
+        >
+          View My Submissions / 查看我的投稿
+        </Link>
       </div>
     );
   }
