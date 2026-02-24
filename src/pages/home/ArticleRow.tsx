@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Article } from '../../types';
 
 export const ArticleRow: React.FC<{ article: Article }> = ({ article }) => (
-  <div className="group pt-8 pb-8 border-b border-gray-100 last:border-0">
+  <Link to="/preprints" className="block group pt-8 pb-8 border-b border-gray-100 last:border-0">
     <div className="flex gap-4 sm:gap-8 items-start">
       <div className="flex-1">
         <span className={`inline-block px-2 py-1 border text-[9px] font-bold uppercase tracking-widest mb-3 ${article.type === 'Original Research' ? 'border-accent-gold text-accent-gold' : 'border-gray-400 text-gray-500'}`}>
@@ -25,5 +26,5 @@ export const ArticleRow: React.FC<{ article: Article }> = ({ article }) => (
         </div>
       )}
     </div>
-  </div>
+  </Link>
 );

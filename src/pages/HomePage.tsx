@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ARTICLES } from '../constants';
 import { HeroQuote } from './home/HeroQuote';
 import { EditorialSection } from './home/EditorialSection';
@@ -26,10 +27,10 @@ export const HomePage: React.FC = () => (
           </div>
 
           <div className="mt-6 sm:mt-12 text-center border-t border-gray-100 pt-4 sm:pt-8">
-            <a href="#" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-gold hover:text-charcoal transition-all">
+            <Link to="/preprints" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-gold hover:text-charcoal transition-all">
               View All Research / 查看所有研究
               <span className="material-symbols-outlined text-sm">arrow_forward</span>
-            </a>
+            </Link>
           </div>
         </section>
       </div>
