@@ -23,5 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Supabase
+supabase/.temp/
+supabase/.env
+
 # Claude
 .claude/
