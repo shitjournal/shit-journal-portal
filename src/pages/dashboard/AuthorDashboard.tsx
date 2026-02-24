@@ -13,7 +13,7 @@ interface Submission {
 }
 
 const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'In the Bowl', cn: '在马桶里', color: 'bg-gray-100 text-gray-600' },
+  pending: { en: 'Preprint', cn: '化粪池发酵中', color: 'bg-amber-50 text-amber-700' },
   under_review: { en: 'Scooper Review', cn: '铲屎官评审中', color: 'bg-yellow-50 text-yellow-700' },
   revisions_requested: { en: 'Revisions', cn: '需要修改', color: 'bg-blue-50 text-blue-700' },
   accepted: { en: 'Approved', cn: '批准冲水', color: 'bg-green-50 text-green-700' },
@@ -77,25 +77,28 @@ export const AuthorDashboard: React.FC = () => {
               {submissions.map(sub => {
                 const status = STATUS_LABELS[sub.status] || STATUS_LABELS.pending;
                 return (
-                  <Link
-                    key={sub.id}
-                    to={`/dashboard/${sub.id}`}
-                    className="block bg-white border border-gray-200 p-6 hover:border-accent-gold transition-colors group"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors truncate">
-                          {sub.manuscript_title}
-                        </h4>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(sub.created_at).toLocaleDateString('zh-CN')} · {sub.viscosity}
-                        </p>
+                  <div key={sub.id} className="bg-white border border-gray-200 p-6 hover:border-accent-gold transition-colors group">
+                    <Link to={`/preprints/${sub.id}`} className="block">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors truncate">
+                            {sub.manuscript_title}
+                          </h4>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(sub.created_at).toLocaleDateString('zh-CN')} · {sub.viscosity}
+                          </p>
+                        </div>
+                        <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm whitespace-nowrap ${status.color}`}>
+                          {status.en} / {status.cn}
+                        </span>
                       </div>
-                      <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm whitespace-nowrap ${status.color}`}>
-                        {status.en} / {status.cn}
-                      </span>
+                    </Link>
+                    <div className="mt-2 pt-2 border-t border-gray-50">
+                      <Link to={`/dashboard/${sub.id}`} className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-accent-gold transition-colors">
+                        Submission Details / 投稿详情 →
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
 

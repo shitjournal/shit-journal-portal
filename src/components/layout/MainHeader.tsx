@@ -36,9 +36,14 @@ export const MainHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMen
           <span className="text-xs font-bold uppercase tracking-widest">Menu / 菜单</span>
         </div>
 
-        <Link to="/" className="flex items-end justify-center">
-          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-serif font-black tracking-tighter text-charcoal leading-[0.8]">SHIT</h1>
-          <div className="chinese-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal tracking-[0.2em] ml-3 sm:ml-4 pb-1 leading-none">奥力给</div>
+        <Link to="/" className="flex items-center justify-center gap-1 sm:gap-2">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-serif font-black tracking-tighter text-charcoal leading-none">SHIT</h1>
+          <div className="flex flex-col justify-between self-stretch text-charcoal pt-[10px] pb-[6px] sm:pt-[15px] sm:pb-[9px] lg:pt-[18px] lg:pb-[12px]">
+            <span className="text-[6px] sm:text-[9px] lg:text-[11px] font-black tracking-wide leading-none">Sciences</span>
+            <span className="text-[6px] sm:text-[9px] lg:text-[11px] font-black tracking-wide leading-none">Humanities</span>
+            <span className="text-[6px] sm:text-[9px] lg:text-[11px] font-black tracking-wide leading-none">Information</span>
+            <span className="text-[6px] sm:text-[9px] lg:text-[11px] font-black tracking-wide leading-none">Technology</span>
+          </div>
         </Link>
 
         <div className="flex items-center justify-end gap-4">

@@ -26,7 +26,7 @@ interface ReviewData {
 }
 
 const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'In the Bowl', cn: '在马桶里', color: 'bg-gray-100 text-gray-600' },
+  pending: { en: 'Preprint', cn: '化粪池发酵中', color: 'bg-amber-50 text-amber-700' },
   under_review: { en: 'Scooper Review', cn: '铲屎官评审中', color: 'bg-yellow-50 text-yellow-700' },
   revisions_requested: { en: 'Revisions Requested', cn: '需要修改', color: 'bg-blue-50 text-blue-700' },
   accepted: { en: 'Approved for Flush', cn: '批准冲水', color: 'bg-green-50 text-green-700' },
@@ -105,12 +105,19 @@ export const SubmissionDetail: React.FC = () => {
       </Link>
 
       <div className="bg-white border border-gray-200 p-8 shadow-sm mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
           <h2 className="text-2xl font-serif font-bold">{submission.manuscript_title}</h2>
           <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm whitespace-nowrap ${status.color}`}>
             {status.en} / {status.cn}
           </span>
         </div>
+        <Link
+          to={`/preprints/${submission.id}`}
+          className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-accent-gold hover:text-charcoal transition-colors mb-6"
+        >
+          View in 化粪池 / 查看预印本
+          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+        </Link>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div>

@@ -12,6 +12,7 @@ export interface SubmissionFormData {
   coAuthors: CoAuthor[];
   viscosity: string;
   file: File | null;
+  pdfFile: File | null;
 }
 
 interface FormErrors {
@@ -21,6 +22,7 @@ interface FormErrors {
   institution?: string;
   viscosity?: string;
   file?: string;
+  pdfFile?: string;
   coAuthors?: string;
   submit?: string;
 }
@@ -36,6 +38,7 @@ export function useSubmissionForm() {
     coAuthors: [],
     viscosity: '',
     file: null,
+    pdfFile: null,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,7 +70,10 @@ export function useSubmissionForm() {
       newErrors.viscosity = 'Please select viscosity / 请选择粘度';
     }
     if (!formData.file) {
-      newErrors.file = 'Please upload a file / 请上传文件';
+      newErrors.file = 'Please upload a Word file / 请上传Word文件';
+    }
+    if (!formData.pdfFile) {
+      newErrors.pdfFile = 'Please upload a PDF file / 请上传PDF文件';
     }
 
     // Validate co-authors that have been partially filled
@@ -98,21 +104,31 @@ export function useSubmissionForm() {
 
     try {
       const file = formData.file!;
+      const pdfFile = formData.pdfFile!;
       const submissionId = crypto.randomUUID();
       const ext = file.name.split('.').pop() || 'docx';
 
-      // Use author name + email as filename
       const safeName = formData.authorName.replace(/[^a-zA-Z0-9]/g, '_');
       const safeEmail = formData.email.replace(/[@.]/g, '_');
       const filePath = `${submissionId}/${safeName}_${safeEmail}.${ext}`;
+      const pdfPath = `${submissionId}/${safeName}_${safeEmail}.pdf`;
 
-      // Upload file to Supabase Storage
+      // Upload Word file
       const { error: uploadError } = await supabase.storage
         .from('manuscripts')
         .upload(filePath, file);
 
       if (uploadError) {
-        throw new Error(`File upload failed / 文件上传失败: ${uploadError.message}`);
+        throw new Error(`Word upload failed / Word上传失败: ${uploadError.message}`);
+      }
+
+      // Upload PDF file
+      const { error: pdfUploadError } = await supabase.storage
+        .from('manuscripts')
+        .upload(pdfPath, pdfFile, { contentType: 'application/pdf' });
+
+      if (pdfUploadError) {
+        throw new Error(`PDF upload failed / PDF上传失败: ${pdfUploadError.message}`);
       }
 
       // Insert submission record
@@ -131,6 +147,7 @@ export function useSubmissionForm() {
           file_path: filePath,
           file_name: file.name,
           file_size_bytes: file.size,
+          pdf_path: pdfPath,
         });
 
       if (dbError) {

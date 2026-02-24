@@ -7,7 +7,7 @@ import { ViscositySection } from './ViscositySection';
 import { PayloadSection } from './PayloadSection';
 import { useSubmissionForm } from './useSubmissionForm';
 
-const SUBMISSIONS_PAUSED = true;
+const SUBMISSIONS_PAUSED = false;
 
 export const SubmissionForm: React.FC = () => {
   const { formData, errors, isSubmitting, isSubmitted, currentStep, updateField, handleSubmit } = useSubmissionForm();
@@ -32,21 +32,28 @@ export const SubmissionForm: React.FC = () => {
     return (
       <div className="text-center py-20">
         <span className="text-6xl block mb-6">💩</span>
-        <h2 className="text-3xl font-serif font-bold mb-3">Submission Received!</h2>
-        <h3 className="chinese-serif text-xl text-charcoal-light mb-6">稿件已收到！</h3>
+        <h2 className="text-3xl font-serif font-bold mb-3">Published to 化粪池!</h2>
+        <h3 className="chinese-serif text-xl text-charcoal-light mb-6">稿件已发布到化粪池！</h3>
         <p className="font-serif text-gray-500 max-w-md mx-auto">
-          Your manuscript has been flushed into our Scooper Review pipeline.
-          You will receive a confirmation at <strong>{formData.email}</strong>.
+          Your manuscript is now live in the Septic Tank. Other researchers can browse and rate it.
         </p>
         <p className="chinese-serif text-gray-400 mt-2 mb-8">
-          您的稿件已进入铲屎官评审管道。确认函将发送至您的邮箱。
+          您的稿件已进入化粪池发酵，其他研究者可以浏览和评分。
         </p>
-        <Link
-          to="/dashboard"
-          className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
-        >
-          View My Submissions / 查看我的投稿
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            to="/preprints"
+            className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
+          >
+            Browse 化粪池 / 浏览化粪池
+          </Link>
+          <Link
+            to="/dashboard"
+            className="inline-block px-8 py-3 border border-gray-300 text-gray-500 text-xs font-bold uppercase tracking-widest hover:border-accent-gold hover:text-accent-gold transition-all"
+          >
+            My Submissions / 我的投稿
+          </Link>
+        </div>
       </div>
     );
   }
@@ -104,10 +111,12 @@ export const SubmissionForm: React.FC = () => {
         <div>
           <PayloadSection
             file={formData.file}
+            pdfFile={formData.pdfFile}
             onFileSelect={f => updateField('file', f)}
+            onPdfFileSelect={f => updateField('pdfFile', f)}
           />
-          {errors.file && (
-            <p className="text-science-red text-xs mt-2 font-bold">{errors.file}</p>
+          {(errors.file || errors.pdfFile) && (
+            <p className="text-science-red text-xs mt-2 font-bold">{errors.file || errors.pdfFile}</p>
           )}
         </div>
 
@@ -122,7 +131,7 @@ export const SubmissionForm: React.FC = () => {
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Submitting... / 提交中...' : 'Submit for Peer Review / 提交同行评审'}
+            {isSubmitting ? 'Publishing... / 发布中...' : 'Publish to 化粪池 / 发布到化粪池'}
             {!isSubmitting && <span className="material-symbols-outlined text-lg">send</span>}
           </button>
           <p className="text-center text-[10px] text-gray-400 mt-4 uppercase tracking-widest">

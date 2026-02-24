@@ -10,7 +10,7 @@ export const Footer: React.FC = () => (
             <div>
               <h2 className="text-2xl font-bold italic tracking-wider">SHIT PORTAL</h2>
               <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-bold">
-                Studies of High Inner Trash / 高阶内在糟粕研究
+                Sciences, Humanities, Information, Technology / 构石（构建学术的基石）
               </p>
             </div>
           </div>

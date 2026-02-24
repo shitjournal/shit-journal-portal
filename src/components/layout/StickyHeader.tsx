@@ -26,10 +26,15 @@ export const StickyHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleM
             )
           )}
         </nav>
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-end gap-2">
-          <Link to="/" className="text-white font-serif font-black text-2xl tracking-tighter hover:text-accent-gold transition-colors">SHIT</Link>
-          <span className="chinese-serif text-sm text-gray-400 hidden sm:inline">奥力给</span>
-        </div>
+        <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-end gap-1 hover:text-accent-gold transition-colors">
+          <span className="text-white font-serif font-black text-2xl tracking-tighter leading-[0.85]">SHIT</span>
+          <div className="hidden sm:flex flex-col justify-between text-gray-400 self-stretch py-px">
+            <span className="text-[5px] font-black tracking-wide leading-none">Sciences</span>
+            <span className="text-[5px] font-black tracking-wide leading-none">Humanities</span>
+            <span className="text-[5px] font-black tracking-wide leading-none">Information</span>
+            <span className="text-[5px] font-black tracking-wide leading-none">Technology</span>
+          </div>
+        </Link>
         <div className="flex items-center gap-4">
           <span className="material-symbols-outlined text-white text-xl cursor-pointer hover:text-accent-gold transition-colors">search</span>
           <a className="px-4 py-1.5 bg-science-red text-white text-[9px] font-bold uppercase tracking-widest rounded-sm hover:bg-red-700 transition-colors hidden sm:block" href="#">
