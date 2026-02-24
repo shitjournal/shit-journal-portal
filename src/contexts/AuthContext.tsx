@@ -15,6 +15,7 @@ interface AuthContextValue {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  refreshProfile: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
@@ -24,6 +25,7 @@ export const AuthContext = createContext<AuthContextValue>({
   user: null,
   profile: null,
   loading: true,
+  refreshProfile: async () => {},
   signIn: async () => ({ error: null }),
   signUp: async () => ({ error: null, needsConfirmation: false }),
   signOut: async () => {},
@@ -48,32 +50,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.rpc('link_submissions_by_email');
   };
 
-  useEffect(() => {
-    // Restore session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        fetchProfile(currentUser.id);
-        linkOldSubmissions();
-      }
-      setLoading(false);
-    });
+  // Handle user session: fetch profile and link old submissions
+  // IMPORTANT: Must not await Supabase calls inside onAuthStateChange callback
+  // due to known deadlock bug in supabase-js (Web Locks API).
+  // Use setTimeout to dispatch async work after callback completes.
+  const handleSession = async (currentUser: User | null) => {
+    setUser(currentUser);
+    if (currentUser) {
+      try { await linkOldSubmissions(); } catch { /* RPC may fail */ }
+      await fetchProfile(currentUser.id);
+    } else {
+      setProfile(null);
+    }
+  };
 
-    // Listen for auth changes
+  useEffect(() => {
+    // Listen for auth changes (fires INITIAL_SESSION on setup)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        fetchProfile(currentUser.id);
-        linkOldSubmissions();
-      } else {
-        setProfile(null);
-      }
+      // Dispatch async work outside the callback to avoid Supabase deadlock
+      setTimeout(() => {
+        handleSession(currentUser).finally(() => setLoading(false));
+      }, 0);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const refreshProfile = async () => {
+    if (user) await fetchProfile(user.id);
+  };
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -101,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, refreshProfile, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

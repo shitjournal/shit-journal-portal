@@ -14,7 +14,7 @@ const NavLink: React.FC<{ label: string; cnLabel: string; to?: string }> = ({ la
 
 export const SecondaryNav: React.FC = () => {
   const { user } = useAuth();
-  const links = NAV_LINKS_FULL.filter(l => !l.authRequired || user);
+  const links = NAV_LINKS_FULL.filter(l => (!l.authRequired || user) && !l.hideFromSecondaryNav);
 
   return (
     <div className="hidden md:block w-full bg-[#F2F2F2] border-b border-gray-300">

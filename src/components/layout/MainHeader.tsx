@@ -31,8 +31,8 @@ export const MainHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMen
         <div className="flex md:hidden items-center">
           <span className="material-symbols-outlined text-charcoal text-2xl cursor-pointer" onClick={onToggleMenu}>menu</span>
         </div>
-        <div className="hidden md:flex items-center gap-3 w-1/4">
-          <span className="material-symbols-outlined text-charcoal text-2xl cursor-pointer">menu</span>
+        <div className="hidden md:flex items-center gap-3 w-1/4 cursor-pointer" onClick={onToggleMenu}>
+          <span className="material-symbols-outlined text-charcoal text-2xl">menu</span>
           <span className="text-xs font-bold uppercase tracking-widest">Menu / 菜单</span>
         </div>
 

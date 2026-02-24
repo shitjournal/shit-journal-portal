@@ -16,9 +16,9 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose} />
-      <div className="fixed top-0 left-0 right-0 bg-black z-50 md:hidden shadow-xl pt-14">
-        <div className="px-6 py-6 flex flex-col gap-1">
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+      <div className="fixed top-0 left-0 bottom-0 w-[85vw] max-w-[380px] bg-black z-50 shadow-xl overflow-y-auto">
+        <div className="px-6 py-8 flex flex-col gap-1">
           {/* User section at top */}
           {user ? (
             <div className="pb-4 mb-2 border-b border-gray-700">
