@@ -103,6 +103,18 @@ export function useSubmissionForm() {
     setErrors(prev => ({ ...prev, submit: undefined }));
 
     try {
+      // Check submission limit (max 5 per user)
+      const { count, error: countError } = await supabase
+        .from('submissions')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user?.id);
+
+      if (!countError && count !== null && count >= 5) {
+        setErrors(prev => ({ ...prev, submit: 'You have reached the submission limit (5 papers max) / 您已达到投稿上限（最多 5 篇）' }));
+        setIsSubmitting(false);
+        return;
+      }
+
       const file = formData.file!;
       const pdfFile = formData.pdfFile!;
       const submissionId = crypto.randomUUID();
@@ -156,7 +168,7 @@ export function useSubmissionForm() {
 
       // Send confirmation email (fire-and-forget, don't block submission)
       try {
-        await supabase.functions.invoke('send-confirmation-email', {
+        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
           body: {
             email: formData.email,
             authorName: formData.authorName,
@@ -164,8 +176,10 @@ export function useSubmissionForm() {
             submissionId,
           },
         });
-      } catch {
-        // Silently ignore email errors
+        if (emailError) console.error('Email function error:', emailError);
+        else console.log('Confirmation email sent:', emailData);
+      } catch (e) {
+        console.error('Email call failed:', e);
       }
 
       setIsSubmitted(true);
