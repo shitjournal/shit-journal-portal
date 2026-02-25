@@ -125,6 +125,12 @@ export const PreprintDetailPage: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Submitted / 提交时间</span>
             <p className="text-charcoal">{new Date(preprint.created_at).toLocaleString('zh-CN')}</p>
           </div>
+          {preprint.social_media && (
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Social Media / 社交媒体</span>
+              <p className="text-charcoal">{preprint.social_media}</p>
+            </div>
+          )}
         </div>
 
         {coAuthors.length > 0 && (
