@@ -4,6 +4,7 @@ import { ARTICLES } from '../constants';
 import { HeroQuote } from './home/HeroQuote';
 import { EditorialSection } from './home/EditorialSection';
 import { CallForPapers } from './home/CallForPapers';
+import { SepticTankPromo } from './home/SepticTankPromo';
 import { ArticleRow } from './home/ArticleRow';
 import { HomeSidebar } from './home/HomeSidebar';
 
@@ -14,6 +15,7 @@ export const HomePage: React.FC = () => (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
       <div className="lg:col-span-8">
         <EditorialSection />
+        <SepticTankPromo />
         <CallForPapers />
 
         <section className="mb-2 sm:mb-16">
