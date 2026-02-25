@@ -1,37 +1,17 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const SITE_URL = "https://shitjournal.org";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
 Deno.serve(async (req) => {
-  // CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-      },
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Verify the user is authenticated
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing auth" }), { status: 401 });
-    }
-
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-    }
-
     const { email, authorName, manuscriptTitle, submissionId } = await req.json();
 
     if (!email || !manuscriptTitle || !submissionId) {
