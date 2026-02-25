@@ -154,6 +154,20 @@ export function useSubmissionForm() {
         throw new Error(`Database error / 数据库错误: ${dbError.message}`);
       }
 
+      // Send confirmation email (fire-and-forget, don't block submission)
+      try {
+        await supabase.functions.invoke('send-confirmation-email', {
+          body: {
+            email: formData.email,
+            authorName: formData.authorName,
+            manuscriptTitle: formData.manuscriptTitle,
+            submissionId,
+          },
+        });
+      } catch {
+        // Silently ignore email errors
+      }
+
       setIsSubmitted(true);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Submission failed / 提交失败';
