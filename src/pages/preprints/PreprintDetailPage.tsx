@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { PdfViewer } from './PdfViewer';
 import { RatingWidget } from './RatingWidget';
+import Giscus from '@giscus/react';
 
 const VISCOSITY_LABELS: Record<string, string> = {
   stringy: 'Stringy / 拉丝型',
@@ -163,6 +164,26 @@ export const PreprintDetailPage: React.FC = () => {
       <div className="mb-8">
         <h3 className="text-xl font-serif font-bold mb-4">Manuscript / 全文</h3>
         <PdfViewer pdfPath={preprint.pdf_path} />
+      </div>
+
+      {/* Giscus Comments */}
+      <div className="mt-16">
+        <h3 className="text-xl font-serif font-bold mb-8 border-b border-gray-200 pb-4">Discussion / 屎上雕花</h3>
+        <Giscus
+          id="comments"
+          repo="sunbiz1024/shit-journal-portal"
+          repoId="R_kgDORYVNbQ"
+          category="General"
+          categoryId="DIC_kwDORYVNbc4C3KZh"
+          mapping="specific"
+          term={id}
+          reactionsEnabled="1"
+          emitMetadata="0"
+          inputPosition="bottom"
+          theme="preferred_color_scheme"
+          lang="zh-CN"
+          strict="0"
+        />
       </div>
     </div>
   );
