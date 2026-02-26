@@ -14,15 +14,25 @@ interface Submission {
   status: string;
   created_at: string;
   solicited_topic: string | null;
+  weighted_score?: number;
+  rating_count?: number;
 }
 
 type TabFilter = 'pending' | 'approved' | 'rejected' | 'all';
+type SortMode = 'newest' | 'oldest' | 'highest_rated' | 'most_rated';
 
 const TAB_OPTIONS: { value: TabFilter; en: string; cn: string }[] = [
   { value: 'pending', en: 'Pending', cn: '待预审' },
   { value: 'approved', en: 'Approved', cn: '已入池' },
   { value: 'rejected', en: 'Rejected', cn: '已拒绝' },
   { value: 'all', en: 'All', cn: '全部' },
+];
+
+const SORT_OPTIONS: { value: SortMode; en: string; cn: string }[] = [
+  { value: 'newest', en: 'Newest', cn: '最新' },
+  { value: 'oldest', en: 'Oldest', cn: '最早' },
+  { value: 'highest_rated', en: 'Highest Rated', cn: '最高评分' },
+  { value: 'most_rated', en: 'Most Rated', cn: '最多评分' },
 ];
 
 const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
@@ -50,6 +60,7 @@ export const ScreeningDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const tab = (searchParams.get('tab') as TabFilter) || 'pending';
+  const sort = (searchParams.get('sort') as SortMode) || 'newest';
 
   useEffect(() => {
     if (!user) return;
@@ -59,23 +70,60 @@ export const ScreeningDashboard: React.FC = () => {
       let query = supabase
         .from('submissions')
         .select('id, manuscript_title, author_name, email, institution, viscosity, status, created_at, solicited_topic')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: sort === 'oldest' });
 
       const filter = statusFilter(tab);
       if (filter.length > 0) {
         query = query.in('status', filter);
       }
 
-      const { data } = await query;
-      setSubmissions(data || []);
+      const { data: subs } = await query;
+      let results: Submission[] = subs || [];
+
+      // Fetch rating data for score-based sorting
+      if (results.length > 0) {
+        const { data: ratings } = await supabase
+          .from('preprints_with_ratings')
+          .select('id, weighted_score, rating_count');
+
+        if (ratings) {
+          const ratingsMap = new Map(ratings.map(r => [r.id, r]));
+          results = results.map(s => {
+            const r = ratingsMap.get(s.id);
+            return { ...s, weighted_score: r?.weighted_score ?? 0, rating_count: r?.rating_count ?? 0 };
+          });
+        }
+      }
+
+      // Client-side sort for score-based modes
+      if (sort === 'highest_rated') {
+        results.sort((a, b) => (b.weighted_score ?? 0) - (a.weighted_score ?? 0) || (b.rating_count ?? 0) - (a.rating_count ?? 0));
+      } else if (sort === 'most_rated') {
+        results.sort((a, b) => (b.rating_count ?? 0) - (a.rating_count ?? 0) || (b.weighted_score ?? 0) - (a.weighted_score ?? 0));
+      }
+
+      setSubmissions(results);
       setLoading(false);
     };
 
     fetchSubmissions();
-  }, [user, tab]);
+  }, [user, tab, sort]);
 
   const setTab = (t: TabFilter) => {
-    setSearchParams(t === 'pending' ? {} : { tab: t });
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (t === 'pending') next.delete('tab'); else next.set('tab', t);
+      next.delete('page');
+      return next;
+    });
+  };
+
+  const setSort = (s: SortMode) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (s === 'newest') next.delete('sort'); else next.set('sort', s);
+      return next;
+    });
   };
 
   return (
@@ -104,6 +152,24 @@ export const ScreeningDashboard: React.FC = () => {
                 }`}
               >
                 {t.en} / {t.cn}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort controls */}
+          <div className="flex items-center gap-2 mb-6">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Sort / 排序:</span>
+            {SORT_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setSort(opt.value)}
+                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border transition-colors ${
+                  sort === opt.value
+                    ? 'border-accent-gold text-accent-gold bg-yellow-50'
+                    : 'border-gray-300 text-gray-400 hover:border-accent-gold hover:text-accent-gold'
+                }`}
+              >
+                {opt.en} / {opt.cn}
               </button>
             ))}
           </div>
@@ -145,9 +211,16 @@ export const ScreeningDashboard: React.FC = () => {
                         </p>
                         <p className="text-xs text-gray-300 mt-0.5">{sub.email}</p>
                       </div>
-                      <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm whitespace-nowrap ${status.color}`}>
-                        {status.en} / {status.cn}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {(sub.rating_count ?? 0) > 0 && (
+                          <span className="text-[10px] font-bold text-gray-400">
+                            {(sub.weighted_score ?? 0).toFixed(1)}★ · {sub.rating_count}票
+                          </span>
+                        )}
+                        <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm whitespace-nowrap ${status.color}`}>
+                          {status.en} / {status.cn}
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 );
