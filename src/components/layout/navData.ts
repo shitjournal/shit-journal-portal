@@ -4,6 +4,6 @@ export const NAV_LINKS_FULL = [
   { label: 'Submit', cn: '投稿', to: '/submit' },
   { label: 'Dashboard', cn: '仪表台', to: '/dashboard', authRequired: true, userMenuOnly: true },
   { label: 'Screening', cn: '预审稿', to: '/screening', authRequired: true, editorOnly: true, userMenuOnly: true },
-  { label: 'Editorial Board', cn: '编委会', to: '/editorial-board' },
+  { label: 'Community Guard', cn: '社区挑粪人', to: '/community-guard' },
   { label: 'Journals', cn: '子刊', to: '/journals' },
 ];
