@@ -72,7 +72,7 @@ export const GovernanceArticle: React.FC = () => (
                 <span className="font-bold">研究课题：</span>在捍卫学术自由的同时，如何识别并清除真正的毒素？
               </p>
               <p className="text-sm text-gray-500">
-                <span className="font-bold">方案要求：</span>建立一套基于算法的"降解协议"，在无需编辑部介入的前提下，有效识别并处理人身攻击、数据造假或恶意灌水。
+                <span className="font-bold">方案要求：</span>建立一套基于算法的"降解协议"，在无需编辑部介入的前提下，有效识别并处理人身攻击、涉及敏感或恶意灌水。
               </p>
             </div>
 
