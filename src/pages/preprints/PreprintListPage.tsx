@@ -14,6 +14,11 @@ const SORT_OPTIONS: { value: SortMode; en: string; cn: string }[] = [
   { value: 'most_rated', en: 'Most Rated', cn: '最多评分' },
 ];
 
+const TOPIC_TABS: { value: string; en: string; cn: string }[] = [
+  { value: 'all', en: 'All', cn: '全部' },
+  { value: 'S.H.I.T社区治理1.0', en: 'Governance 1.0', cn: '社区治理1.0' },
+];
+
 export const PreprintListPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [preprints, setPreprints] = useState<any[]>([]);
@@ -22,6 +27,7 @@ export const PreprintListPage: React.FC = () => {
 
   const rawSort = searchParams.get('sort') as SortMode | null;
   const sort: SortMode = rawSort && VALID_SORTS.includes(rawSort) ? rawSort : 'newest';
+  const topic = searchParams.get('topic') || 'all';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -36,12 +42,16 @@ export const PreprintListPage: React.FC = () => {
         .from('preprints_with_ratings')
         .select('*', { count: 'exact' });
 
+      if (topic !== 'all') {
+        query = query.eq('solicited_topic', topic);
+      }
+
       if (sort === 'newest') {
         query = query.order('created_at', { ascending: false });
       } else if (sort === 'highest_rated') {
-        query = query.order('avg_score', { ascending: false }).order('rating_count', { ascending: false });
+        query = query.order('weighted_score', { ascending: false }).order('rating_count', { ascending: false });
       } else {
-        query = query.order('rating_count', { ascending: false }).order('avg_score', { ascending: false });
+        query = query.order('rating_count', { ascending: false }).order('weighted_score', { ascending: false });
       }
 
       const { data, count } = await query.range(from, to);
@@ -52,12 +62,21 @@ export const PreprintListPage: React.FC = () => {
     };
 
     fetchPreprints();
-  }, [page, sort]);
+  }, [page, sort, topic]);
 
   const setPage = (p: number) => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       if (p <= 1) next.delete('page'); else next.set('page', String(p));
+      return next;
+    });
+  };
+
+  const handleTopicChange = (newTopic: string) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (newTopic === 'all') next.delete('topic'); else next.set('topic', newTopic);
+      next.delete('page');
       return next;
     });
   };
@@ -75,10 +94,27 @@ export const PreprintListPage: React.FC = () => {
     <div className="max-w-4xl mx-auto px-4 lg:px-8 py-12">
       <div className="mb-8">
         <h2 className="text-3xl font-serif font-bold mb-1">Preprints</h2>
-        <h3 className="chinese-serif text-xl text-charcoal-light">化粪池</h3>
+        <h3 className="chinese-serif text-xl text-charcoal-light">发酵池</h3>
         <p className="text-sm text-gray-500 mt-2">
           Browse and rate submitted manuscripts. / 浏览并评价已提交的稿件。
         </p>
+      </div>
+
+      {/* Topic tabs */}
+      <div className="flex gap-1 mb-4 border-b border-gray-200">
+        {TOPIC_TABS.map(t => (
+          <button
+            key={t.value}
+            onClick={() => handleTopicChange(t.value)}
+            className={`px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest transition-colors cursor-pointer ${
+              topic === t.value
+                ? 'border-b-2 border-accent-gold text-accent-gold'
+                : 'text-gray-400 hover:text-charcoal'
+            }`}
+          >
+            {t.en} / {t.cn}
+          </button>
+        ))}
       </div>
 
       {/* Sort controls */}
@@ -107,7 +143,7 @@ export const PreprintListPage: React.FC = () => {
         <div className="text-center py-20 bg-white border border-gray-200">
           <span className="text-6xl block mb-6">🚽</span>
           <p className="font-serif text-lg text-gray-500 mb-2">The tank is empty.</p>
-          <p className="chinese-serif text-gray-400">化粪池是空的</p>
+          <p className="chinese-serif text-gray-400">发酵池是空的</p>
         </div>
       ) : (
         <>

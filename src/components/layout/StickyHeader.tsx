@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 export const StickyHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMenu }) => {
   const { user } = useAuth();
-  const links = NAV_LINKS_FULL.filter(l => !l.authRequired || user);
+  const links = NAV_LINKS_FULL.filter(l => (!l.authRequired || user) && !l.userMenuOnly);
 
   return (
     <div className="fixed top-0 left-0 w-full bg-black z-50 shadow-lg animate-slideDown">
@@ -27,7 +27,7 @@ export const StickyHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleM
           )}
         </nav>
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-end gap-1 hover:text-accent-gold transition-colors">
-          <span className="text-white font-serif font-black text-2xl tracking-tighter leading-[0.85]">SHIT</span>
+          <span className="text-white font-serif font-black text-2xl tracking-tighter leading-[0.85]">S.H.I.T</span>
           <div className="hidden sm:flex flex-col justify-between text-gray-400 self-stretch py-px">
             <span className="text-[5px] font-black tracking-wide leading-none">Sciences</span>
             <span className="text-[5px] font-black tracking-wide leading-none">Humanities</span>

@@ -6,7 +6,8 @@ import { useAuth } from '../../hooks/useAuth';
 export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const links = NAV_LINKS_FULL.filter(l => !l.authRequired || user);
+  const isEditor = profile?.role === 'editor';
+  const links = NAV_LINKS_FULL.filter(l => (!l.authRequired || user) && (!l.editorOnly || isEditor) && !l.userMenuOnly);
 
   const handleSignOut = async () => {
     onClose();
@@ -28,7 +29,7 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   {profile?.display_name || user.email}
                 </span>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   to="/dashboard"
                   onClick={onClose}
@@ -36,6 +37,15 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 >
                   Dashboard / 仪表台
                 </Link>
+                {isEditor && (
+                  <Link
+                    to="/screening"
+                    onClick={onClose}
+                    className="px-4 py-2 border border-gray-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent-gold hover:border-accent-gold transition-all"
+                  >
+                    Screening / 预审稿
+                  </Link>
+                )}
                 <button
                   onClick={handleSignOut}
                   className="px-4 py-2 border border-gray-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-science-red hover:border-science-red transition-all cursor-pointer"

@@ -25,9 +25,9 @@ export const HomeSidebar: React.FC = () => (
         ))}
       </div>
       <div className="mt-8 text-right">
-        <a href="#" className="text-[10px] font-bold text-science-red uppercase tracking-widest border-b border-transparent hover:border-science-red transition-all">
+        <Link to="/news" className="text-[10px] font-bold text-science-red uppercase tracking-widest border-b border-transparent hover:border-science-red transition-all">
           More News / 更多新闻 ›
-        </a>
+        </Link>
       </div>
     </section>
 
@@ -38,7 +38,7 @@ export const HomeSidebar: React.FC = () => (
     </section>
 
     <Link to="/submit" className="block w-full py-5 bg-accent-gold text-white text-xs font-bold uppercase tracking-[0.25em] hover:bg-[#B18E26] transition-colors shadow-lg text-center">
-      SUBMIT SHIT / 提交研究
+      SUBMIT S.H.I.T / 提交研究
     </Link>
   </aside>
 );

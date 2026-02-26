@@ -53,7 +53,7 @@ const Watermark: React.FC = () => (
           className="text-[28px] font-serif font-bold whitespace-nowrap"
           style={{ color: 'rgba(197, 160, 47, 0.08)' }}
         >
-          SHIT JOURNAL PREPRINT
+          S.H.I.T JOURNAL PREPRINT
         </span>
       ))}
     </div>

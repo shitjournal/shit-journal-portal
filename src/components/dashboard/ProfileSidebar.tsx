@@ -3,8 +3,12 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import type { Profile } from '../../contexts/AuthContext';
 
-function getBadge(_role: Profile['role']): { en: string; cn: string } {
-  return { en: 'Excreter', cn: '排泄者' };
+function getBadge(role: Profile['role']): { en: string; cn: string } {
+  switch (role) {
+    case 'editor': return { en: 'Chief Scooper', cn: '首席铲屎官' };
+    case 'reviewer': return { en: 'Scooper', cn: '铲屎官' };
+    default: return { en: 'Excreter', cn: '排泄者' };
+  }
 }
 
 export const ProfileSidebar: React.FC<{ submissionCount: number }> = ({ submissionCount }) => {

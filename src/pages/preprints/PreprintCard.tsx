@@ -11,6 +11,7 @@ interface PreprintCardProps {
   avg_score: number;
   rating_count: number;
   co_authors: unknown[] | null;
+  solicited_topic: string | null;
 }
 
 const VISCOSITY_LABELS: Record<string, string> = {
@@ -30,9 +31,16 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps }> = ({ prepri
     >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors leading-tight mb-2">
-            {preprint.manuscript_title}
-          </h4>
+          <div className="flex items-center gap-2 mb-2">
+            <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors leading-tight">
+              {preprint.manuscript_title}
+            </h4>
+            {preprint.solicited_topic && (
+              <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-300 whitespace-nowrap shrink-0">
+                {preprint.solicited_topic}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-charcoal-light mb-1">
             {preprint.author_name} · {preprint.institution}
             {coAuthorCount > 0 && (
