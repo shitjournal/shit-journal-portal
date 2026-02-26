@@ -16,6 +16,7 @@ import { ScreeningDashboard } from './pages/editor/ScreeningDashboard';
 import { ScreeningDetail } from './pages/editor/ScreeningDetail';
 import { NewsPage } from './pages/news/NewsPage';
 import { GovernanceArticle } from './pages/news/GovernanceArticle';
+import { CommunityGuardPage } from './pages/CommunityGuardPage';
 import { ComingSoon } from './pages/ComingSoon';
 
 const App: React.FC = () => (
@@ -35,6 +36,7 @@ const App: React.FC = () => (
           <Route path="/screening/:id" element={<RoleProtectedRoute allowedRoles={['editor']}><ScreeningDetail /></RoleProtectedRoute>} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/news/governance-1.0" element={<GovernanceArticle />} />
+          <Route path="/community-guard" element={<CommunityGuardPage />} />
           <Route path="*" element={<ComingSoon />} />
         </Routes>
       </Layout>
