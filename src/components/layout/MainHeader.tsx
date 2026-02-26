@@ -37,7 +37,7 @@ export const MainHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMen
         </div>
 
         <Link to="/" className="flex items-center justify-center gap-1 sm:gap-2">
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-serif font-black tracking-tighter text-charcoal leading-none">SHIT</h1>
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-serif font-black tracking-tighter text-charcoal leading-none">S.H.I.T</h1>
           <div className="flex flex-col justify-between self-stretch text-charcoal pt-[10px] pb-[6px] sm:pt-[15px] sm:pb-[9px] lg:pt-[18px] lg:pb-[12px]">
             <span className="text-[6px] sm:text-[9px] lg:text-[11px] font-black tracking-wide leading-none">Sciences</span>
             <span className="text-[6px] sm:text-[9px] lg:text-[11px] font-black tracking-wide leading-none">Humanities</span>
@@ -74,6 +74,16 @@ export const MainHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMen
                     <span className="material-symbols-outlined text-sm align-middle mr-2">dashboard</span>
                     Dashboard / 仪表台
                   </Link>
+                  {profile?.role === 'editor' && (
+                    <Link
+                      to="/screening"
+                      onClick={() => setDropdownOpen(false)}
+                      className="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 hover:text-accent-gold transition-colors border-t border-gray-100"
+                    >
+                      <span className="material-symbols-outlined text-sm align-middle mr-2">fact_check</span>
+                      Screening / 预审稿
+                    </Link>
+                  )}
                   <button
                     onClick={handleSignOut}
                     className="block w-full text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 hover:text-science-red transition-colors cursor-pointer border-t border-gray-100"

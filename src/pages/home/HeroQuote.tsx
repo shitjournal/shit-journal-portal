@@ -7,7 +7,7 @@ export const HeroQuote: React.FC = () => (
       💩
     </div>
     <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal leading-tight">
-      "Truth Fades, SHIT Lasts."
+      "Truth Fades, S.H.I.T Lasts."
     </h2>
     <p className="mt-4 chinese-serif text-2xl text-charcoal-light font-medium tracking-wide">
       "真理会过时，构石永恒。"

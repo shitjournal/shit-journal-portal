@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -13,9 +13,13 @@ interface SubmissionData {
   co_authors: { name: string; email: string; institution: string; contribution: string }[];
   viscosity: string;
   file_name: string;
+  file_path: string;
+  pdf_path: string;
   file_size_bytes: number;
   status: string;
   created_at: string;
+  screening_notes: string | null;
+  solicited_topic: string | null;
 }
 
 interface ReviewData {
@@ -26,7 +30,7 @@ interface ReviewData {
 }
 
 const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'Preprint', cn: '化粪池发酵中', color: 'bg-amber-50 text-amber-700' },
+  pending: { en: 'Screening', cn: '待预审', color: 'bg-gray-100 text-gray-500' },
   under_review: { en: 'Scooper Review', cn: '铲屎官评审中', color: 'bg-yellow-50 text-yellow-700' },
   revisions_requested: { en: 'Revisions Requested', cn: '需要修改', color: 'bg-blue-50 text-blue-700' },
   accepted: { en: 'Approved for Flush', cn: '批准冲水', color: 'bg-green-50 text-green-700' },
@@ -45,9 +49,23 @@ const RECOMMENDATION_LABELS: Record<string, string> = {
 export const SubmissionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [submission, setSubmission] = useState<SubmissionData | null>(null);
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Delete state
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  // Revision reupload state
+  const [revisionWord, setRevisionWord] = useState<File | null>(null);
+  const [revisionPdf, setRevisionPdf] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const wordInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user || !id) return;
@@ -75,6 +93,81 @@ export const SubmissionDetail: React.FC = () => {
 
     fetch();
   }, [user, id]);
+
+  const handleResubmit = async () => {
+    if (!submission || !revisionWord || !revisionPdf || uploading) return;
+    setUploading(true);
+    setUploadError('');
+
+    try {
+      // Use .update() to overwrite existing files (requires UPDATE policy)
+      const { error: wordErr } = await supabase.storage
+        .from('manuscripts')
+        .update(submission.file_path, revisionWord);
+      if (wordErr) throw new Error(`Word upload failed / Word上传失败: ${wordErr.message}`);
+
+      const { error: pdfErr } = await supabase.storage
+        .from('manuscripts')
+        .update(submission.pdf_path, revisionPdf, { contentType: 'application/pdf' });
+      if (pdfErr) throw new Error(`PDF upload failed / PDF上传失败: ${pdfErr.message}`);
+
+      // Update submission: reset to pending, update file metadata
+      const { error: dbErr } = await supabase
+        .from('submissions')
+        .update({
+          status: 'pending',
+          file_name: revisionWord.name,
+          file_size_bytes: revisionWord.size,
+          screening_notes: null,
+          screened_at: null,
+          screened_by: null,
+        })
+        .eq('id', submission.id);
+
+      if (dbErr) throw new Error(`Update failed / 更新失败: ${dbErr.message}`);
+
+      // Refresh submission data
+      setSubmission(prev => prev ? {
+        ...prev,
+        status: 'pending',
+        file_name: revisionWord.name,
+        file_size_bytes: revisionWord.size,
+        screening_notes: null,
+      } : null);
+      setRevisionWord(null);
+      setRevisionPdf(null);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed / 上传失败');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!submission || deleting) return;
+    setDeleting(true);
+    setDeleteError('');
+
+    try {
+      // 1. Delete ratings
+      await supabase.from('preprint_ratings').delete().eq('submission_id', submission.id);
+
+      // 2. Delete storage files
+      const filesToRemove = [submission.file_path, submission.pdf_path].filter(Boolean);
+      if (filesToRemove.length > 0) {
+        await supabase.storage.from('manuscripts').remove(filesToRemove);
+      }
+
+      // 4. Delete submission record
+      const { error } = await supabase.from('submissions').delete().eq('id', submission.id);
+      if (error) throw new Error(error.message);
+
+      navigate('/dashboard');
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Delete failed / 删除失败');
+      setDeleting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -106,18 +199,29 @@ export const SubmissionDetail: React.FC = () => {
 
       <div className="bg-white border border-gray-200 p-8 shadow-sm mb-8">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
-          <h2 className="text-2xl font-serif font-bold">{submission.manuscript_title}</h2>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-serif font-bold">{submission.manuscript_title}</h2>
+              {submission.solicited_topic && (
+                <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-300 whitespace-nowrap shrink-0">
+                  {submission.solicited_topic}
+                </span>
+              )}
+            </div>
+          </div>
           <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm whitespace-nowrap ${status.color}`}>
             {status.en} / {status.cn}
           </span>
         </div>
-        <Link
-          to={`/preprints/${submission.id}`}
-          className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-accent-gold hover:text-charcoal transition-colors mb-6"
-        >
-          View in 化粪池 / 查看预印本
-          <span className="material-symbols-outlined text-sm">arrow_forward</span>
-        </Link>
+        {['under_review', 'accepted'].includes(submission.status) && (
+          <Link
+            to={`/preprints/${submission.id}`}
+            className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-accent-gold hover:text-charcoal transition-colors mb-6"
+          >
+            View in 发酵池 / 查看预印本
+            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          </Link>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div>
@@ -158,6 +262,99 @@ export const SubmissionDetail: React.FC = () => {
             </div>
           </div>
         )}
+
+        {submission.screening_notes && (
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 block mb-2">Editor Notes / 编辑备注</span>
+            <p className="font-serif text-gray-700 text-sm leading-relaxed whitespace-pre-wrap bg-amber-50 border border-amber-200 p-4">
+              {submission.screening_notes}
+            </p>
+          </div>
+        )}
+
+        {/* Revision reupload section */}
+        {submission.status === 'revisions_requested' && (
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <h3 className="text-lg font-serif font-bold mb-1">Resubmit Revised Manuscript</h3>
+            <p className="text-xs text-gray-400 mb-4">请上传修改后的稿件，重新提交预审</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              {/* Word upload */}
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
+                  revisionWord ? 'border-accent-gold/30 bg-amber-50/30' : 'border-gray-300 bg-gray-50 hover:border-accent-gold hover:bg-white'
+                }`}
+                onClick={() => wordInputRef.current?.click()}
+              >
+                <input
+                  ref={wordInputRef}
+                  type="file"
+                  accept=".doc,.docx"
+                  className="hidden"
+                  onChange={e => {
+                    const f = e.target.files?.[0];
+                    if (f) setRevisionWord(f);
+                  }}
+                />
+                <span className={`material-symbols-outlined text-2xl mb-2 block ${revisionWord ? 'text-accent-gold' : 'text-gray-400'}`}>description</span>
+                {revisionWord ? (
+                  <>
+                    <p className="text-sm font-medium text-charcoal">{revisionWord.name}</p>
+                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{(revisionWord.size / 1024).toFixed(1)} KB</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-charcoal">Word Document / Word文档</p>
+                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">.doc / .docx</p>
+                  </>
+                )}
+              </div>
+
+              {/* PDF upload */}
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
+                  revisionPdf ? 'border-accent-gold/30 bg-amber-50/30' : 'border-gray-300 bg-gray-50 hover:border-accent-gold hover:bg-white'
+                }`}
+                onClick={() => pdfInputRef.current?.click()}
+              >
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={e => {
+                    const f = e.target.files?.[0];
+                    if (f) setRevisionPdf(f);
+                  }}
+                />
+                <span className={`material-symbols-outlined text-2xl mb-2 block ${revisionPdf ? 'text-accent-gold' : 'text-gray-400'}`}>picture_as_pdf</span>
+                {revisionPdf ? (
+                  <>
+                    <p className="text-sm font-medium text-charcoal">{revisionPdf.name}</p>
+                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{(revisionPdf.size / 1024).toFixed(1)} KB</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-charcoal">PDF Document / PDF文档</p>
+                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">.pdf</p>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {uploadError && (
+              <p className="text-red-500 text-xs font-bold mb-3">{uploadError}</p>
+            )}
+
+            <button
+              onClick={handleResubmit}
+              disabled={!revisionWord || !revisionPdf || uploading}
+              className="px-6 py-3 bg-accent-gold text-white text-[11px] font-bold uppercase tracking-widest hover:bg-charcoal transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {uploading ? 'Uploading... / 上传中...' : 'Resubmit for Review / 重新提交预审'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Reviews Section */}
@@ -190,6 +387,38 @@ export const SubmissionDetail: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Delete Section */}
+      <div className="mt-12 pt-8 border-t border-gray-200">
+        {deleteError && (
+          <p className="text-red-500 text-xs font-bold mb-3">{deleteError}</p>
+        )}
+        {!confirmDelete ? (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors"
+          >
+            Delete Submission / 删除稿件
+          </button>
+        ) : (
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-red-600 font-bold">确认删除？稿件和文件将永久删除，无法恢复。</p>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="px-5 py-2 bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition-colors disabled:opacity-50"
+            >
+              {deleting ? 'Deleting...' : 'Confirm Delete / 确认删除'}
+            </button>
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors"
+            >
+              Cancel / 取消
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

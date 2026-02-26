@@ -10,10 +10,11 @@ interface Submission {
   status: string;
   viscosity: string;
   created_at: string;
+  solicited_topic: string | null;
 }
 
 const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'Preprint', cn: '化粪池发酵中', color: 'bg-amber-50 text-amber-700' },
+  pending: { en: 'Screening', cn: '待预审', color: 'bg-gray-100 text-gray-500' },
   under_review: { en: 'Scooper Review', cn: '铲屎官评审中', color: 'bg-yellow-50 text-yellow-700' },
   revisions_requested: { en: 'Revisions', cn: '需要修改', color: 'bg-blue-50 text-blue-700' },
   accepted: { en: 'Approved', cn: '批准冲水', color: 'bg-green-50 text-green-700' },
@@ -22,7 +23,8 @@ const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> =
 };
 
 export const AuthorDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const isEditor = profile?.role === 'editor';
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,7 @@ export const AuthorDashboard: React.FC = () => {
     const fetchSubmissions = async () => {
       const { data } = await supabase
         .from('submissions')
-        .select('id, manuscript_title, status, viscosity, created_at')
+        .select('id, manuscript_title, status, viscosity, created_at, solicited_topic')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -69,7 +71,7 @@ export const AuthorDashboard: React.FC = () => {
                 to="/submit"
                 className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
               >
-                SUBMIT SHIT / 立即投稿
+                SUBMIT S.H.I.T / 立即投稿
               </Link>
             </div>
           ) : (
@@ -78,12 +80,19 @@ export const AuthorDashboard: React.FC = () => {
                 const status = STATUS_LABELS[sub.status] || STATUS_LABELS.pending;
                 return (
                   <div key={sub.id} className="bg-white border border-gray-200 p-6 hover:border-accent-gold transition-colors group">
-                    <Link to={`/preprints/${sub.id}`} className="block">
+                    <Link to={['under_review', 'accepted'].includes(sub.status) ? `/preprints/${sub.id}` : `/dashboard/${sub.id}`} className="block">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors truncate">
-                            {sub.manuscript_title}
-                          </h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors truncate">
+                              {sub.manuscript_title}
+                            </h4>
+                            {sub.solicited_topic && (
+                              <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-300 whitespace-nowrap shrink-0">
+                                {sub.solicited_topic}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-gray-400 mt-1">
                             {new Date(sub.created_at).toLocaleDateString('zh-CN')} · {sub.viscosity}
                           </p>
@@ -107,11 +116,12 @@ export const AuthorDashboard: React.FC = () => {
                   to="/submit"
                   className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
                 >
-                  SUBMIT SHIT / 再投一篇
+                  SUBMIT S.H.I.T / 再投一篇
                 </Link>
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ export const Footer: React.FC = () => (
           <div className="flex items-center gap-4 mb-8">
             <span className="text-5xl">💩</span>
             <div>
-              <h2 className="text-2xl font-bold italic tracking-wider">SHIT PORTAL</h2>
+              <h2 className="text-2xl font-bold italic tracking-wider">S.H.I.T PORTAL</h2>
               <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-bold">
                 Sciences, Humanities, Information, Technology / 构石（构建学术的基石）
               </p>
@@ -43,11 +43,11 @@ export const Footer: React.FC = () => (
       </div>
 
       <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-widest text-gray-500">
-        <p>© 2026 SHIT JOURNAL ACADEMIC. ALL RIGHTS WASTED. / 版权所有：没有版权</p>
+        <p>© 2026 S.H.I.T JOURNAL ACADEMIC. ALL RIGHTS WASTED. / 版权所有：没有版权</p>
         <div className="flex gap-8 mt-4 md:mt-0">
           <a className="hover:text-white transition-colors" href="#">Privacy / 隐私</a>
           <a className="hover:text-white transition-colors" href="#">Terms / 条款</a>
-          <span>DOI: 10.SHIT/ROOT</span>
+          <span>DOI: 10.S.H.I.T/ROOT</span>
         </div>
       </div>
     </div>

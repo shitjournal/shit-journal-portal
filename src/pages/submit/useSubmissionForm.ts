@@ -13,6 +13,7 @@ export interface SubmissionFormData {
   viscosity: string;
   file: File | null;
   pdfFile: File | null;
+  solicitedTopic: string | null;
 }
 
 interface FormErrors {
@@ -39,6 +40,7 @@ export function useSubmissionForm() {
     viscosity: '',
     file: null,
     pdfFile: null,
+    solicitedTopic: null,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -160,6 +162,7 @@ export function useSubmissionForm() {
           file_name: file.name,
           file_size_bytes: file.size,
           pdf_path: pdfPath,
+          solicited_topic: formData.solicitedTopic,
         });
 
       if (dbError) {

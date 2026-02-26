@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export const EditorialSection: React.FC = () => (
   <section className="mb-8 sm:mb-16">
@@ -17,23 +18,28 @@ export const EditorialSection: React.FC = () => (
           className="w-full aspect-[4/3] object-cover grayscale contrast-125 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
         />
         <div className="absolute bottom-0 left-0 bg-white/95 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider border-t border-r border-gray-300">
-          排泄物在 500 倍显微镜下的样子 / Excrement under a 500x microscope
+          学术自由在 500 倍显微镜下的样子 / Academic freedom under a 500x microscope
         </div>
       </div>
 
       <div className="flex flex-col h-full">
         <h4 className="text-3xl sm:text-4xl font-serif font-bold leading-tight mb-2 hover:text-accent-gold transition-colors cursor-pointer">
-          A Manifesto for Academic Rubbish
+          A Manifesto for Academic Decentralization
         </h4>
-        <h5 className="text-xl sm:text-2xl chinese-serif font-bold text-gray-500 mb-6">学术糟粕宣言</h5>
-        <p className="font-serif text-lg text-gray-700 leading-relaxed mb-8 italic">
-          他们追求真理，却在真理的排泄物面前掩鼻而过。《SHIT》的诞生，是为了建立一个前卫的学术避难所。我们拒绝平庸的真理，我们只欢迎那些经过严谨同行评审的、最纯粹的思维垃圾。无论是在结肠中孕育的灵感，还是在PPT架构中迷失的灵魂，都将在本刊获得永生。
+        <h5 className="text-xl sm:text-2xl chinese-serif font-bold text-gray-500 mb-6">学术去中心化宣言</h5>
+        <p className="font-serif text-lg text-gray-700 leading-relaxed mb-4 italic">
+          《S.H.I.T》是一场社会实验。我们试图回答一个问题：如果把编辑部的权力交还给社区，学术评价会变得更好还是更糟？
         </p>
-        <div className="mt-auto border-t border-gray-100 pt-4">
-          <span className="text-accent-gold font-bold uppercase text-xs tracking-widest">
-            —— 首席奥力给院士：Dr. Shit
-          </span>
-        </div>
+        <p className="font-serif text-base text-gray-600 leading-relaxed mb-6">
+          在这里，没有大佬，没有学阀。每一篇稿件都进入发酵池，由社区公开评审、公开评分。好的思想会自己浮上来，坏的自然沉底。
+        </p>
+        <Link
+          to="/news/governance-1.0"
+          className="inline-flex items-center gap-1 text-sm font-bold text-accent-gold hover:text-charcoal transition-colors"
+        >
+          想参与社区自治？提交你的方案
+          <span className="material-symbols-outlined text-base">arrow_forward</span>
+        </Link>
       </div>
     </div>
   </section>
