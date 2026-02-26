@@ -9,10 +9,10 @@ const corsHeaders = {
 const DECISION_CONFIG: Record<string, { subject: string; heading: string; headingCn: string; body: string; bodyCn: string; color: string }> = {
   under_review: {
     subject: "Your manuscript has been approved — S.H.I.T Journal",
-    heading: "Approved to 发酵池!",
+    heading: "Approved to 化粪池!",
     headingCn: "稿件已通过预审！",
-    body: "Your manuscript has passed editorial screening and is now live in the Septic Tank (发酵池). Other researchers can browse and rate it.",
-    bodyCn: "您的稿件已通过编辑预审，现已进入发酵池。其他研究者可以浏览和评分。",
+    body: "Your manuscript has passed editorial screening and is now live in the Septic Tank (化粪池). Other researchers can browse and rate it.",
+    bodyCn: "您的稿件已通过编辑预审，现已进入化粪池。其他研究者可以浏览和评分。",
     color: "#16a34a",
   },
   revisions_requested: {
@@ -20,7 +20,7 @@ const DECISION_CONFIG: Record<string, { subject: string; heading: string; headin
     heading: "Revisions Requested",
     headingCn: "稿件需要修改",
     body: "Our editors have reviewed your manuscript and are requesting revisions before it can enter the Septic Tank. Please check the editor notes below and update your submission.",
-    bodyCn: "编辑审阅了您的稿件，需要您进行修改后才能进入发酵池。请查看下方的编辑备注并更新您的投稿。",
+    bodyCn: "编辑审阅了您的稿件，需要您进行修改后才能进入化粪池。请查看下方的编辑备注并更新您的投稿。",
     color: "#2563eb",
   },
   flushed: {
@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
 
     const actionButton = decision === "under_review"
       ? `<a href="${preprintUrl}" style="display: inline-block; padding: 12px 24px; background: #d4a017; color: white; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-           View in 发酵池 / 查看预印本
+           View in 化粪池 / 查看预印本
          </a>`
       : `<a href="${dashboardUrl}" style="display: inline-block; padding: 12px 24px; background: #d4a017; color: white; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
            Dashboard / 仪表台

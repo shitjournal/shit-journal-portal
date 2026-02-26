@@ -57,7 +57,7 @@ export const GovernanceArticle: React.FC = () => (
             </div>
 
             <div className="border-l-2 border-gray-200 pl-5">
-              <h3 className="text-base font-serif font-bold mb-2">二、见刊判定模块：发酵池自动降解与晋升算法</h3>
+              <h3 className="text-base font-serif font-bold mb-2">二、见刊判定模块：化粪池自动降解与晋升算法</h3>
               <p className="text-sm text-gray-600 mb-1">
                 <span className="font-bold">研究课题：</span>稿件如何从预印本（Preprint Reservoir）自动转化为"已见刊"状态？
               </p>

@@ -218,7 +218,7 @@ export const SubmissionDetail: React.FC = () => {
             to={`/preprints/${submission.id}`}
             className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-accent-gold hover:text-charcoal transition-colors mb-6"
           >
-            View in 发酵池 / 查看预印本
+            View in 化粪池 / 查看预印本
             <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
         )}

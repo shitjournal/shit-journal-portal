@@ -40,14 +40,14 @@ export const SubmissionForm: React.FC = () => {
           Your manuscript has been received and is awaiting editorial screening. It will appear in the Septic Tank once approved.
         </p>
         <p className="chinese-serif text-gray-400 mt-2 mb-8">
-          您的稿件已收到，正在等待编辑预审。通过后将进入发酵池。
+          您的稿件已收到，正在等待编辑预审。通过后将进入化粪池。
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             to="/preprints"
             className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
           >
-            Browse 发酵池 / 浏览发酵池
+            Browse 化粪池 / 浏览化粪池
           </Link>
           <Link
             to="/dashboard"
@@ -161,7 +161,7 @@ export const SubmissionForm: React.FC = () => {
                   <p className="ml-4 text-gray-500">方案要求：设计一套博弈论模型，量化个人贡献，确保社区话语权随学术输出质量动态调整，而非受身份地位驱动。</p>
                 </li>
                 <li>
-                  <span className="font-bold">见刊判定模块：发酵池自动降解与晋升算法</span>
+                  <span className="font-bold">见刊判定模块：化粪池自动降解与晋升算法</span>
                   <p className="ml-4 mt-1 text-gray-600">研究课题：稿件如何从预印本（Preprint Reservoir）自动转化为"已见刊"状态？</p>
                   <p className="ml-4 text-gray-500">方案要求：设定"S.H.I.T 分数"的具体加权算法（包含阅读量、争议度、深度评价等），明确自动晋升的阈值。</p>
                 </li>

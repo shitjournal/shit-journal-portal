@@ -17,7 +17,7 @@ const GUARDS = [
     role: 'Scooper',
     roleCn: '铲屎官',
     bio: 'Community guardian and quality enforcer. Keeps the septic tank clean and the standards high.',
-    bioCn: '社区守护者与质量把关人。保持发酵池清洁，维持高标准。',
+    bioCn: '社区守护者与质量把关人。保持化粪池清洁，维持高标准。',
   },
 ];
 
