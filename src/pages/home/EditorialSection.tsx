@@ -31,7 +31,7 @@ export const EditorialSection: React.FC = () => (
           《S.H.I.T》是一场社会实验。我们试图回答一个问题：如果把编辑部的权力交还给社区，学术评价会变得更好还是更糟？
         </p>
         <p className="font-serif text-base text-gray-600 leading-relaxed mb-6">
-          在这里，没有大佬，没有学阀。每一篇稿件都进入发酵池，由社区公开评审、公开评分。好的思想会自己浮上来，坏的自然沉底。
+          在这里，没有大佬，没有学阀。每一篇稿件都进入化粪池，由社区公开评审、公开评分。好的思想会自己浮上来，坏的自然沉底。
         </p>
         <Link
           to="/news/governance-1.0"

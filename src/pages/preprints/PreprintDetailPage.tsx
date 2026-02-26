@@ -87,7 +87,7 @@ export const PreprintDetailPage: React.FC = () => {
         <span className="text-6xl block mb-6">🚫</span>
         <h2 className="text-2xl font-serif font-bold mb-4">Not found / 未找到</h2>
         <Link to="/preprints" className="text-accent-gold font-bold hover:underline">
-          Back to Preprints / 返回发酵池
+          Back to Preprints / 返回化粪池
         </Link>
       </div>
     );
@@ -101,7 +101,7 @@ export const PreprintDetailPage: React.FC = () => {
         onClick={() => navigate(-1)}
         className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-accent-gold transition-colors mb-8 inline-block"
       >
-        ← Back to Preprints / 返回发酵池
+        ← Back to Preprints / 返回化粪池
       </button>
 
       {/* Metadata */}

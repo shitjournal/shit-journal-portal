@@ -94,7 +94,7 @@ export const PreprintListPage: React.FC = () => {
     <div className="max-w-4xl mx-auto px-4 lg:px-8 py-12">
       <div className="mb-8">
         <h2 className="text-3xl font-serif font-bold mb-1">Preprints</h2>
-        <h3 className="chinese-serif text-xl text-charcoal-light">发酵池</h3>
+        <h3 className="chinese-serif text-xl text-charcoal-light">化粪池</h3>
         <p className="text-sm text-gray-500 mt-2">
           Browse and rate submitted manuscripts. / 浏览并评价已提交的稿件。
         </p>
@@ -143,7 +143,7 @@ export const PreprintListPage: React.FC = () => {
         <div className="text-center py-20 bg-white border border-gray-200">
           <span className="text-6xl block mb-6">🚽</span>
           <p className="font-serif text-lg text-gray-500 mb-2">The tank is empty.</p>
-          <p className="chinese-serif text-gray-400">发酵池是空的</p>
+          <p className="chinese-serif text-gray-400">化粪池是空的</p>
         </div>
       ) : (
         <>

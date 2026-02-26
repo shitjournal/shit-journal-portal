@@ -51,6 +51,7 @@ export const ScreeningDetail: React.FC = () => {
   const [submission, setSubmission] = useState<SubmissionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState('');
+  const [topicOverride, setTopicOverride] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -66,6 +67,7 @@ export const ScreeningDetail: React.FC = () => {
       if (data) {
         setSubmission(data);
         setNotes(data.screening_notes || '');
+        setTopicOverride(data.solicited_topic || '');
       }
       setLoading(false);
     };
@@ -106,6 +108,7 @@ export const ScreeningDetail: React.FC = () => {
         screened_at: new Date().toISOString(),
         screened_by: user.id,
         screening_notes: notes.trim() || null,
+        solicited_topic: topicOverride || null,
       })
       .eq('id', id);
 
@@ -221,6 +224,20 @@ export const ScreeningDetail: React.FC = () => {
       {/* Decision Form */}
       <div className="bg-white border border-gray-200 p-8">
         <h3 className="text-xl font-serif font-bold mb-4">Screening Decision / 预审决定</h3>
+
+        <div className="mb-6">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">
+            Solicited Topic / 约稿主题
+          </label>
+          <select
+            value={topicOverride}
+            onChange={e => setTopicOverride(e.target.value)}
+            className="w-full sm:w-auto border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:border-accent-gold bg-white"
+          >
+            <option value="">None / 无</option>
+            <option value="S.H.I.T社区治理1.0">S.H.I.T社区治理1.0</option>
+          </select>
+        </div>
 
         <div className="mb-6">
           <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">
