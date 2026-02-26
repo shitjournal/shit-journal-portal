@@ -1,14 +1,4 @@
 import React from 'react';
-
-const MAINTENANCE = true;
-
-const MaintenancePage: React.FC = () => (
-  <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-    <p className="text-[#999] text-sm tracking-wide">系统维护中 / Under Maintenance</p>
-  </div>
-);
-
-// ---- Normal app (hidden during maintenance) ----
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { Layout } from './components/layout/Layout';
@@ -28,7 +18,7 @@ import { NewsPage } from './pages/news/NewsPage';
 import { GovernanceArticle } from './pages/news/GovernanceArticle';
 import { ComingSoon } from './pages/ComingSoon';
 
-const NormalApp: React.FC = () => (
+const App: React.FC = () => (
   <BrowserRouter>
     <AuthProvider>
       <Layout>
@@ -51,7 +41,5 @@ const NormalApp: React.FC = () => (
     </AuthProvider>
   </BrowserRouter>
 );
-
-const App: React.FC = () => (MAINTENANCE ? <MaintenancePage /> : <NormalApp />);
 
 export default App;
