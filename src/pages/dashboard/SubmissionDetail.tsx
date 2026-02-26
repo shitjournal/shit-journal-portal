@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -49,9 +49,15 @@ const RECOMMENDATION_LABELS: Record<string, string> = {
 export const SubmissionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [submission, setSubmission] = useState<SubmissionData | null>(null);
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Delete state
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   // Revision reupload state
   const [revisionWord, setRevisionWord] = useState<File | null>(null);
@@ -134,6 +140,35 @@ export const SubmissionDetail: React.FC = () => {
       setUploadError(err instanceof Error ? err.message : 'Upload failed / 上传失败');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!submission || deleting) return;
+    setDeleting(true);
+    setDeleteError('');
+
+    try {
+      // 1. Delete ratings
+      await supabase.from('preprint_ratings').delete().eq('submission_id', submission.id);
+
+      // 2. Delete reviews
+      await supabase.from('reviews').delete().eq('submission_id', submission.id);
+
+      // 3. Delete storage files
+      const filesToRemove = [submission.file_path, submission.pdf_path].filter(Boolean);
+      if (filesToRemove.length > 0) {
+        await supabase.storage.from('manuscripts').remove(filesToRemove);
+      }
+
+      // 4. Delete submission record
+      const { error } = await supabase.from('submissions').delete().eq('id', submission.id);
+      if (error) throw new Error(error.message);
+
+      navigate('/dashboard');
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Delete failed / 删除失败');
+      setDeleting(false);
     }
   };
 
@@ -355,6 +390,38 @@ export const SubmissionDetail: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Delete Section */}
+      <div className="mt-12 pt-8 border-t border-gray-200">
+        {deleteError && (
+          <p className="text-red-500 text-xs font-bold mb-3">{deleteError}</p>
+        )}
+        {!confirmDelete ? (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors"
+          >
+            Delete Submission / 删除稿件
+          </button>
+        ) : (
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-red-600 font-bold">确认删除？稿件和文件将永久删除，无法恢复。</p>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="px-5 py-2 bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition-colors disabled:opacity-50"
+            >
+              {deleting ? 'Deleting...' : 'Confirm Delete / 确认删除'}
+            </button>
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors"
+            >
+              Cancel / 取消
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
