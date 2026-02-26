@@ -42,12 +42,18 @@ Deno.serve(async (req) => {
     const { email, authorName, manuscriptTitle, submissionId, decision, notes } = await req.json();
 
     if (!email || !manuscriptTitle || !submissionId || !decision) {
-      return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
+      return new Response(JSON.stringify({ error: "Missing fields" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const config = DECISION_CONFIG[decision];
     if (!config) {
-      return new Response(JSON.stringify({ error: "Unknown decision" }), { status: 400 });
+      return new Response(JSON.stringify({ error: "Unknown decision" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const dashboardUrl = `${SITE_URL}/dashboard`;
@@ -126,14 +132,20 @@ Deno.serve(async (req) => {
 
     if (!res.ok) {
       console.error("Resend error:", result);
-      return new Response(JSON.stringify({ error: "Email send failed", detail: result }), { status: 500 });
+      return new Response(JSON.stringify({ error: "Email send failed", detail: result }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     return new Response(JSON.stringify({ success: true, id: result.id }), {
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
     console.error("Edge function error:", err);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
