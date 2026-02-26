@@ -152,10 +152,7 @@ export const SubmissionDetail: React.FC = () => {
       // 1. Delete ratings
       await supabase.from('preprint_ratings').delete().eq('submission_id', submission.id);
 
-      // 2. Delete reviews
-      await supabase.from('reviews').delete().eq('submission_id', submission.id);
-
-      // 3. Delete storage files
+      // 2. Delete storage files
       const filesToRemove = [submission.file_path, submission.pdf_path].filter(Boolean);
       if (filesToRemove.length > 0) {
         await supabase.storage.from('manuscripts').remove(filesToRemove);
