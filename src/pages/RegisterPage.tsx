@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
 
 export const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // OTP verification
+  const [otp, setOtp] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
+  const [resent, setResent] = useState(false);
+
   const { signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,24 +40,88 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setVerifyError('');
+    setVerifying(true);
+
+    const { error: err } = await supabase.auth.verifyOtp({
+      email,
+      token: otp.trim(),
+      type: 'signup',
+    });
+
+    if (err) {
+      setVerifyError(err.message);
+      setVerifying(false);
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
+  const handleResend = async () => {
+    setResent(false);
+    await supabase.auth.resend({ type: 'signup', email });
+    setResent(true);
+  };
+
   if (success) {
     return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <span className="text-6xl block mb-6">📧</span>
-        <h2 className="text-3xl font-serif font-bold mb-2">Check Your Email!</h2>
-        <h3 className="chinese-serif text-xl text-charcoal-light mb-6">请查看邮箱！</h3>
-        <p className="font-serif text-gray-500 mb-2">
-          We've sent a confirmation link to <strong>{email}</strong>.
-        </p>
-        <p className="chinese-serif text-gray-400 mb-8">
-          点击邮件中的链接完成注册。
-        </p>
-        <Link
-          to="/login"
-          className="inline-block px-8 py-3 border-2 border-charcoal text-xs font-bold uppercase tracking-widest hover:bg-charcoal hover:text-white transition-all"
-        >
-          Go to Login / 去登录
-        </Link>
+      <div className="max-w-md mx-auto px-4 py-20">
+        <div className="text-center mb-8">
+          <span className="text-6xl block mb-6">📧</span>
+          <h2 className="text-3xl font-serif font-bold mb-2">Enter Verification Code</h2>
+          <h3 className="chinese-serif text-xl text-charcoal-light mb-4">输入验证码</h3>
+          <p className="font-serif text-gray-500 text-sm">
+            We've sent a 6-digit code to <strong>{email}</strong>.
+          </p>
+          <p className="chinese-serif text-gray-400 text-sm">
+            请查看邮箱中的 6 位验证码。
+          </p>
+        </div>
+
+        <form onSubmit={handleVerify} className="bg-white p-8 border border-gray-200 shadow-sm space-y-6">
+          {verifyError && (
+            <div className="p-3 bg-red-50 border border-science-red text-science-red text-sm font-bold">
+              {verifyError}
+            </div>
+          )}
+
+          <div>
+            <label className="form-label">Verification Code / 验证码</label>
+            <input
+              className="form-input text-center text-2xl tracking-[0.5em] font-mono"
+              type="text"
+              value={otp}
+              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="000000"
+              required
+              maxLength={6}
+              autoFocus
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={verifying || otp.length < 6}
+            className="w-full py-4 bg-accent-gold text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#B18E26] transition-colors shadow-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {verifying ? 'Verifying... / 验证中...' : 'Verify / 验证'}
+          </button>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={handleResend}
+              className="text-sm text-accent-gold font-bold hover:underline cursor-pointer"
+            >
+              Resend Code / 重新发送
+            </button>
+            {resent && (
+              <p className="text-xs text-green-600 mt-2">Code resent! / 已重新发送！</p>
+            )}
+          </div>
+        </form>
       </div>
     );
   }
