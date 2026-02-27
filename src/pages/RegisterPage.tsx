@@ -73,10 +73,10 @@ export const RegisterPage: React.FC = () => {
           <h2 className="text-3xl font-serif font-bold mb-2">Enter Verification Code</h2>
           <h3 className="chinese-serif text-xl text-charcoal-light mb-4">输入验证码</h3>
           <p className="font-serif text-gray-500 text-sm">
-            We've sent a 6-digit code to <strong>{email}</strong>.
+            We've sent a verification code to <strong>{email}</strong>.
           </p>
           <p className="chinese-serif text-gray-400 text-sm">
-            请查看邮箱中的 6 位验证码。
+            请查看邮箱中的验证码。
           </p>
         </div>
 
@@ -93,10 +93,10 @@ export const RegisterPage: React.FC = () => {
               className="form-input text-center text-2xl tracking-[0.5em] font-mono"
               type="text"
               value={otp}
-              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="000000"
+              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
+              placeholder="00000000"
               required
-              maxLength={6}
+              maxLength={8}
               autoFocus
             />
           </div>
