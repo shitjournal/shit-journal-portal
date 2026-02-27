@@ -93,13 +93,7 @@ export const ScreeningDetail: React.FC = () => {
       }).catch(e => console.error('Screening email failed:', e));
     }
 
-    // Delete storage files when flushing to save space
-    if (decision === 'flushed') {
-      const filesToRemove = [submission?.file_path, submission?.pdf_path].filter(Boolean) as string[];
-      if (filesToRemove.length > 0) {
-        await supabase.storage.from('manuscripts').remove(filesToRemove);
-      }
-    }
+    // Flushed submissions are kept for 24h then cleaned up by database cron
 
     const { error } = await supabase
       .from('submissions')
