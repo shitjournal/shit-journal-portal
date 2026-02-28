@@ -56,7 +56,7 @@ export const SubmissionForm: React.FC = () => {
       <StepIndicator currentStep={currentStep} />
 
       <div className="space-y-12">
-        <div>
+        <div id="section-identity">
           <IdentitySection
             email={formData.email}
             manuscriptTitle={formData.manuscriptTitle}
@@ -76,7 +76,7 @@ export const SubmissionForm: React.FC = () => {
           )}
         </div>
 
-        <div>
+        <div id="section-coauthors">
           <CoAuthorsSection
             coAuthors={formData.coAuthors}
             onChange={v => updateField('coAuthors', v)}
@@ -86,7 +86,7 @@ export const SubmissionForm: React.FC = () => {
           )}
         </div>
 
-        <div>
+        <div id="section-viscosity">
           <ViscositySection
             viscosity={formData.viscosity}
             onChange={v => updateField('viscosity', v)}
@@ -96,7 +96,7 @@ export const SubmissionForm: React.FC = () => {
           )}
         </div>
 
-        <div>
+        <div id="section-payload">
           <PayloadSection
             pdfFile={formData.pdfFile}
             onPdfFileSelect={f => updateField('pdfFile', f)}

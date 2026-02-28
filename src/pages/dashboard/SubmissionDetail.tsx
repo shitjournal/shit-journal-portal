@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { STATUS_LABELS } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
+import { PdfViewer } from '../preprints/PdfViewer';
 
 interface SubmissionData {
   id: string;
@@ -265,6 +266,15 @@ export const SubmissionDetail: React.FC = () => {
               {submission.status === 'revisions_requested' ? '请上传修改后的稿件，重新提交预审' : '上传新版本 PDF 替换当前文件'}
             </p>
 
+            <div className="flex gap-3 mb-4">
+              <a href="/SHIT-LaTeX-Template.zip" download className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-charcoal text-white hover:bg-accent-gold transition-colors">
+                LaTeX Template
+              </a>
+              <a href="/SHIT_Word-Template.docx" download className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border border-charcoal text-charcoal hover:bg-charcoal hover:text-white transition-colors">
+                Word Template
+              </a>
+            </div>
+
             <div className="mb-4">
               <div
                 className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
@@ -310,6 +320,12 @@ export const SubmissionDetail: React.FC = () => {
             </button>
           </div>
         )}
+      </div>
+
+      {/* PDF Preview */}
+      <div className="mb-8">
+        <h3 className="text-xl font-serif font-bold mb-4">Manuscript Preview / 稿件预览</h3>
+        <PdfViewer pdfPath={submission.pdf_path} />
       </div>
 
       {/* Reviews Section */}
