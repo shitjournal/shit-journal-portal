@@ -12,7 +12,7 @@ export const ComingSoon: React.FC = () => (
         Back to Home / 返回首页
       </Link>
       <Link to="/submit" className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md">
-        Submit S.H.I.T / 立即投稿（排泄）
+        Submit S.H.I.T / 立即排泄
       </Link>
     </div>
   </div>

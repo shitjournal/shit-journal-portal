@@ -35,7 +35,7 @@ export const SubmissionForm: React.FC = () => {
             to="/dashboard"
             className="inline-block px-8 py-3 border border-gray-300 text-gray-500 text-xs font-bold uppercase tracking-widest hover:border-accent-gold hover:text-accent-gold transition-all"
           >
-            My Submissions / 我的投稿
+            My Submissions / 我的排泄
           </Link>
         </div>
       </div>
@@ -171,7 +171,7 @@ export const SubmissionForm: React.FC = () => {
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Submitting... / 提交中...' : 'Submit / 提交投稿'}
+            {isSubmitting ? 'Submitting... / 提交中...' : 'Submit / 提交排泄'}
             {!isSubmitting && <span className="material-symbols-outlined text-lg">send</span>}
           </button>
           <p className="text-center text-[10px] text-gray-400 mt-4 uppercase tracking-widest">

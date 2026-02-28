@@ -63,7 +63,7 @@ export const AuthorDashboard: React.FC = () => {
                 to="/submit"
                 className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
               >
-                SUBMIT S.H.I.T / 立即投稿
+                SUBMIT S.H.I.T / 立即排泄
               </Link>
             </div>
           ) : (
@@ -96,7 +96,7 @@ export const AuthorDashboard: React.FC = () => {
                     </Link>
                     <div className="mt-2 pt-2 border-t border-gray-50">
                       <Link to={`/dashboard/${sub.id}`} className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-accent-gold transition-colors">
-                        Submission Details / 投稿详情 →
+                        Submission Details / 排泄详情 →
                       </Link>
                     </div>
                   </div>
