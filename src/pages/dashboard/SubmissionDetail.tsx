@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { STATUS_LABELS } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 
 interface SubmissionData {
@@ -29,15 +30,6 @@ interface ReviewData {
   status: string;
 }
 
-const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'Screening', cn: '待预审', color: 'bg-gray-100 text-gray-500' },
-  under_review: { en: 'Scooper Review', cn: '铲屎官评审中', color: 'bg-yellow-50 text-yellow-700' },
-  revisions_requested: { en: 'Revisions Requested', cn: '需要修改', color: 'bg-blue-50 text-blue-700' },
-  accepted: { en: 'Approved for Flush', cn: '批准冲水', color: 'bg-green-50 text-green-700' },
-  rejected: { en: 'Clogged', cn: '堵塞了', color: 'bg-red-50 text-red-700' },
-  flushed: { en: 'Desk Flushed', cn: '直接冲掉', color: 'bg-red-50 text-red-500' },
-};
-
 const RECOMMENDATION_LABELS: Record<string, string> = {
   accept: 'Accept / 接受',
   minor_revisions: 'Minor Revisions / 小修',
@@ -60,11 +52,9 @@ export const SubmissionDetail: React.FC = () => {
   const [deleteError, setDeleteError] = useState('');
 
   // Revision reupload state
-  const [revisionWord, setRevisionWord] = useState<File | null>(null);
   const [revisionPdf, setRevisionPdf] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
-  const wordInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -94,47 +84,42 @@ export const SubmissionDetail: React.FC = () => {
     fetch();
   }, [user, id]);
 
-  const handleResubmit = async () => {
-    if (!submission || !revisionWord || !revisionPdf || uploading) return;
+  const handleUpdatePdf = async () => {
+    if (!submission || !revisionPdf || uploading) return;
     setUploading(true);
     setUploadError('');
 
     try {
-      // Use .update() to overwrite existing files (requires UPDATE policy)
-      const { error: wordErr } = await supabase.storage
-        .from('manuscripts')
-        .update(submission.file_path, revisionWord);
-      if (wordErr) throw new Error(`Word upload failed / Word上传失败: ${wordErr.message}`);
-
       const { error: pdfErr } = await supabase.storage
         .from('manuscripts')
-        .update(submission.pdf_path, revisionPdf, { contentType: 'application/pdf' });
+        .upload(submission.pdf_path, revisionPdf, { contentType: 'application/pdf', upsert: true });
       if (pdfErr) throw new Error(`PDF upload failed / PDF上传失败: ${pdfErr.message}`);
 
-      // Update submission: reset to pending, update file metadata
+      // Only reset status if revisions were requested
+      const updates: Record<string, unknown> = {
+        file_name: revisionPdf.name,
+        file_size_bytes: revisionPdf.size,
+      };
+      if (submission.status === 'revisions_requested') {
+        updates.status = 'pending';
+        updates.screening_notes = null;
+        updates.screened_at = null;
+        updates.screened_by = null;
+      }
+
       const { error: dbErr } = await supabase
         .from('submissions')
-        .update({
-          status: 'pending',
-          file_name: revisionWord.name,
-          file_size_bytes: revisionWord.size,
-          screening_notes: null,
-          screened_at: null,
-          screened_by: null,
-        })
+        .update(updates)
         .eq('id', submission.id);
 
       if (dbErr) throw new Error(`Update failed / 更新失败: ${dbErr.message}`);
 
-      // Refresh submission data
       setSubmission(prev => prev ? {
         ...prev,
-        status: 'pending',
-        file_name: revisionWord.name,
-        file_size_bytes: revisionWord.size,
-        screening_notes: null,
+        ...(submission.status === 'revisions_requested' ? { status: 'pending', screening_notes: null } : {}),
+        file_name: revisionPdf.name,
+        file_size_bytes: revisionPdf.size,
       } : null);
-      setRevisionWord(null);
       setRevisionPdf(null);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Upload failed / 上传失败');
@@ -272,45 +257,15 @@ export const SubmissionDetail: React.FC = () => {
           </div>
         )}
 
-        {/* Revision reupload section */}
-        {submission.status === 'revisions_requested' && (
+        {/* PDF update section */}
+        {(submission.status === 'pending' || submission.status === 'revisions_requested') && (
           <div className="mt-6 pt-6 border-t border-gray-100">
-            <h3 className="text-lg font-serif font-bold mb-1">Resubmit Revised Manuscript</h3>
-            <p className="text-xs text-gray-400 mb-4">请上传修改后的稿件，重新提交预审</p>
+            <h3 className="text-lg font-serif font-bold mb-1">Update PDF / 更新稿件</h3>
+            <p className="text-xs text-gray-400 mb-4">
+              {submission.status === 'revisions_requested' ? '请上传修改后的稿件，重新提交预审' : '上传新版本 PDF 替换当前文件'}
+            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              {/* Word upload */}
-              <div
-                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
-                  revisionWord ? 'border-accent-gold/30 bg-amber-50/30' : 'border-gray-300 bg-gray-50 hover:border-accent-gold hover:bg-white'
-                }`}
-                onClick={() => wordInputRef.current?.click()}
-              >
-                <input
-                  ref={wordInputRef}
-                  type="file"
-                  accept=".doc,.docx"
-                  className="hidden"
-                  onChange={e => {
-                    const f = e.target.files?.[0];
-                    if (f) setRevisionWord(f);
-                  }}
-                />
-                <span className={`material-symbols-outlined text-2xl mb-2 block ${revisionWord ? 'text-accent-gold' : 'text-gray-400'}`}>description</span>
-                {revisionWord ? (
-                  <>
-                    <p className="text-sm font-medium text-charcoal">{revisionWord.name}</p>
-                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">{(revisionWord.size / 1024).toFixed(1)} KB</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm font-medium text-charcoal">Word Document / Word文档</p>
-                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">.doc / .docx</p>
-                  </>
-                )}
-              </div>
-
-              {/* PDF upload */}
+            <div className="mb-4">
               <div
                 className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
                   revisionPdf ? 'border-accent-gold/30 bg-amber-50/30' : 'border-gray-300 bg-gray-50 hover:border-accent-gold hover:bg-white'
@@ -347,11 +302,11 @@ export const SubmissionDetail: React.FC = () => {
             )}
 
             <button
-              onClick={handleResubmit}
-              disabled={!revisionWord || !revisionPdf || uploading}
+              onClick={handleUpdatePdf}
+              disabled={!revisionPdf || uploading}
               className="px-6 py-3 bg-accent-gold text-white text-[11px] font-bold uppercase tracking-widest hover:bg-charcoal transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {uploading ? 'Uploading... / 上传中...' : 'Resubmit for Review / 重新提交预审'}
+              {uploading ? 'Uploading... / 上传中...' : submission.status === 'revisions_requested' ? 'Resubmit / 重新提交' : 'Update PDF / 更新文件'}
             </button>
           </div>
         )}

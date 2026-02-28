@@ -1,9 +1,7 @@
 import React, { useRef, useState } from 'react';
 
 interface Props {
-  file: File | null;
   pdfFile: File | null;
-  onFileSelect: (file: File) => void;
   onPdfFileSelect: (file: File) => void;
 }
 
@@ -91,7 +89,7 @@ const DropZone: React.FC<DropZoneProps> = ({ accept, file, onSelect, label, hint
   );
 };
 
-export const PayloadSection: React.FC<Props> = ({ file, pdfFile, onFileSelect, onPdfFileSelect }) => (
+export const PayloadSection: React.FC<Props> = ({ pdfFile, onPdfFileSelect }) => (
   <section className="bg-white p-8 border border-gray-200 shadow-sm">
     <div className="flex items-baseline gap-3 mb-8 border-b border-gray-100 pb-4">
       <span className="text-2xl font-serif font-bold text-accent-gold">03</span>
@@ -99,41 +97,44 @@ export const PayloadSection: React.FC<Props> = ({ file, pdfFile, onFileSelect, o
     </div>
 
     {/* Template download */}
-    <div className="mb-8 p-4 bg-gray-50 border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-      <div className="flex-1">
+    <div className="mb-8 p-4 bg-gray-50 border border-gray-200">
+      <div className="mb-3">
         <p className="text-sm font-bold text-charcoal">Please use our official template / 请使用官方模板</p>
         <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-1">
           Format your manuscript using the template below before submitting / 请先用模板排版再投稿
         </p>
       </div>
-      <a
-        href="/SHIT_Word-Template.docx"
-        download
-        className="inline-flex items-center gap-2 px-4 py-2 border-2 border-accent-gold text-accent-gold text-[10px] font-bold uppercase tracking-widest hover:bg-accent-gold hover:text-white transition-colors shrink-0"
-      >
-        <span className="material-symbols-outlined text-sm">download</span>
-        Download Template / 下载模板
-      </a>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <a
+          href="/SHIT-LaTeX-Template.zip"
+          download
+          className="inline-flex items-center gap-2 px-4 py-2 border-2 border-accent-gold text-accent-gold text-[10px] font-bold uppercase tracking-widest hover:bg-accent-gold hover:text-white transition-colors shrink-0"
+        >
+          <span className="material-symbols-outlined text-sm">download</span>
+          LaTeX Template / LaTeX 模板
+        </a>
+        <a
+          href="/SHIT_Word-Template.docx"
+          download
+          className="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-300 text-gray-500 text-[10px] font-bold uppercase tracking-widest hover:border-accent-gold hover:text-accent-gold transition-colors shrink-0"
+        >
+          <span className="material-symbols-outlined text-sm">download</span>
+          Word Template / Word 模板
+        </a>
+      </div>
+      <p className="text-[10px] text-science-red font-bold mt-2">
+        LaTeX users: please compile with XeLaTeX / LaTeX 用户请使用 XeLaTeX 编译
+      </p>
     </div>
 
-    {/* Dual upload zones */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <DropZone
-        accept=".doc,.docx"
-        file={file}
-        onSelect={onFileSelect}
-        label="Word Document / Word文档"
-        hint=".doc / .docx"
-        icon="description"
-      />
-      <DropZone
-        accept=".pdf"
-        file={pdfFile}
-        onSelect={onPdfFileSelect}
-        label="PDF Document / PDF文档"
-        hint=".pdf"
-        icon="picture_as_pdf"
-      />
-    </div>
+    {/* PDF upload */}
+    <DropZone
+      accept=".pdf"
+      file={pdfFile}
+      onSelect={onPdfFileSelect}
+      label="PDF Document / PDF文档"
+      hint=".pdf"
+      icon="picture_as_pdf"
+    />
   </section>
 );

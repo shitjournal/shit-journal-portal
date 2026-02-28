@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { EDITOR_STATUS_LABELS } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { ProfileSidebar } from '../../components/dashboard/ProfileSidebar';
 
@@ -34,15 +35,6 @@ const SORT_OPTIONS: { value: SortMode; en: string; cn: string }[] = [
   { value: 'highest_rated', en: 'Highest Rated', cn: '最高评分' },
   { value: 'most_rated', en: 'Most Rated', cn: '最多评分' },
 ];
-
-const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'Pending', cn: '待预审', color: 'bg-amber-50 text-amber-700' },
-  under_review: { en: 'In Tank', cn: '已入池', color: 'bg-green-50 text-green-700' },
-  revisions_requested: { en: 'Revisions', cn: '需修改', color: 'bg-blue-50 text-blue-700' },
-  accepted: { en: 'Accepted', cn: '已接受', color: 'bg-green-50 text-green-700' },
-  rejected: { en: 'Rejected', cn: '已拒绝', color: 'bg-red-50 text-red-700' },
-  flushed: { en: 'Flushed', cn: '已冲掉', color: 'bg-red-50 text-red-500' },
-};
 
 const statusFilter = (tab: TabFilter): string[] => {
   switch (tab) {
@@ -187,7 +179,7 @@ export const ScreeningDashboard: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {submissions.map(sub => {
-                const status = STATUS_LABELS[sub.status] || STATUS_LABELS.pending;
+                const status = EDITOR_STATUS_LABELS[sub.status] || EDITOR_STATUS_LABELS.pending;
                 return (
                   <Link
                     key={sub.id}

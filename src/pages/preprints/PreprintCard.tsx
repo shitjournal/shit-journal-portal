@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { VISCOSITY_LABELS } from '../../lib/constants';
 
 interface PreprintCardProps {
   id: string;
@@ -13,12 +14,6 @@ interface PreprintCardProps {
   co_authors: unknown[] | null;
   solicited_topic: string | null;
 }
-
-const VISCOSITY_LABELS: Record<string, string> = {
-  stringy: 'Stringy / 拉丝型',
-  semi: 'Semi-solid / 半固态',
-  'high-entropy': 'High-Entropy / 高熵态',
-};
 
 export const PreprintCard: React.FC<{ preprint: PreprintCardProps }> = ({ preprint }) => {
   const score = Math.round(preprint.avg_score || 0);

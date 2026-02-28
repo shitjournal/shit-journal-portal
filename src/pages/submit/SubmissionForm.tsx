@@ -8,27 +8,9 @@ import { PayloadSection } from './PayloadSection';
 import { useSubmissionForm } from './useSubmissionForm';
 import { GuidelinesGate } from './GuidelinesGate';
 
-const SUBMISSIONS_PAUSED = false;
-
 export const SubmissionForm: React.FC = () => {
   const { formData, errors, isSubmitting, isSubmitted, currentStep, updateField, handleSubmit } = useSubmissionForm();
   const [agreed, setAgreed] = useState(false);
-
-  if (SUBMISSIONS_PAUSED) {
-    return (
-      <div className="text-center py-20">
-        <span className="text-6xl block mb-6">🚧</span>
-        <h2 className="text-3xl font-serif font-bold mb-3">Submissions Temporarily Paused</h2>
-        <h3 className="chinese-serif text-xl text-charcoal-light mb-6">投稿暂时关闭</h3>
-        <p className="font-serif text-gray-500 max-w-md mx-auto">
-          We are upgrading our submission system. Submissions will reopen soon with new formatting requirements.
-        </p>
-        <p className="chinese-serif text-gray-400 mt-2">
-          投稿系统升级中，即将重新开放，届时将提供新的稿件格式要求。
-        </p>
-      </div>
-    );
-  }
 
   if (isSubmitted) {
     return (
@@ -116,13 +98,11 @@ export const SubmissionForm: React.FC = () => {
 
         <div>
           <PayloadSection
-            file={formData.file}
             pdfFile={formData.pdfFile}
-            onFileSelect={f => updateField('file', f)}
             onPdfFileSelect={f => updateField('pdfFile', f)}
           />
-          {(errors.file || errors.pdfFile) && (
-            <p className="text-science-red text-xs mt-2 font-bold">{errors.file || errors.pdfFile}</p>
+          {errors.pdfFile && (
+            <p className="text-science-red text-xs mt-2 font-bold">{errors.pdfFile}</p>
           )}
         </div>
 
