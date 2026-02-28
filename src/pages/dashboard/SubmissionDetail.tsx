@@ -359,8 +359,8 @@ export const SubmissionDetail: React.FC = () => {
         </div>
       )}
 
-      {/* Delete Section */}
-      <div className="mt-12 pt-8 border-t border-gray-200">
+      {/* Delete Section - hidden for submissions in 化粪池 */}
+      {!['under_review', 'accepted'].includes(submission.status) && <div className="mt-12 pt-8 border-t border-gray-200">
         {deleteError && (
           <p className="text-red-500 text-xs font-bold mb-3">{deleteError}</p>
         )}
@@ -389,7 +389,7 @@ export const SubmissionDetail: React.FC = () => {
             </button>
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 };
