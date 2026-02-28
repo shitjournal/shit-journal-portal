@@ -131,7 +131,7 @@ export const ProfileSidebar: React.FC<{ submissionCount: number }> = ({ submissi
 
           {/* Submission Count */}
           <div className="pt-3 border-t border-gray-100">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Submissions / 投稿数</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Submissions / 排泄数</span>
             <p className="text-2xl font-serif font-bold text-charcoal">{submissionCount}</p>
           </div>
         </div>
