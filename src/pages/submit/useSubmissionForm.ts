@@ -82,6 +82,22 @@ export function useSubmissionForm() {
     }
 
     setErrors(newErrors);
+    const firstError = Object.keys(newErrors)[0] as keyof FormErrors | undefined;
+    if (firstError) {
+      const sectionMap: Record<string, string> = {
+        authorName: 'section-identity',
+        email: 'section-identity',
+        manuscriptTitle: 'section-identity',
+        institution: 'section-identity',
+        coAuthors: 'section-coauthors',
+        viscosity: 'section-viscosity',
+        pdfFile: 'section-payload',
+      };
+      const sectionId = sectionMap[firstError];
+      if (sectionId) {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
     return Object.keys(newErrors).length === 0;
   };
 
