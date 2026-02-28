@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { STATUS_LABELS } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { ProfileSidebar } from '../../components/dashboard/ProfileSidebar';
 
@@ -12,15 +13,6 @@ interface Submission {
   created_at: string;
   solicited_topic: string | null;
 }
-
-const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'Screening', cn: '待预审', color: 'bg-gray-100 text-gray-500' },
-  under_review: { en: 'Scooper Review', cn: '铲屎官评审中', color: 'bg-yellow-50 text-yellow-700' },
-  revisions_requested: { en: 'Revisions', cn: '需要修改', color: 'bg-blue-50 text-blue-700' },
-  accepted: { en: 'Approved', cn: '批准冲水', color: 'bg-green-50 text-green-700' },
-  rejected: { en: 'Clogged', cn: '堵塞了', color: 'bg-red-50 text-red-700' },
-  flushed: { en: 'Desk Flushed', cn: '直接冲掉', color: 'bg-red-50 text-red-500' },
-};
 
 export const AuthorDashboard: React.FC = () => {
   const { user, profile } = useAuth();

@@ -2,14 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
+import { VISCOSITY_LABELS } from '../../lib/constants';
 import { PdfViewer } from './PdfViewer';
 import { RatingWidget } from './RatingWidget';
-
-const VISCOSITY_LABELS: Record<string, string> = {
-  stringy: 'Stringy / 拉丝型',
-  semi: 'Semi-solid / 半固态',
-  'high-entropy': 'High-Entropy / 高熵态',
-};
 
 export const PreprintDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

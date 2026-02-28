@@ -11,7 +11,6 @@ export interface SubmissionFormData {
   socialMedia: string;
   coAuthors: CoAuthor[];
   viscosity: string;
-  file: File | null;
   pdfFile: File | null;
   solicitedTopic: string | null;
 }
@@ -22,7 +21,6 @@ interface FormErrors {
   authorName?: string;
   institution?: string;
   viscosity?: string;
-  file?: string;
   pdfFile?: string;
   coAuthors?: string;
   submit?: string;
@@ -38,7 +36,6 @@ export function useSubmissionForm() {
     socialMedia: profile?.social_media || '',
     coAuthors: [],
     viscosity: '',
-    file: null,
     pdfFile: null,
     solicitedTopic: null,
   });
@@ -71,9 +68,6 @@ export function useSubmissionForm() {
     if (!formData.viscosity) {
       newErrors.viscosity = 'Please select viscosity / 请选择粘度';
     }
-    if (!formData.file) {
-      newErrors.file = 'Please upload a Word file / 请上传Word文件';
-    }
     if (!formData.pdfFile) {
       newErrors.pdfFile = 'Please upload a PDF file / 请上传PDF文件';
     }
@@ -92,7 +86,7 @@ export function useSubmissionForm() {
   };
 
   const getCurrentStep = (): number => {
-    if (formData.file) return 3;
+    if (formData.pdfFile) return 3;
     if (formData.viscosity) return 3;
     if (formData.email || formData.manuscriptTitle || formData.authorName) return 2;
     return 1;
@@ -117,24 +111,12 @@ export function useSubmissionForm() {
         return;
       }
 
-      const file = formData.file!;
       const pdfFile = formData.pdfFile!;
       const submissionId = crypto.randomUUID();
-      const ext = file.name.split('.').pop() || 'docx';
 
       const safeName = formData.authorName.replace(/[^a-zA-Z0-9]/g, '_');
       const safeEmail = formData.email.replace(/[@.]/g, '_');
-      const filePath = `${submissionId}/${safeName}_${safeEmail}.${ext}`;
       const pdfPath = `${submissionId}/${safeName}_${safeEmail}.pdf`;
-
-      // Upload Word file
-      const { error: uploadError } = await supabase.storage
-        .from('manuscripts')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        throw new Error(`Word upload failed / Word上传失败: ${uploadError.message}`);
-      }
 
       // Upload PDF file
       const { error: pdfUploadError } = await supabase.storage
@@ -158,9 +140,9 @@ export function useSubmissionForm() {
           social_media: formData.socialMedia || null,
           co_authors: formData.coAuthors.length > 0 ? formData.coAuthors : [],
           viscosity: formData.viscosity,
-          file_path: filePath,
-          file_name: file.name,
-          file_size_bytes: file.size,
+          file_path: pdfPath,
+          file_name: pdfFile.name,
+          file_size_bytes: pdfFile.size,
           pdf_path: pdfPath,
           solicited_topic: formData.solicitedTopic,
         });

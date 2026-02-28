@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { EDITOR_STATUS_LABELS, VISCOSITY_LABELS } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { PdfViewer } from '../preprints/PdfViewer';
 
@@ -22,21 +23,6 @@ interface SubmissionData {
   screening_notes: string | null;
   solicited_topic: string | null;
 }
-
-const VISCOSITY_LABELS: Record<string, string> = {
-  stringy: 'Stringy / 拉丝型',
-  semi: 'Semi-solid / 半固态',
-  'high-entropy': 'High-Entropy / 高熵态',
-};
-
-const STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {
-  pending: { en: 'Pending', cn: '待预审', color: 'bg-amber-50 text-amber-700' },
-  under_review: { en: 'In Tank', cn: '已入池', color: 'bg-green-50 text-green-700' },
-  revisions_requested: { en: 'Revisions', cn: '需修改', color: 'bg-blue-50 text-blue-700' },
-  accepted: { en: 'Accepted', cn: '已接受', color: 'bg-green-50 text-green-700' },
-  rejected: { en: 'Rejected', cn: '已拒绝', color: 'bg-red-50 text-red-700' },
-  flushed: { en: 'Flushed', cn: '已冲掉', color: 'bg-red-50 text-red-500' },
-};
 
 const DECISIONS = [
   { value: 'under_review', en: 'Approve to Tank', cn: '批准入池', color: 'bg-green-600 hover:bg-green-700' },
@@ -133,7 +119,7 @@ export const ScreeningDetail: React.FC = () => {
     );
   }
 
-  const status = STATUS_LABELS[submission.status] || STATUS_LABELS.pending;
+  const status = EDITOR_STATUS_LABELS[submission.status] || EDITOR_STATUS_LABELS.pending;
   const coAuthors = Array.isArray(submission.co_authors) ? submission.co_authors : [];
 
   return (
