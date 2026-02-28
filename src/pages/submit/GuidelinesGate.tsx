@@ -39,6 +39,14 @@ export const GuidelinesGate: React.FC<{ onAgree: () => void }> = ({ onAgree }) =
             <ul className="space-y-1.5 ml-4">
               <li className="text-sm text-charcoal leading-relaxed">
                 <span className="font-bold">高仿排版：</span>必须使用官方 LaTeX/Doc 模板，用视觉秩序掩盖灵魂的荒漠。
+                <span className="flex gap-3 mt-2">
+                  <a href="/SHIT-LaTeX-Template.zip" download className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-charcoal text-white hover:bg-accent-gold transition-colors">
+                    LaTeX Template
+                  </a>
+                  <a href="/SHIT_Word-Template.docx" download className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border border-charcoal text-charcoal hover:bg-charcoal hover:text-white transition-colors">
+                    Word Template
+                  </a>
+                </span>
               </li>
               <li className="text-sm text-charcoal leading-relaxed">
                 <span className="font-bold">八股结构：</span>摘要、引言、参考文献缺一不可——即使你的参考文献全是隔壁超市的收银条。

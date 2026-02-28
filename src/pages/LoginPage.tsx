@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -21,6 +21,14 @@ export const LoginPage: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval>>();
+
+  useEffect(() => {
+    if (cooldown <= 0) { clearInterval(cooldownRef.current); return; }
+    cooldownRef.current = setInterval(() => setCooldown(c => c - 1), 1000);
+    return () => clearInterval(cooldownRef.current);
+  }, [cooldown > 0]);
 
   const from = (location.state as { from?: string })?.from || '/dashboard';
 
@@ -54,6 +62,7 @@ export const LoginPage: React.FC = () => {
         : err.message);
     } else {
       setResetStep('otp');
+      setCooldown(60);
     }
     setLoading(false);
   };
@@ -104,9 +113,11 @@ export const LoginPage: React.FC = () => {
   };
 
   const handleResend = async () => {
+    if (cooldown > 0) return;
     setResent(false);
     await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
     setResent(true);
+    setCooldown(60);
   };
 
   const exitForgotMode = () => {
@@ -117,6 +128,7 @@ export const LoginPage: React.FC = () => {
     setConfirmPassword('');
     setError('');
     setResent(false);
+    setCooldown(0);
   };
 
   // --- Forgot password flow ---
@@ -239,11 +251,12 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleResend}
-                className="text-sm text-accent-gold font-bold hover:underline cursor-pointer"
+                disabled={cooldown > 0}
+                className="text-sm text-accent-gold font-bold hover:underline cursor-pointer disabled:text-gray-400 disabled:no-underline disabled:cursor-not-allowed"
               >
-                Resend Code / 重新发送
+                {cooldown > 0 ? `Resend in ${cooldown}s / ${cooldown}秒后重发` : 'Resend Code / 重新发送'}
               </button>
-              {resent && (
+              {resent && cooldown > 55 && (
                 <p className="text-xs text-green-600 mt-2">Code resent! / 已重新发送！</p>
               )}
             </div>
