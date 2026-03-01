@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { supabase } from '../../lib/supabase';
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface PdfViewerProps {
   pdfPath: string | null;
@@ -50,8 +47,6 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
   const [loading, setLoading] = useState(true);
   const [numPages, setNumPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
 
   useEffect(() => {
     if (!pdfPath) {
@@ -87,17 +82,6 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
 
     getUrl();
   }, [pdfPath]);
-
-  useEffect(() => {
-    const update = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.clientWidth);
-      }
-    };
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
 
   // Keyboard navigation
   useEffect(() => {
@@ -136,7 +120,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
   }
 
   return (
-    <div ref={containerRef} className="relative select-none">
+    <div className="relative select-none">
       <Watermark />
       <Document
         file={pdfUrl}
@@ -154,14 +138,12 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
           </div>
         }
       >
-        {containerWidth > 0 && (
-          <Page
-            pageNumber={currentPage}
-            width={containerWidth}
-            renderAnnotationLayer={false}
-            renderTextLayer={false}
-          />
-        )}
+        <Page
+          pageNumber={currentPage}
+          renderAnnotationLayer={false}
+          renderTextLayer={false}
+          className="pdf-page-responsive"
+        />
       </Document>
 
       {/* Pagination controls */}

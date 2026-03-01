@@ -34,6 +34,17 @@
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
+@layer base {
+  .pdf-page-responsive {
+    display: flex;
+    justify-content: center;
+  }
+  .pdf-page-responsive canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
 @layer components {
   .nav-item {
     @apply text-charcoal-light hover:text-science-red text-[11px] font-sans font-bold uppercase tracking-wider px-4 border-r border-gray-300 last:border-r-0 leading-none transition-colors whitespace-nowrap;
