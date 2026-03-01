@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { VISCOSITY_LABELS } from '../../lib/constants';
@@ -9,6 +9,7 @@ import { RatingWidget } from './RatingWidget';
 export const PreprintDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [preprint, setPreprint] = useState<any>(null);
   const [userRating, setUserRating] = useState<number | null>(null);
@@ -145,13 +146,42 @@ export const PreprintDetailPage: React.FC = () => {
 
       {/* Rating */}
       <div className="mb-8">
-        <RatingWidget
-          currentRating={userRating}
-          avgScore={preprint.avg_score}
-          ratingCount={preprint.rating_count}
-          isOwnSubmission={isOwnSubmission}
-          onRate={handleRate}
-        />
+        {user ? (
+          <RatingWidget
+            currentRating={userRating}
+            avgScore={preprint.avg_score}
+            ratingCount={preprint.rating_count}
+            isOwnSubmission={isOwnSubmission}
+            onRate={handleRate}
+          />
+        ) : (
+          <div className="bg-white border border-gray-200 p-6">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">
+              Rate / 评价
+            </h3>
+            <div className="flex items-center gap-4 mb-4">
+              <span className="text-sm text-gray-500">登录后可评分 / Sign in to rate</span>
+              <Link
+                to="/login"
+                state={{ from: location.pathname }}
+                className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-accent-gold text-white hover:bg-charcoal transition-colors"
+              >
+                Sign In / 登录
+              </Link>
+            </div>
+            <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+              <div>
+                <span className="text-2xl font-serif font-bold text-charcoal">
+                  {preprint.avg_score > 0 ? preprint.avg_score.toFixed(1) : '—'}
+                </span>
+                <span className="text-sm text-gray-400"> / 5</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                {preprint.rating_count} {preprint.rating_count === 1 ? 'rating' : 'ratings'} / {preprint.rating_count}个评分
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* PDF Viewer */}

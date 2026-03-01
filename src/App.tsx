@@ -30,8 +30,8 @@ const App: React.FC = () => (
           <Route path="/submit" element={<ProtectedRoute><SubmitPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><AuthorDashboard /></ProtectedRoute>} />
           <Route path="/dashboard/:id" element={<ProtectedRoute><SubmissionDetail /></ProtectedRoute>} />
-          <Route path="/preprints" element={<ProtectedRoute><PreprintListPage /></ProtectedRoute>} />
-          <Route path="/preprints/:id" element={<ProtectedRoute><PreprintDetailPage /></ProtectedRoute>} />
+          <Route path="/preprints" element={<PreprintListPage />} />
+          <Route path="/preprints/:id" element={<PreprintDetailPage />} />
           <Route path="/screening" element={<RoleProtectedRoute allowedRoles={['editor']}><ScreeningDashboard /></RoleProtectedRoute>} />
           <Route path="/screening/:id" element={<RoleProtectedRoute allowedRoles={['editor']}><ScreeningDetail /></RoleProtectedRoute>} />
           <Route path="/news" element={<NewsPage />} />
