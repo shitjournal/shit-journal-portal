@@ -140,6 +140,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
       >
         <Page
           pageNumber={currentPage}
+          scale={2}
           renderAnnotationLayer={false}
           renderTextLayer={false}
           className="pdf-page-responsive"
