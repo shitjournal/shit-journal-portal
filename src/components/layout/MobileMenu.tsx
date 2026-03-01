@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { NAV_LINKS_FULL } from './navData';
 import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
 
 export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { user, profile, signOut } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('is_read', false)
+      .then(({ count }) => setUnreadCount(count || 0));
+  }, [user]);
   const navigate = useNavigate();
   const isEditor = profile?.role === 'editor';
   const links = NAV_LINKS_FULL.filter(l => (!l.authRequired || user) && (!l.editorOnly || isEditor) && !l.userMenuOnly);
@@ -30,6 +42,18 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/notifications"
+                  onClick={onClose}
+                  className="px-4 py-2 border border-gray-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-accent-gold hover:border-accent-gold transition-all"
+                >
+                  消息 / Notifications
+                  {unreadCount > 0 && (
+                    <span className="ml-1.5 inline-flex items-center justify-center min-w-[16px] h-[16px] px-1 bg-science-red text-white text-[8px] font-bold rounded-full">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
                 <Link
                   to="/dashboard"
                   onClick={onClose}

@@ -33,6 +33,18 @@ export const PreprintListPage: React.FC = () => {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   useEffect(() => {
+    const cacheKey = `preprints_${sort}_${topic}_${page}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      const { data, count, expiry } = JSON.parse(cached);
+      if (Date.now() < expiry) {
+        setPreprints(data);
+        setTotalCount(count);
+        setLoading(false);
+        return;
+      }
+    }
+
     const fetchPreprints = async () => {
       setLoading(true);
       const from = (page - 1) * PAGE_SIZE;
@@ -59,6 +71,12 @@ export const PreprintListPage: React.FC = () => {
       setPreprints(data || []);
       setTotalCount(count || 0);
       setLoading(false);
+
+      sessionStorage.setItem(cacheKey, JSON.stringify({
+        data: data || [],
+        count: count || 0,
+        expiry: Date.now() + 2 * 60 * 1000, // 2 min cache
+      }));
     };
 
     fetchPreprints();

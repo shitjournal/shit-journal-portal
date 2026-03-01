@@ -27,14 +27,20 @@ const DropZone: React.FC<DropZoneProps> = ({ accept, file, onSelect, label, hint
 
   const exts = accept.split(',').map(s => s.trim().toLowerCase());
 
+  const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+
   const validate = (f: File): boolean => {
     const name = f.name.toLowerCase();
-    if (exts.some(ext => name.endsWith(ext))) {
-      setError('');
-      return true;
+    if (!exts.some(ext => name.endsWith(ext))) {
+      setError(`Only ${accept} files allowed / 仅支持 ${accept} 格式`);
+      return false;
     }
-    setError(`Only ${accept} files allowed / 仅支持 ${accept} 格式`);
-    return false;
+    if (f.size > MAX_SIZE) {
+      setError(`File too large (${formatSize(f.size)}). Max 5 MB / 文件过大，上限 5 MB`);
+      return false;
+    }
+    setError('');
+    return true;
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -133,7 +139,7 @@ export const PayloadSection: React.FC<Props> = ({ pdfFile, onPdfFileSelect }) =>
       file={pdfFile}
       onSelect={onPdfFileSelect}
       label="PDF Document / PDF文档"
-      hint=".pdf"
+      hint=".pdf · max 5 MB"
       icon="picture_as_pdf"
     />
   </section>

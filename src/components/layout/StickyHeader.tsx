@@ -3,15 +3,23 @@ import { Link } from 'react-router-dom';
 import { NAV_LINKS_FULL } from './navData';
 import { useAuth } from '../../hooks/useAuth';
 
-export const StickyHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMenu }) => {
+interface StickyHeaderProps {
+  onToggleMenu: () => void;
+  hasUnread: boolean;
+}
+
+export const StickyHeader: React.FC<StickyHeaderProps> = ({ onToggleMenu, hasUnread }) => {
   const { user } = useAuth();
   const links = NAV_LINKS_FULL.filter(l => (!l.authRequired || user) && !l.userMenuOnly);
 
   return (
     <div className="fixed top-0 left-0 w-full bg-black z-50 shadow-lg animate-slideDown">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-2.5 flex items-center justify-between relative">
-        <div className="flex md:hidden items-center">
+        <div className="flex md:hidden items-center relative">
           <span className="material-symbols-outlined text-white text-xl cursor-pointer" onClick={onToggleMenu}>menu</span>
+          {hasUnread && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-science-red rounded-full" />
+          )}
         </div>
         <nav className="hidden md:flex items-center gap-1">
           {links.map(link =>

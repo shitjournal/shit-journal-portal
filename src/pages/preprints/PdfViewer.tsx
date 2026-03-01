@@ -13,21 +13,6 @@ interface PdfViewerProps {
   pdfPath: string | null;
 }
 
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)');
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  return isMobile;
-};
-
 const Watermark: React.FC = () => (
   <div
     className="absolute inset-0 z-10 pointer-events-none overflow-hidden"
@@ -63,10 +48,8 @@ const Watermark: React.FC = () => (
 export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const isMobile = useIsMobile();
-
-  // react-pdf state (mobile only)
   const [numPages, setNumPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -76,12 +59,29 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
       return;
     }
 
+    const cacheKey = `pdf_url_${pdfPath}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      const { url, expiry } = JSON.parse(cached);
+      if (Date.now() < expiry) {
+        setPdfUrl(url);
+        setLoading(false);
+        return;
+      }
+    }
+
     const getUrl = async () => {
       const { data } = await supabase.storage
         .from('manuscripts')
         .createSignedUrl(pdfPath, 3600);
 
-      if (data?.signedUrl) setPdfUrl(data.signedUrl);
+      if (data?.signedUrl) {
+        setPdfUrl(data.signedUrl);
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          url: data.signedUrl,
+          expiry: Date.now() + 30 * 60 * 1000, // 30 min cache
+        }));
+      }
       setLoading(false);
     };
 
@@ -89,7 +89,6 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
   }, [pdfPath]);
 
   useEffect(() => {
-    if (!isMobile) return;
     const update = () => {
       if (containerRef.current) {
         setContainerWidth(containerRef.current.clientWidth);
@@ -98,7 +97,21 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
-  }, [isMobile]);
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (numPages === 0) return;
+      if (e.key === 'ArrowLeft' && currentPage > 1) {
+        setCurrentPage(p => p - 1);
+      } else if (e.key === 'ArrowRight' && currentPage < numPages) {
+        setCurrentPage(p => p + 1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPage, numPages]);
 
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -122,22 +135,6 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
     );
   }
 
-  // Desktop: iframe
-  if (!isMobile) {
-    return (
-      <div className="relative select-none">
-        <Watermark />
-        <iframe
-          src={`${pdfUrl}#toolbar=0&navpanes=0`}
-          className="w-full border border-gray-200"
-          style={{ height: '80vh' }}
-          title="PDF Viewer"
-        />
-      </div>
-    );
-  }
-
-  // Mobile: react-pdf canvas
   return (
     <div ref={containerRef} className="relative select-none">
       <Watermark />
@@ -157,17 +154,38 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
           </div>
         }
       >
-        {Array.from({ length: numPages }, (_, i) => (
-          <div key={i + 1} className="mb-2">
-            <Page
-              pageNumber={i + 1}
-              width={containerWidth || undefined}
-              renderAnnotationLayer={false}
-              renderTextLayer={false}
-            />
-          </div>
-        ))}
+        {containerWidth > 0 && (
+          <Page
+            pageNumber={currentPage}
+            width={containerWidth}
+            renderAnnotationLayer={false}
+            renderTextLayer={false}
+          />
+        )}
       </Document>
+
+      {/* Pagination controls */}
+      {numPages > 0 && (
+        <div className="flex items-center justify-center gap-6 py-4 border-t border-gray-200 bg-white">
+          <button
+            onClick={() => setCurrentPage(p => p - 1)}
+            disabled={currentPage <= 1}
+            className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest border border-gray-200 hover:border-accent-gold hover:text-accent-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            ← 上一页
+          </button>
+          <span className="text-sm font-serif text-charcoal">
+            {currentPage} / {numPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(p => p + 1)}
+            disabled={currentPage >= numPages}
+            className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest border border-gray-200 hover:border-accent-gold hover:text-accent-gold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            下一页 →
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { VISCOSITY_LABELS } from '../../lib/constants';
 import { PdfViewer } from './PdfViewer';
 import { RatingWidget } from './RatingWidget';
+import { CommentSection } from './CommentSection';
 
 export const PreprintDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,9 +14,62 @@ export const PreprintDetailPage: React.FC = () => {
   const { user } = useAuth();
   const [preprint, setPreprint] = useState<any>(null);
   const [userRating, setUserRating] = useState<number | null>(null);
+  const [comments, setComments] = useState<any[]>([]);
+  const [userLikes, setUserLikes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   const isOwnSubmission = preprint?.user_id === user?.id;
+
+  const fetchComments = useCallback(async (alsoFetchLikes = false) => {
+    if (!id) return;
+    const { data } = await supabase
+      .from('preprint_comments_with_user')
+      .select('*')
+      .eq('submission_id', id);
+    const loaded = data || [];
+    setComments(loaded);
+    if (alsoFetchLikes && user) {
+      // Pass loaded comments directly to avoid needing a separate query for comment IDs
+      const commentIds = loaded.map(c => c.id);
+      if (commentIds.length) {
+        const { data: likesData } = await supabase
+          .from('preprint_comment_likes')
+          .select('comment_id')
+          .eq('user_id', user.id)
+          .in('comment_id', commentIds);
+        setUserLikes(new Set((likesData || []).map(l => l.comment_id)));
+      }
+    }
+  }, [id, user]);
+
+  const handleToggleLike = useCallback(async (commentId: string) => {
+    if (!user) return;
+    const isLiked = userLikes.has(commentId);
+
+    // Optimistic update
+    setUserLikes(prev => {
+      const next = new Set(prev);
+      if (isLiked) next.delete(commentId); else next.add(commentId);
+      return next;
+    });
+    setComments(prev => prev.map(c =>
+      c.id === commentId
+        ? { ...c, like_count: c.like_count + (isLiked ? -1 : 1) }
+        : c
+    ));
+
+    if (isLiked) {
+      await supabase
+        .from('preprint_comment_likes')
+        .delete()
+        .eq('comment_id', commentId)
+        .eq('user_id', user.id);
+    } else {
+      await supabase
+        .from('preprint_comment_likes')
+        .insert({ comment_id: commentId, user_id: user.id });
+    }
+  }, [user, userLikes]);
 
   useEffect(() => {
     if (!id) return;
@@ -44,7 +98,8 @@ export const PreprintDetailPage: React.FC = () => {
     };
 
     fetch();
-  }, [id, user]);
+    fetchComments(true);
+  }, [id, user, fetchComments]);
 
   const handleRate = useCallback(async (score: number) => {
     if (!user || !id || isOwnSubmission) return;
@@ -188,6 +243,19 @@ export const PreprintDetailPage: React.FC = () => {
       <div className="mb-8">
         <h3 className="text-xl font-serif font-bold mb-4">Manuscript / 全文</h3>
         <PdfViewer pdfPath={preprint.pdf_path} />
+      </div>
+
+      {/* Comments */}
+      <div className="mb-8">
+        <CommentSection
+          submissionId={preprint.id}
+          authorUserId={preprint.user_id}
+          comments={comments}
+          currentUserId={user?.id}
+          userLikes={userLikes}
+          onCommentAdded={fetchComments}
+          onToggleLike={handleToggleLike}
+        />
       </div>
     </div>
   );

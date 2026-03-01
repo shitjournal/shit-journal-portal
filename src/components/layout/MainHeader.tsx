@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-export const MainHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMenu }) => {
+interface MainHeaderProps {
+  onToggleMenu: () => void;
+  unreadCount: number;
+  setUnreadCount: (count: number) => void;
+}
+
+export const MainHeader: React.FC<MainHeaderProps> = ({ onToggleMenu, unreadCount, setUnreadCount }) => {
   const { user, profile, signOut } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -28,8 +34,11 @@ export const MainHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMen
   return (
     <header className="w-full bg-white pt-6 pb-6 border-b-2 border-charcoal">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 flex items-center justify-between">
-        <div className="flex md:hidden items-center">
+        <div className="flex md:hidden items-center relative">
           <span className="material-symbols-outlined text-charcoal text-2xl cursor-pointer" onClick={onToggleMenu}>menu</span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-science-red rounded-full" />
+          )}
         </div>
         <div className="hidden md:flex items-center gap-3 w-1/4 cursor-pointer" onClick={onToggleMenu}>
           <span className="material-symbols-outlined text-charcoal text-2xl">menu</span>
@@ -62,14 +71,30 @@ export const MainHeader: React.FC<{ onToggleMenu: () => void }> = ({ onToggleMen
                 <span className="text-[10px] font-bold uppercase tracking-widest max-w-[100px] truncate">
                   {profile?.display_name || user.email}
                 </span>
+                {unreadCount > 0 && (
+                  <span className="w-2 h-2 bg-science-red rounded-full shrink-0" />
+                )}
               </button>
 
               {dropdownOpen && (
                 <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 shadow-lg z-50 min-w-[180px]">
                   <Link
+                    to="/notifications"
+                    onClick={() => { setDropdownOpen(false); setUnreadCount(0); }}
+                    className="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 hover:text-accent-gold transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm align-middle mr-2">notifications</span>
+                    消息 / Notifications
+                    {unreadCount > 0 && (
+                      <span className="ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-science-red text-white text-[9px] font-bold rounded-full">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
                     to="/dashboard"
                     onClick={() => setDropdownOpen(false)}
-                    className="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 hover:text-accent-gold transition-colors"
+                    className="block px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 hover:text-accent-gold transition-colors border-t border-gray-100"
                   >
                     <span className="material-symbols-outlined text-sm align-middle mr-2">dashboard</span>
                     Dashboard / 仪表台
