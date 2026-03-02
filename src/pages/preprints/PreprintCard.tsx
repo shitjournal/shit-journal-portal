@@ -37,7 +37,7 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             {isStone && (
-              <span className="text-lg" title="构石 / The Stone">💎</span>
+              <span className="text-lg" title="构石 / The Stone">🪨</span>
             )}
             <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors leading-tight">
               {preprint.manuscript_title}

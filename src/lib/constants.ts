@@ -28,8 +28,8 @@ export type Discipline = 'science' | 'engineering' | 'medical' | 'agriculture' |
 export const ZONE_LABELS: Record<Zone, { en: string; cn: string; icon: string }> = {
   latrine: { en: 'The Latrine', cn: '旱厕', icon: '🚽' },
   septic: { en: 'Septic Tank', cn: '化粪池', icon: '🧪' },
-  stone: { en: 'The Stone', cn: '构石', icon: '💎' },
-  sediment: { en: 'Sediment', cn: '沉淀区', icon: '🪨' },
+  stone: { en: 'The Stone', cn: '构石', icon: '🪨' },
+  sediment: { en: 'Sediment', cn: '沉淀区', icon: '🕳️' },
 };
 
 export const DISCIPLINE_LABELS: Record<Discipline, { en: string; cn: string }> = {

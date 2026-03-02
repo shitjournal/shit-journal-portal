@@ -181,7 +181,7 @@ export const PreprintDetailPage: React.FC = () => {
       {/* Metadata */}
       <div className="bg-white border border-gray-200 p-8 mb-8">
         <div className="flex items-center gap-3 mb-6">
-          {isStone && <span className="text-3xl" title="构石 / The Stone">💎</span>}
+          {isStone && <span className="text-3xl" title="构石 / The Stone">🪨</span>}
           <h2 className="text-2xl font-serif font-bold">{preprint.manuscript_title}</h2>
         </div>
 

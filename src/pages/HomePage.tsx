@@ -10,6 +10,20 @@ import { HomeSidebar } from './home/HomeSidebar';
 
 export const HomePage: React.FC = () => (
   <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-24">
+    {/* News banner */}
+    <Link
+      to="/news/zone-system"
+      className="block bg-charcoal text-white px-4 sm:px-6 py-3 mb-6 -mx-4 lg:-mx-8 hover:bg-black transition-colors group"
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="shrink-0 text-[9px] font-bold uppercase tracking-widest bg-science-red px-2 py-0.5">NEW</span>
+          <span className="text-sm font-serif truncate">构石四域上线：旱厕 → 化粪池 → 构石 → 沉淀区</span>
+        </div>
+        <span className="material-symbols-outlined text-sm shrink-0 text-gray-400 group-hover:text-accent-gold transition-colors">arrow_forward</span>
+      </div>
+    </Link>
+
     <HeroQuote />
 
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
