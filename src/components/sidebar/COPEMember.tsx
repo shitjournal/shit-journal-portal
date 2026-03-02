@@ -3,7 +3,7 @@ import React from 'react';
 export const COPEMember: React.FC = () => (
   <div className="bg-white border border-gray-200 p-8 text-center shadow-sm">
     <div className="flex justify-center gap-4 mb-6">
-      <span className="text-5xl">💩</span>
+      <img src="/LOGO2.png" alt="构石" className="w-12 h-12" />
       <span className="text-5xl">👃</span>
     </div>
     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-charcoal mb-2">COPE MEMBER / 会员</h4>

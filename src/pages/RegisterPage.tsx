@@ -11,6 +11,7 @@ export const RegisterPage: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // OTP verification
   const [otp, setOtp] = useState('');
@@ -141,7 +142,7 @@ export const RegisterPage: React.FC = () => {
   return (
     <div className="max-w-md mx-auto px-4 py-20">
       <div className="text-center mb-10">
-        <span className="text-6xl block mb-4">💩</span>
+        <img src="/LOGO2.png" alt="构石" className="w-16 h-16 inline-block mb-2" />
         <h2 className="text-3xl font-serif font-bold mb-1">Join the Movement</h2>
         <h3 className="chinese-serif text-xl text-charcoal-light">加入排泄运动</h3>
       </div>
@@ -179,15 +180,25 @@ export const RegisterPage: React.FC = () => {
 
         <div>
           <label className="form-label">Password / 密码</label>
-          <input
-            className="form-input"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="At least 6 characters / 至少6位"
-            required
-            minLength={6}
-          />
+          <div className="relative">
+            <input
+              className="form-input pr-10"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="At least 6 characters / 至少6位"
+              required
+              minLength={6}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-charcoal text-sm cursor-pointer"
+              tabIndex={-1}
+            >
+              {showPassword ? '🙈' : '👁'}
+            </button>
+          </div>
         </div>
 
         <button

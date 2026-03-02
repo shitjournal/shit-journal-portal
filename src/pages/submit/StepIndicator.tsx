@@ -3,7 +3,8 @@ import React from 'react';
 const STEPS = [
   { num: 1, label: 'Identity / 身份识别' },
   { num: 2, label: 'Viscosity / 粘度核验' },
-  { num: 3, label: 'Payload / 载荷上传' },
+  { num: 3, label: 'Discipline / 学科分类' },
+  { num: 4, label: 'Payload / 载荷上传' },
 ];
 
 export const StepIndicator: React.FC<{ currentStep: number }> = ({ currentStep }) => (

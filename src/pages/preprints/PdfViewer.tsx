@@ -104,7 +104,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <span className="text-4xl animate-pulse">💩</span>
+        <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
         <p className="text-sm text-gray-400 mt-2">Loading document / 加载文档中...</p>
       </div>
     );
@@ -127,7 +127,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
         onLoadSuccess={onDocumentLoadSuccess}
         loading={
           <div className="text-center py-12">
-            <span className="text-4xl animate-pulse">💩</span>
+            <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
             <p className="text-sm text-gray-400 mt-2">Loading PDF / 加载 PDF 中...</p>
           </div>
         }

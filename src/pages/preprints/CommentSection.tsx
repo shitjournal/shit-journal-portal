@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { fetchSnifferUsers } from '../../hooks/useSnifferBadge';
 
 interface Comment {
   id: string;
@@ -24,6 +25,7 @@ interface CommentSectionProps {
   userLikes: Set<string>;
   onCommentAdded: () => void;
   onToggleLike: (commentId: string) => void;
+  hideScores?: boolean;
 }
 
 type SortMode = 'hot' | 'newest';
@@ -40,6 +42,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   userLikes,
   onCommentAdded,
   onToggleLike,
+  hideScores = false,
 }) => {
   const location = useLocation();
   const [content, setContent] = useState('');
@@ -52,8 +55,17 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [topLevelVisible, setTopLevelVisible] = useState(TOP_LEVEL_PAGE_SIZE);
   const [replyVisibleCounts, setReplyVisibleCounts] = useState<Record<string, number>>({});
+  const [snifferUsers, setSnifferUsers] = useState<Set<string>>(new Set());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fetch sniffer badge status for all commenters
+  useEffect(() => {
+    const userIds = [...new Set(comments.map(c => c.user_id))] as string[];
+    if (userIds.length > 0) {
+      fetchSnifferUsers(userIds).then(setSnifferUsers);
+    }
+  }, [comments]);
 
   // Group comments by parent
   const { topLevel, repliesByParent } = useMemo(() => {
@@ -291,12 +303,14 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
                   comment={comment}
                   isReply={false}
                   isAuthor={comment.user_id === authorUserId}
+                  isSniffer={snifferUsers.has(comment.user_id)}
                   isLiked={userLikes.has(comment.id)}
                   currentUserId={currentUserId}
                   onReply={() => startReply(comment.id, comment.id, comment.display_name)}
                   onDelete={() => handleDelete(comment.id)}
                   onToggleLike={() => onToggleLike(comment.id)}
                   formatTime={formatTime}
+                  hideScores={hideScores}
                 />
 
                 {/* Replies */}
@@ -308,6 +322,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
                         comment={reply}
                         isReply
                         isAuthor={reply.user_id === authorUserId}
+                        isSniffer={snifferUsers.has(reply.user_id)}
                         showReplyTo={reply.reply_to_id !== reply.parent_id}
                         isLiked={userLikes.has(reply.id)}
                         currentUserId={currentUserId}
@@ -315,6 +330,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
                         onDelete={() => handleDelete(reply.id)}
                         onToggleLike={() => onToggleLike(reply.id)}
                         formatTime={formatTime}
+                        hideScores={hideScores}
                       />
                     ))}
                   </div>
@@ -366,6 +382,7 @@ interface CommentItemProps {
   comment: Comment;
   isReply: boolean;
   isAuthor: boolean;
+  isSniffer?: boolean;
   showReplyTo?: boolean;
   isLiked: boolean;
   currentUserId?: string;
@@ -373,12 +390,14 @@ interface CommentItemProps {
   onDelete: () => void;
   onToggleLike: () => void;
   formatTime: (d: string) => string;
+  hideScores?: boolean;
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({
   comment,
   isReply,
   isAuthor,
+  isSniffer = false,
   showReplyTo,
   isLiked,
   currentUserId,
@@ -386,6 +405,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   onDelete,
   onToggleLike,
   formatTime,
+  hideScores = false,
 }) => (
   <div>
     {/* Name row */}
@@ -398,7 +418,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
           作者
         </span>
       )}
-      {comment.user_score != null && (
+      {isSniffer && (
+        <span className="text-[10px] font-bold text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded" title="嗅探兽 / Sniffer">
+          🐽
+        </span>
+      )}
+      {!hideScores && comment.user_score != null && (
         <span className="text-xs" title={`${comment.user_score}/5`}>
           {'💩'.repeat(comment.user_score)}
         </span>

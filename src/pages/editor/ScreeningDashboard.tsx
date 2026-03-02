@@ -74,9 +74,11 @@ export const ScreeningDashboard: React.FC = () => {
 
       // Fetch rating data for score-based sorting
       if (results.length > 0) {
+        const ids = results.map(s => s.id);
         const { data: ratings } = await supabase
-          .from('preprints_with_ratings')
-          .select('id, weighted_score, rating_count');
+          .from('preprints_with_ratings_mat')
+          .select('id, weighted_score, rating_count')
+          .in('id', ids);
 
         if (ratings) {
           const ratingsMap = new Map(ratings.map(r => [r.id, r]));
@@ -168,7 +170,7 @@ export const ScreeningDashboard: React.FC = () => {
 
           {loading ? (
             <div className="text-center py-20">
-              <span className="text-4xl animate-pulse">💩</span>
+              <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
             </div>
           ) : submissions.length === 0 ? (
             <div className="text-center py-20 bg-white border border-gray-200">

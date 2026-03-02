@@ -47,8 +47,8 @@ export const ARTICLES: Article[] = [
 ];
 
 export const METRICS: Metric[] = [
-  { label: 'IMPACT FACTOR', labelCn: '影响因子', value: '0.01' },
+  { label: 'IMPACT FACTOR', labelCn: '影响因子', value: '-99.99' },
   { label: 'VISCOSITY', labelCn: '粘度', value: '99.8', unit: 'Pa·s' },
-  { label: 'H-INDEX', labelCn: 'H指数', value: '0.01' },
+  { label: 'H-INDEX', labelCn: 'H指数', value: '-99.99' },
   { label: 'REJECTION RATE', labelCn: '拒稿率', value: '99.9%' },
 ];

@@ -2,9 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { VISCOSITY_LABELS } from '../../lib/constants';
+import { VISCOSITY_LABELS, DISCIPLINE_LABELS, ZONE_LABELS, ZONE_THRESHOLDS } from '../../lib/constants';
+import type { Zone, Discipline } from '../../lib/constants';
 import { PdfViewer } from './PdfViewer';
 import { RatingWidget } from './RatingWidget';
+import { LatrineRatingWidget } from './LatrineRatingWidget';
 import { CommentSection } from './CommentSection';
 
 export const PreprintDetailPage: React.FC = () => {
@@ -17,6 +19,8 @@ export const PreprintDetailPage: React.FC = () => {
   const [comments, setComments] = useState<any[]>([]);
   const [userLikes, setUserLikes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [editingDiscipline, setEditingDiscipline] = useState<string | null>(null);
+  const [savingDiscipline, setSavingDiscipline] = useState(false);
 
   const isOwnSubmission = preprint?.user_id === user?.id;
 
@@ -76,10 +80,22 @@ export const PreprintDetailPage: React.FC = () => {
 
     const fetch = async () => {
       const { data } = await supabase
-        .from('preprints_with_ratings')
-        .select('*')
+        .from('preprints_with_ratings_mat')
+        .select('id,user_id,manuscript_title,author_name,institution,viscosity,discipline,created_at,social_media,co_authors,pdf_path,avg_score,weighted_score,rating_count,zone')
         .eq('id', id)
         .single();
+
+      // discipline_user_edited lives on submissions table, not in the mat view
+      if (data && user && data.user_id === user.id) {
+        const { data: subData } = await supabase
+          .from('submissions')
+          .select('discipline_user_edited')
+          .eq('id', id)
+          .single();
+        if (subData) {
+          data.discipline_user_edited = subData.discipline_user_edited;
+        }
+      }
 
       if (data) setPreprint(data);
 
@@ -114,12 +130,12 @@ export const PreprintDetailPage: React.FC = () => {
     if (!error) {
       setUserRating(score);
       const { data } = await supabase
-        .from('preprints_with_ratings')
-        .select('avg_score, rating_count')
+        .from('preprints_with_ratings_mat')
+        .select('avg_score, weighted_score, rating_count')
         .eq('id', id)
         .single();
       if (data && preprint) {
-        setPreprint({ ...preprint, avg_score: data.avg_score, rating_count: data.rating_count });
+        setPreprint({ ...preprint, avg_score: data.avg_score, weighted_score: data.weighted_score, rating_count: data.rating_count });
       }
     }
   }, [user, id, isOwnSubmission, preprint]);
@@ -127,7 +143,7 @@ export const PreprintDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div className="text-center py-32">
-        <span className="text-4xl animate-pulse">💩</span>
+        <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
       </div>
     );
   }
@@ -137,14 +153,21 @@ export const PreprintDetailPage: React.FC = () => {
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
         <span className="text-6xl block mb-6">🚫</span>
         <h2 className="text-2xl font-serif font-bold mb-4">Not found / 未找到</h2>
-        <Link to="/preprints" className="text-accent-gold font-bold hover:underline">
-          Back to Preprints / 返回化粪池
+        <Link to="/preprints?zone=latrine" className="text-accent-gold font-bold hover:underline">
+          Back to Latrine / 返回旱厕
         </Link>
       </div>
     );
   }
 
   const coAuthors = Array.isArray(preprint.co_authors) ? preprint.co_authors : [];
+  const zone: Zone = preprint.zone || 'latrine';
+  const isLatrine = zone === 'latrine';
+  const isStone = zone === 'stone';
+  const zoneLabel = ZONE_LABELS[zone];
+  const disciplineLabel = preprint.discipline
+    ? DISCIPLINE_LABELS[preprint.discipline as Discipline]
+    : null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 lg:px-8 py-12">
@@ -152,12 +175,15 @@ export const PreprintDetailPage: React.FC = () => {
         onClick={() => navigate(-1)}
         className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-accent-gold transition-colors mb-8 inline-block"
       >
-        ← Back to Preprints / 返回化粪池
+        ← Back to {zoneLabel.en} / 返回{zoneLabel.cn}
       </button>
 
       {/* Metadata */}
       <div className="bg-white border border-gray-200 p-8 mb-8">
-        <h2 className="text-2xl font-serif font-bold mb-6">{preprint.manuscript_title}</h2>
+        <div className="flex items-center gap-3 mb-6">
+          {isStone && <span className="text-3xl" title="构石 / The Stone">💎</span>}
+          <h2 className="text-2xl font-serif font-bold">{preprint.manuscript_title}</h2>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div>
@@ -172,6 +198,46 @@ export const PreprintDetailPage: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Viscosity / 粘度</span>
             <p className="text-charcoal">{VISCOSITY_LABELS[preprint.viscosity] || preprint.viscosity}</p>
           </div>
+          {disciplineLabel && (
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Discipline / 学科</span>
+              {isOwnSubmission && !preprint.discipline_user_edited ? (
+                <div className="flex items-center gap-2">
+                  <select
+                    value={editingDiscipline ?? preprint.discipline}
+                    onChange={e => setEditingDiscipline(e.target.value)}
+                    disabled={savingDiscipline}
+                    className="border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:border-accent-gold bg-white cursor-pointer"
+                  >
+                    {Object.entries(DISCIPLINE_LABELS).map(([key, label]) => (
+                      <option key={key} value={key}>{label.cn} / {label.en}</option>
+                    ))}
+                  </select>
+                  <button
+                    disabled={savingDiscipline}
+                    onClick={async () => {
+                      const newDiscipline = editingDiscipline ?? preprint.discipline;
+                      setSavingDiscipline(true);
+                      const { error } = await supabase
+                        .from('submissions')
+                        .update({ discipline: newDiscipline, discipline_user_edited: true })
+                        .eq('id', preprint.id);
+                      setSavingDiscipline(false);
+                      if (!error) {
+                        setPreprint({ ...preprint, discipline: newDiscipline, discipline_user_edited: true });
+                        setEditingDiscipline(null);
+                      }
+                    }}
+                    className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-accent-gold text-white hover:bg-charcoal transition-colors disabled:opacity-50"
+                  >
+                    {savingDiscipline ? '...' : 'Confirm / 确认'}
+                  </button>
+                </div>
+              ) : (
+                <p className="text-charcoal">{disciplineLabel.cn} / {disciplineLabel.en}</p>
+              )}
+            </div>
+          )}
           <div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Submitted / 提交时间</span>
             <p className="text-charcoal">{new Date(preprint.created_at).toLocaleString('zh-CN')}</p>
@@ -202,17 +268,26 @@ export const PreprintDetailPage: React.FC = () => {
       {/* Rating */}
       <div className="mb-8">
         {user ? (
-          <RatingWidget
-            currentRating={userRating}
-            avgScore={preprint.avg_score}
-            ratingCount={preprint.rating_count}
-            isOwnSubmission={isOwnSubmission}
-            onRate={handleRate}
-          />
+          isLatrine ? (
+            <LatrineRatingWidget
+              currentRating={userRating}
+              ratingCount={preprint.rating_count}
+              isOwnSubmission={isOwnSubmission}
+              onRate={handleRate}
+            />
+          ) : (
+            <RatingWidget
+              currentRating={userRating}
+              weightedScore={preprint.weighted_score}
+              ratingCount={preprint.rating_count}
+              isOwnSubmission={isOwnSubmission}
+              onRate={handleRate}
+            />
+          )
         ) : (
           <div className="bg-white border border-gray-200 p-6">
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">
-              Rate / 评价
+              {isLatrine ? 'Rate / 盲评' : 'Rate / 评价'}
             </h3>
             <div className="flex items-center gap-4 mb-4">
               <span className="text-sm text-gray-500">登录后可评分 / Sign in to rate</span>
@@ -225,15 +300,25 @@ export const PreprintDetailPage: React.FC = () => {
               </Link>
             </div>
             <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-              <div>
-                <span className="text-2xl font-serif font-bold text-charcoal">
-                  {preprint.avg_score > 0 ? preprint.avg_score.toFixed(1) : '—'}
-                </span>
-                <span className="text-sm text-gray-400"> / 5</span>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                {preprint.rating_count} {preprint.rating_count === 1 ? 'rating' : 'ratings'} / {preprint.rating_count}个评分
-              </span>
+              {isLatrine ? (
+                <>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    评价进度 / Progress: {preprint.rating_count} / {ZONE_THRESHOLDS.LATRINE_TO_SEPTIC_COUNT}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <span className="text-2xl font-serif font-bold text-charcoal">
+                      {preprint.weighted_score > 0 ? preprint.weighted_score.toFixed(2) : '—'}
+                    </span>
+                    <span className="text-sm text-gray-400"> / 5</span>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    {preprint.rating_count} {preprint.rating_count === 1 ? 'rating' : 'ratings'} / {preprint.rating_count}个评分
+                  </span>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -255,6 +340,7 @@ export const PreprintDetailPage: React.FC = () => {
           userLikes={userLikes}
           onCommentAdded={fetchComments}
           onToggleLike={handleToggleLike}
+          hideScores={isLatrine}
         />
       </div>
     </div>

@@ -21,3 +21,31 @@ export const VISCOSITY_LABELS: Record<string, string> = {
   semi: 'Semi-solid / 半固态',
   'high-entropy': 'High-Entropy / 高熵态',
 };
+
+export type Zone = 'latrine' | 'septic' | 'stone' | 'sediment';
+export type Discipline = 'science' | 'engineering' | 'medical' | 'agriculture' | 'law_social' | 'humanities' | 'interdisciplinary';
+
+export const ZONE_LABELS: Record<Zone, { en: string; cn: string; icon: string }> = {
+  latrine: { en: 'The Latrine', cn: '旱厕', icon: '🚽' },
+  septic: { en: 'Septic Tank', cn: '化粪池', icon: '🧪' },
+  stone: { en: 'The Stone', cn: '构石', icon: '💎' },
+  sediment: { en: 'Sediment', cn: '沉淀区', icon: '🪨' },
+};
+
+export const DISCIPLINE_LABELS: Record<Discipline, { en: string; cn: string }> = {
+  interdisciplinary: { en: 'Interdisciplinary', cn: '交叉' },
+  science: { en: 'Science', cn: '理' },
+  engineering: { en: 'Engineering', cn: '工' },
+  medical: { en: 'Medical', cn: '医' },
+  agriculture: { en: 'Agriculture', cn: '农' },
+  law_social: { en: 'Law & Social', cn: '法社' },
+  humanities: { en: 'Humanities', cn: '文' },
+};
+
+export const ZONE_THRESHOLDS = {
+  LATRINE_TO_SEPTIC_COUNT: 30,
+  LATRINE_TO_SEPTIC_SCORE: 3.8,
+  SEPTIC_TO_STONE_COUNT: 100,
+  SEPTIC_TO_STONE_SCORE: 4.5,
+  SNIFFER_BADGE_THRESHOLD: 20,
+} as const;

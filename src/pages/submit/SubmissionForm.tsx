@@ -4,6 +4,7 @@ import { StepIndicator } from './StepIndicator';
 import { IdentitySection } from './IdentitySection';
 import { CoAuthorsSection } from './CoAuthorsSection';
 import { ViscositySection } from './ViscositySection';
+import { DisciplineSection } from './DisciplineSection';
 import { PayloadSection } from './PayloadSection';
 import { useSubmissionForm } from './useSubmissionForm';
 import { GuidelinesGate } from './GuidelinesGate';
@@ -15,21 +16,21 @@ export const SubmissionForm: React.FC = () => {
   if (isSubmitted) {
     return (
       <div className="text-center py-20">
-        <span className="text-6xl block mb-6">💩</span>
+        <img src="/LOGO2.png" alt="构石" className="w-16 h-16 inline-block mb-2" />
         <h2 className="text-3xl font-serif font-bold mb-3">Submitted for Review!</h2>
         <h3 className="chinese-serif text-xl text-charcoal-light mb-6">稿件已提交，等待预审</h3>
         <p className="font-serif text-gray-500 max-w-md mx-auto">
-          Your manuscript has been received and is awaiting editorial screening. It will appear in the Septic Tank once approved.
+          Your manuscript has been received and is awaiting editorial screening. It will enter the Latrine for blind review once approved.
         </p>
         <p className="chinese-serif text-gray-400 mt-2 mb-8">
-          您的稿件已收到，正在等待编辑预审。通过后将进入化粪池。
+          您的稿件已收到，正在等待编辑预审。通过后将进入旱厕接受盲评。
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            to="/preprints"
+            to="/preprints?zone=latrine"
             className="inline-block px-8 py-3 bg-accent-gold text-white text-xs font-bold uppercase tracking-widest hover:bg-[#B18E26] transition-all shadow-md"
           >
-            Browse 化粪池 / 浏览化粪池
+            Enter Latrine / 进入旱厕
           </Link>
           <Link
             to="/dashboard"
@@ -93,6 +94,16 @@ export const SubmissionForm: React.FC = () => {
           />
           {errors.viscosity && (
             <p className="text-science-red text-xs mt-2 font-bold">{errors.viscosity}</p>
+          )}
+        </div>
+
+        <div id="section-discipline">
+          <DisciplineSection
+            discipline={formData.discipline}
+            onChange={v => updateField('discipline', v)}
+          />
+          {errors.discipline && (
+            <p className="text-science-red text-xs mt-2 font-bold">{errors.discipline}</p>
           )}
         </div>
 

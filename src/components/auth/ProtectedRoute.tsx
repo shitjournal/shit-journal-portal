@@ -9,7 +9,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <span className="text-4xl animate-pulse">💩</span>
+        <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse" />
       </div>
     );
   }

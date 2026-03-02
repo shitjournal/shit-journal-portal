@@ -52,7 +52,7 @@ export const AuthorDashboard: React.FC = () => {
 
           {loading ? (
             <div className="text-center py-20">
-              <span className="text-4xl animate-pulse">💩</span>
+              <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse" />
             </div>
           ) : submissions.length === 0 ? (
             <div className="text-center py-20 bg-white border border-gray-200">

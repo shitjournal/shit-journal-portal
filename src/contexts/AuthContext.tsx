@@ -37,40 +37,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    setProfile(data);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (!error) setProfile(data);
+    } catch { /* network error */ }
   };
 
   // Link old anonymous submissions to this user by email (uses SECURITY DEFINER function to bypass RLS)
   const linkOldSubmissions = async () => {
-    await supabase.rpc('link_submissions_by_email');
-  };
-
-  // Handle user session: fetch profile and link old submissions
-  // IMPORTANT: Must not await Supabase calls inside onAuthStateChange callback
-  // due to known deadlock bug in supabase-js (Web Locks API).
-  // Use setTimeout to dispatch async work after callback completes.
-  const handleSession = async (currentUser: User | null) => {
-    setUser(currentUser);
-    if (currentUser) {
-      try { await linkOldSubmissions(); } catch { /* RPC may fail */ }
-      await fetchProfile(currentUser.id);
-    } else {
-      setProfile(null);
-    }
+    try { await supabase.rpc('link_submissions_by_email'); } catch { /* RPC may fail */ }
   };
 
   useEffect(() => {
     // Listen for auth changes (fires INITIAL_SESSION on setup)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // IMPORTANT: Must not await Supabase calls inside callback
+    // due to known deadlock bug in supabase-js (Web Locks API).
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       const currentUser = session?.user ?? null;
-      // Dispatch async work outside the callback to avoid Supabase deadlock
-      setTimeout(() => {
-        handleSession(currentUser).finally(() => setLoading(false));
+      setTimeout(async () => {
+        if (event === 'SIGNED_IN') {
+          // First login: link old submissions + fetch profile
+          setUser(currentUser);
+          if (currentUser) {
+            await linkOldSubmissions();
+            await fetchProfile(currentUser.id);
+          }
+          setLoading(false);
+        } else if (event === 'INITIAL_SESSION') {
+          // Page load session restore: fetch profile only (no RPC)
+          setUser(currentUser);
+          if (currentUser) await fetchProfile(currentUser.id);
+          setLoading(false);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+        } else {
+          // TOKEN_REFRESHED etc: update user object only, no DB queries
+          setUser(currentUser);
+        }
       }, 0);
     });
 

@@ -6,7 +6,7 @@ export const Footer: React.FC = () => (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
         <div className="lg:col-span-5">
           <div className="flex items-center gap-4 mb-8">
-            <span className="text-5xl">💩</span>
+            <img src="/LOGO2.png" alt="构石" className="w-12 h-12" />
             <div>
               <h2 className="text-2xl font-bold italic tracking-wider">S.H.I.T PORTAL</h2>
               <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-bold">

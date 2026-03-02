@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
+import { ZONE_THRESHOLDS } from '../../lib/constants';
 
-interface RatingWidgetProps {
+interface LatrineRatingWidgetProps {
   currentRating: number | null;
-  weightedScore: number;
   ratingCount: number;
   isOwnSubmission: boolean;
   onRate: (score: number) => void;
 }
 
-export const RatingWidget: React.FC<RatingWidgetProps> = ({
-  currentRating, weightedScore, ratingCount, isOwnSubmission, onRate,
+export const LatrineRatingWidget: React.FC<LatrineRatingWidgetProps> = ({
+  currentRating, ratingCount, isOwnSubmission, onRate,
 }) => {
   const [hoverScore, setHoverScore] = useState<number | null>(null);
+  const threshold = ZONE_THRESHOLDS.LATRINE_TO_SEPTIC_COUNT;
+  const progress = Math.min(100, (ratingCount / threshold) * 100);
 
   return (
     <div className="bg-white border border-gray-200 p-6">
       <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">
-        Rate / 评价
+        Rate / 盲评
       </h3>
 
       {isOwnSubmission ? (
@@ -45,16 +47,27 @@ export const RatingWidget: React.FC<RatingWidgetProps> = ({
         </div>
       )}
 
-      <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-        <div>
-          <span className="text-2xl font-serif font-bold text-charcoal">
-            {weightedScore > 0 ? weightedScore.toFixed(2) : '—'}
+      {/* Progress bar instead of avg score */}
+      <div className="pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            评价进度 / Rating Progress
           </span>
-          <span className="text-sm text-gray-400"> / 5</span>
+          <span className="text-sm font-serif font-bold text-charcoal">
+            {ratingCount} / {threshold}
+          </span>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-          {ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'} / {ratingCount}个评分
-        </span>
+        <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+          <div
+            className="bg-accent-gold h-full rounded-full transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-[10px] text-gray-400 mt-2">
+          {ratingCount < threshold
+            ? `还需 ${threshold - ratingCount} 份评价即可解锁分数 / ${threshold - ratingCount} more ratings to unlock score`
+            : '即将毕业进入化粪池 / Graduating to Septic Tank soon'}
+        </p>
       </div>
     </div>
   );

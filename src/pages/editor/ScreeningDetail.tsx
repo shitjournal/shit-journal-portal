@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { EDITOR_STATUS_LABELS, VISCOSITY_LABELS } from '../../lib/constants';
+import { EDITOR_STATUS_LABELS, VISCOSITY_LABELS, DISCIPLINE_LABELS } from '../../lib/constants';
+import type { Discipline } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { PdfViewer } from '../preprints/PdfViewer';
 
@@ -14,6 +15,7 @@ interface SubmissionData {
   social_media: string | null;
   co_authors: { name: string; email: string; institution: string; contribution: string }[];
   viscosity: string;
+  discipline: string;
   file_name: string;
   file_path: string;
   file_size_bytes: number;
@@ -38,6 +40,7 @@ export const ScreeningDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState('');
   const [topicOverride, setTopicOverride] = useState<string>('');
+  const [disciplineOverride, setDisciplineOverride] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -54,6 +57,7 @@ export const ScreeningDetail: React.FC = () => {
         setSubmission(data);
         setNotes(data.screening_notes || '');
         setTopicOverride(data.solicited_topic || '');
+        setDisciplineOverride(data.discipline || 'interdisciplinary');
       }
       setLoading(false);
     };
@@ -89,6 +93,8 @@ export const ScreeningDetail: React.FC = () => {
         screened_by: user.id,
         screening_notes: notes.trim() || null,
         solicited_topic: topicOverride || null,
+        discipline: disciplineOverride || 'interdisciplinary',
+        discipline_user_edited: true,
       })
       .eq('id', id);
 
@@ -102,7 +108,7 @@ export const ScreeningDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="text-center py-32">
-        <span className="text-4xl animate-pulse">💩</span>
+        <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
       </div>
     );
   }
@@ -165,6 +171,10 @@ export const ScreeningDetail: React.FC = () => {
             <p className="text-charcoal">{VISCOSITY_LABELS[submission.viscosity] || submission.viscosity}</p>
           </div>
           <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Discipline / 学科</span>
+            <p className="text-charcoal">{DISCIPLINE_LABELS[submission.discipline as Discipline]?.cn || submission.discipline} / {DISCIPLINE_LABELS[submission.discipline as Discipline]?.en || submission.discipline}</p>
+          </div>
+          <div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Submitted / 提交时间</span>
             <p className="text-charcoal">{new Date(submission.created_at).toLocaleString('zh-CN')}</p>
           </div>
@@ -205,18 +215,34 @@ export const ScreeningDetail: React.FC = () => {
       <div className="bg-white border border-gray-200 p-8">
         <h3 className="text-xl font-serif font-bold mb-4">Screening Decision / 预审决定</h3>
 
-        <div className="mb-6">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">
-            Solicited Topic / 约稿主题
-          </label>
-          <select
-            value={topicOverride}
-            onChange={e => setTopicOverride(e.target.value)}
-            className="w-full sm:w-auto border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:border-accent-gold bg-white"
-          >
-            <option value="">None / 无</option>
-            <option value="S.H.I.T社区治理1.0">S.H.I.T社区治理1.0</option>
-          </select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">
+              Solicited Topic / 约稿主题
+            </label>
+            <select
+              value={topicOverride}
+              onChange={e => setTopicOverride(e.target.value)}
+              className="w-full border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:border-accent-gold bg-white"
+            >
+              <option value="">None / 无</option>
+              <option value="S.H.I.T社区治理1.0">S.H.I.T社区治理1.0</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-2">
+              Discipline / 学科分类
+            </label>
+            <select
+              value={disciplineOverride}
+              onChange={e => setDisciplineOverride(e.target.value)}
+              className="w-full border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:border-accent-gold bg-white"
+            >
+              {Object.entries(DISCIPLINE_LABELS).map(([key, label]) => (
+                <option key={key} value={key}>{label.cn} / {label.en}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="mb-6">

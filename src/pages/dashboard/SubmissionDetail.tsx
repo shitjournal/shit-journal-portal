@@ -158,7 +158,7 @@ export const SubmissionDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="text-center py-32">
-        <span className="text-4xl animate-pulse">💩</span>
+        <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
       </div>
     );
   }
@@ -204,7 +204,7 @@ export const SubmissionDetail: React.FC = () => {
             to={`/preprints/${submission.id}`}
             className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-accent-gold hover:text-charcoal transition-colors mb-6"
           >
-            View in 化粪池 / 查看预印本
+            View Preprint / 查看预印本
             <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
         )}

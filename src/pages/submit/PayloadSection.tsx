@@ -98,7 +98,7 @@ const DropZone: React.FC<DropZoneProps> = ({ accept, file, onSelect, label, hint
 export const PayloadSection: React.FC<Props> = ({ pdfFile, onPdfFileSelect }) => (
   <section className="bg-white p-8 border border-gray-200 shadow-sm">
     <div className="flex items-baseline gap-3 mb-8 border-b border-gray-100 pb-4">
-      <span className="text-2xl font-serif font-bold text-accent-gold">03</span>
+      <span className="text-2xl font-serif font-bold text-accent-gold">04</span>
       <h4 className="text-lg font-bold uppercase tracking-widest">Payload / 载荷上传</h4>
     </div>
 

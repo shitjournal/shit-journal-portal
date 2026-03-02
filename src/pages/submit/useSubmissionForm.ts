@@ -11,6 +11,7 @@ export interface SubmissionFormData {
   socialMedia: string;
   coAuthors: CoAuthor[];
   viscosity: string;
+  discipline: string;
   pdfFile: File | null;
   solicitedTopic: string | null;
 }
@@ -21,6 +22,7 @@ interface FormErrors {
   authorName?: string;
   institution?: string;
   viscosity?: string;
+  discipline?: string;
   pdfFile?: string;
   coAuthors?: string;
   submit?: string;
@@ -36,6 +38,7 @@ export function useSubmissionForm() {
     socialMedia: profile?.social_media || '',
     coAuthors: [],
     viscosity: '',
+    discipline: '',
     pdfFile: null,
     solicitedTopic: null,
   });
@@ -68,6 +71,9 @@ export function useSubmissionForm() {
     if (!formData.viscosity) {
       newErrors.viscosity = 'Please select viscosity / 请选择粘度';
     }
+    if (!formData.discipline) {
+      newErrors.discipline = 'Please select discipline / 请选择学科';
+    }
     if (!formData.pdfFile) {
       newErrors.pdfFile = 'Please upload a PDF file / 请上传PDF文件';
     }
@@ -91,6 +97,7 @@ export function useSubmissionForm() {
         institution: 'section-identity',
         coAuthors: 'section-coauthors',
         viscosity: 'section-viscosity',
+        discipline: 'section-discipline',
         pdfFile: 'section-payload',
       };
       const sectionId = sectionMap[firstError];
@@ -102,7 +109,8 @@ export function useSubmissionForm() {
   };
 
   const getCurrentStep = (): number => {
-    if (formData.pdfFile) return 3;
+    if (formData.pdfFile) return 4;
+    if (formData.discipline) return 4;
     if (formData.viscosity) return 3;
     if (formData.email || formData.manuscriptTitle || formData.authorName) return 2;
     return 1;
@@ -156,6 +164,8 @@ export function useSubmissionForm() {
           social_media: formData.socialMedia || null,
           co_authors: formData.coAuthors.length > 0 ? formData.coAuthors : [],
           viscosity: formData.viscosity,
+          discipline: formData.discipline,
+          discipline_user_edited: true,
           file_path: pdfPath,
           file_name: pdfFile.name,
           file_size_bytes: pdfFile.size,

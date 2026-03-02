@@ -19,6 +19,15 @@ const GUARDS = [
     bio: 'Community guardian and quality enforcer. Keeps the septic tank clean and the standards high.',
     bioCn: '社区守护者与质量把关人。保持化粪池清洁，维持高标准。',
   },
+  {
+    name: '阿波（Jacob）',
+    avatar: '/jacob-avatar.jpg',
+    emoji: null,
+    role: 'Scooper',
+    roleCn: '铲屎官',
+    bio: 'Community guardian and dedicated waste management specialist. Ensuring every submission gets the review it deserves.',
+    bioCn: '社区守护者与废料管理专家。确保每篇投稿都得到应有的评审。',
+  },
 ];
 
 export const CommunityGuardPage: React.FC = () => (
