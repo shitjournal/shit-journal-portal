@@ -17,6 +17,7 @@ import { ScreeningDetail } from './pages/editor/ScreeningDetail';
 import { NewsPage } from './pages/news/NewsPage';
 import { GovernanceArticle } from './pages/news/GovernanceArticle';
 import { ZoneSystemArticle } from './pages/news/ZoneSystemArticle';
+import { MaintenanceArticle } from './pages/news/MaintenanceArticle';
 import { CommunityGuardPage } from './pages/CommunityGuardPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { ComingSoon } from './pages/ComingSoon';
@@ -42,6 +43,7 @@ const App: React.FC = () => (
           <Route path="/news" element={<NewsPage />} />
           <Route path="/news/zone-system" element={<ZoneSystemArticle />} />
           <Route path="/news/governance-1.0" element={<GovernanceArticle />} />
+          <Route path="/news/maintenance" element={<MaintenanceArticle />} />
           <Route path="/admin/feedback" element={<RoleProtectedRoute allowedRoles={['editor']}><FeedbackViewer /></RoleProtectedRoute>} />
           <Route path="/admin/users" element={<RoleProtectedRoute allowedRoles={['super_admin']}><UserManagement /></RoleProtectedRoute>} />
           <Route path="/admin/actions" element={<RoleProtectedRoute allowedRoles={['admin']}><AdminActions /></RoleProtectedRoute>} />

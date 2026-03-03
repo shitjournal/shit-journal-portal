@@ -13,6 +13,14 @@ interface NewsArticle {
 
 const FEATURED_ARTICLES: NewsArticle[] = [
   {
+    slug: 'maintenance',
+    date: '2026-03-03',
+    tag: 'Announcement / 公告',
+    title: '投稿通道暂时关闭，评论功能维护中',
+    titleCn: 'Submissions Temporarily Closed, Comments Under Maintenance',
+    summary: '为了让社区长久、健康地存在下去，投稿入口和评论功能暂时关闭。已投稿件安全保存，审核后会正常上线。评分功能一切正常，欢迎继续为稿件评分。',
+  },
+  {
     slug: 'zone-system',
     date: '2026-03-02',
     tag: 'New Feature / 新功能',

@@ -28,6 +28,15 @@ const GUARDS = [
     bio: 'Community guardian and dedicated waste management specialist. Ensuring every submission gets the review it deserves.',
     bioCn: '社区守护者与废料管理专家。确保每篇投稿都得到应有的评审。',
   },
+  {
+    name: '法式螺翔（KSY）',
+    avatar: '/ksy-avatar.jpg',
+    emoji: null,
+    role: 'Legal Scooper',
+    roleCn: '法务铲屎官',
+    bio: 'Legal compliance guardian. Ensuring content stays within bounds and the community remains a safe space.',
+    bioCn: '法律合规守护者。确保内容合规合法，守护社区的安全底线。',
+  },
 ];
 
 export const CommunityGuardPage: React.FC = () => (
