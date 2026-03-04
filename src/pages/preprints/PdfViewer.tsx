@@ -10,6 +10,8 @@ interface PdfViewerProps {
   pdfPath: string | null;
 }
 
+const DISCLAIMER = '本内容纯属整活，不代表任何学术观点或现实指导建议。请保持理智，切勿模仿。';
+
 const Watermark: React.FC = () => (
   <div
     className="absolute inset-0 z-10 pointer-events-none overflow-hidden"
@@ -32,12 +34,23 @@ const Watermark: React.FC = () => (
       {Array.from({ length: 30 }).map((_, i) => (
         <span
           key={i}
-          className="text-[28px] font-serif font-bold whitespace-nowrap"
-          style={{ color: 'rgba(197, 160, 47, 0.08)' }}
+          className="font-serif font-bold whitespace-nowrap"
+          style={{
+            color: i % 2 === 0 ? 'rgba(197, 160, 47, 0.08)' : 'rgba(220, 38, 38, 0.13)',
+            fontSize: i % 2 === 0 ? '28px' : '18px',
+          }}
         >
-          S.H.I.T JOURNAL PREPRINT
+          {i % 2 === 0 ? 'S.H.I.T JOURNAL PREPRINT' : DISCLAIMER}
         </span>
       ))}
+    </div>
+    {/* Fixed disclaimer banner */}
+    <div className="absolute bottom-0 left-0 right-0 py-2 px-4 text-center"
+      style={{ background: 'rgba(220, 38, 38, 0.85)' }}
+    >
+      <p className="text-white text-xs font-bold tracking-wide">
+        {DISCLAIMER}
+      </p>
     </div>
   </div>
 );
