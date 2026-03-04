@@ -36,21 +36,13 @@ const Watermark: React.FC = () => (
           key={i}
           className="font-serif font-bold whitespace-nowrap"
           style={{
-            color: i % 2 === 0 ? 'rgba(197, 160, 47, 0.08)' : 'rgba(220, 38, 38, 0.13)',
+            color: i % 2 === 0 ? 'rgba(197, 160, 47, 0.15)' : 'rgba(220, 38, 38, 0.22)',
             fontSize: i % 2 === 0 ? '28px' : '18px',
           }}
         >
           {i % 2 === 0 ? 'S.H.I.T JOURNAL PREPRINT' : DISCLAIMER}
         </span>
       ))}
-    </div>
-    {/* Fixed disclaimer banner */}
-    <div className="absolute bottom-0 left-0 right-0 py-2 px-4 text-center"
-      style={{ background: 'rgba(220, 38, 38, 0.85)' }}
-    >
-      <p className="text-white text-xs font-bold tracking-wide">
-        {DISCLAIMER}
-      </p>
     </div>
   </div>
 );
@@ -159,6 +151,11 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
           className="pdf-page-responsive"
         />
       </Document>
+
+      {/* Disclaimer banner */}
+      <div className="py-2 px-4 text-center" style={{ background: 'rgba(220, 38, 38, 0.85)' }}>
+        <p className="text-white text-xs font-bold tracking-wide">{DISCLAIMER}</p>
+      </div>
 
       {/* Pagination controls */}
       {numPages > 0 && (
