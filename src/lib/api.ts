@@ -1,7 +1,6 @@
 // src/lib/api.ts
 
-// ⚠️ 今晚本地联调时用 localhost，等部署到服务器后，改成服务器 IP 或域名
-const BASE_URL = 'http://localhost:8000'; 
+const BASE_URL = 'https://api.shitjournal.org'; 
 
 /**
  * 核心拦截器：所有请求都要经过这个管道
