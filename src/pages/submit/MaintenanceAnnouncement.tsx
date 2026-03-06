@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { API } from '../../lib/api';
 import { useAuth } from '../../hooks/useAuth';
 
 export const MaintenanceAnnouncement: React.FC = () => {
@@ -12,18 +12,17 @@ export const MaintenanceAnnouncement: React.FC = () => {
   const [checkingExisting, setCheckingExisting] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if this user already left feedback
+  // 检查是否已经留言过
   useEffect(() => {
     if (authLoading) return;
     if (!user) { setCheckingExisting(false); return; }
-    supabase
-      .from('feedback')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .then(({ count }) => {
-        if (count && count > 0) setAlreadySubmitted(true);
-        setCheckingExisting(false);
-      });
+    
+    API.feedback.checkMine()
+      .then(res => {
+        if (res.has_submitted) setAlreadySubmitted(true);
+      })
+      .catch(err => console.error("检查留言状态失败:", err))
+      .finally(() => setCheckingExisting(false));
   }, [user, authLoading]);
 
   const handleSubmit = async () => {
@@ -31,26 +30,22 @@ export const MaintenanceAnnouncement: React.FC = () => {
     setSubmitting(true);
     setError(null);
 
-    const { error: insertError } = await supabase.from('feedback').insert({
-      user_id: user.id,
-      display_name: profile?.display_name ?? null,
-      email: user.email,
-      content: content.trim(),
-    });
-
-    if (insertError) {
-      if (insertError.code === '23505') {
-        setError('您已经留过言了 / You have already submitted feedback');
-        setAlreadySubmitted(true);
-      } else {
-        setError('提交失败，请稍后再试 / Submission failed');
-      }
-    } else {
+    try {
+      await API.feedback.submit(content.trim());
       setSubmitted(true);
       setAlreadySubmitted(true);
       setContent('');
+    } catch (err: any) {
+      // 拦截后端的查重报错
+      if (err.message && err.message.includes('已经提交过')) {
+        setError('您已经留过言了 / You have already submitted feedback');
+        setAlreadySubmitted(true);
+      } else {
+        setError(err.message || '提交失败，请稍后再试 / Submission failed');
+      }
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   return (

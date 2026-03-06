@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { NAV_LINKS_FULL } from './navData';
 import { useAuth } from '../../hooks/useAuth';
-import { supabase } from '../../lib/supabase';
+import { API } from '../../lib/api';
 import { REGISTRATION_CLOSED } from '../../lib/maintenanceConfig';
 import { isEditor as checkIsEditor, isAdmin as checkIsAdmin, isSuperAdmin as checkIsSuperAdmin } from '../../lib/roles';
 
@@ -12,18 +12,34 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('is_read', false)
-      .then(({ count }) => setUnreadCount(count || 0));
+    
+    // 🔥 替换为咱们的统一 API 接口
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await API.notifications.getList(1, 50);
+        // 如果后端直接返回了 unread_count 就用后端的，否则前端过滤一下当页的未读数
+        const count = res.unread_count ?? (res.data?.filter((n: any) => !n.is_read)?.length || 0);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error("加载通知失败:", error);
+      }
+    };
+
+    fetchUnreadCount();
   }, [user]);
+  
   const navigate = useNavigate();
   const editorAccess = checkIsEditor(profile?.role);
   const adminAccess = checkIsAdmin(profile?.role);
   const superAdminAccess = checkIsSuperAdmin(profile?.role);
-  const links = NAV_LINKS_FULL.filter(l => (!l.authRequired || user) && (!l.editorOnly || editorAccess) && (!l.adminOnly || adminAccess) && (!l.superAdminOnly || superAdminAccess) && !l.userMenuOnly);
+  
+  const links = NAV_LINKS_FULL.filter(l => 
+    (!l.authRequired || user) && 
+    (!l.editorOnly || editorAccess) && 
+    (!l.adminOnly || adminAccess) && 
+    (!l.superAdminOnly || superAdminAccess) && 
+    !l.userMenuOnly
+  );
 
   const handleSignOut = async () => {
     onClose();

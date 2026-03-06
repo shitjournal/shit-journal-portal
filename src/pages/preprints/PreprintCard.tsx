@@ -1,25 +1,36 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { VISCOSITY_LABELS, DISCIPLINE_LABELS, ZONE_THRESHOLDS } from '../../lib/constants';
+import { DISCIPLINE_LABELS, ZONE_THRESHOLDS } from '../../lib/constants';
 import type { Zone, Discipline } from '../../lib/constants';
 
+// 🚀 纯粹的 FastAPI 数据结构映射
 interface PreprintCardProps {
   id: string;
-  manuscript_title: string;
-  author_name: string;
-  institution: string;
-  viscosity: string;
-  discipline?: string;
+  title: string; 
+  tag: string;
+  discipline: string;
   created_at: string;
   avg_score: number;
   weighted_score: number;
   rating_count: number;
   co_authors: unknown[] | null;
-  solicited_topic: string | null;
+  topic?: string | null; 
+  author?: { 
+    display_name: string;
+    institution?: string; 
+  };
 }
 
+// 🛡️ 终极过滤器：专杀 Pandas 的 NaN 和 JS 的 "null", "undefined"
+const isValidText = (text: any): boolean => {
+  if (!text) return false;
+  if (typeof text !== 'string') return false;
+  const t = text.trim().toLowerCase();
+  return t !== '' && t !== 'nan' && t !== 'null' && t !== 'undefined' && t !== 'none';
+};
+
 export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }> = ({ preprint, zone }) => {
-  const score = Math.round(preprint.weighted_score || 0);
+  const score = Math.round(preprint.weighted_score || preprint.avg_score || 0);
   const coAuthorCount = Array.isArray(preprint.co_authors) ? preprint.co_authors.length : 0;
   const disciplineLabel = preprint.discipline
     ? DISCIPLINE_LABELS[preprint.discipline as Discipline]
@@ -27,6 +38,13 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }>
 
   const isLatrine = zone === 'latrine';
   const isStone = zone === 'stone';
+
+  // 🚀 经过无菌处理的干净数据
+  const displayTitle = isValidText(preprint.title) ? preprint.title : '无题 / Untitled';
+  const displayAuthor = isValidText(preprint.author?.display_name) ? preprint.author!.display_name : '匿名作者 / Anonymous';
+  const displayInstitution = isValidText(preprint.author?.institution) ? preprint.author!.institution : null;
+  const displayTag = isValidText(preprint.tag) ? preprint.tag : '未分类 / Uncategorized';
+  const displayTopic = isValidText(preprint.topic) ? preprint.topic : null;
 
   return (
     <Link
@@ -40,24 +58,34 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }>
               <span className="text-lg" title="构石 / The Stone">🪨</span>
             )}
             <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors leading-tight">
-              {preprint.manuscript_title}
+              {displayTitle}
             </h4>
-            {preprint.solicited_topic && (
+            
+            {/* 🔥 绝对不会再出现黄橙色的 NaN 框框了 */}
+            {displayTopic && (
               <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-300 whitespace-nowrap shrink-0">
-                {preprint.solicited_topic}
+                {displayTopic}
               </span>
             )}
           </div>
+          
           <p className="text-sm text-charcoal-light mb-1">
-            {preprint.author_name} · {preprint.institution}
+            {displayAuthor} 
+            {/* 🚀 机构如果是 NaN，直接消失，不会显示 " · NaN" */}
+            {displayInstitution && ` · ${displayInstitution}`}
             {coAuthorCount > 0 && (
               <span className="text-gray-400"> (+{coAuthorCount})</span>
             )}
           </p>
+          
           <div className="flex flex-wrap items-center text-[10px] font-bold text-gray-400 gap-2 uppercase tracking-wider">
             <span>{new Date(preprint.created_at).toLocaleDateString('zh-CN')}</span>
             <span>·</span>
-            <span>{VISCOSITY_LABELS[preprint.viscosity] || preprint.viscosity}</span>
+            
+            <span className="text-charcoal border border-gray-200 px-1.5 py-0.5 bg-gray-50">
+              {displayTag}
+            </span>
+            
             {disciplineLabel && (
               <>
                 <span>·</span>
@@ -70,7 +98,6 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }>
         {/* Right side: score or progress */}
         <div className="text-right shrink-0">
           {isLatrine ? (
-            // Latrine: blind mode — show progress bar
             <div className="min-w-[120px]">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                 评价进度 / Progress
@@ -78,22 +105,21 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }>
               <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
                 <div
                   className="bg-accent-gold h-full rounded-full transition-all"
-                  style={{ width: `${Math.min(100, (preprint.rating_count / ZONE_THRESHOLDS.LATRINE_TO_SEPTIC_COUNT) * 100)}%` }}
+                  style={{ width: `${Math.min(100, ((preprint.rating_count || 0) / ZONE_THRESHOLDS.LATRINE_TO_SEPTIC_COUNT) * 100)}%` }}
                 />
               </div>
               <p className="text-[10px] font-bold text-gray-400 mt-1">
-                {preprint.rating_count} / {ZONE_THRESHOLDS.LATRINE_TO_SEPTIC_COUNT}
+                {preprint.rating_count || 0} / {ZONE_THRESHOLDS.LATRINE_TO_SEPTIC_COUNT}
               </p>
             </div>
           ) : (
-            // Other zones: show score
             <>
-              <div className="text-xl leading-none" title={`${(preprint.weighted_score || 0).toFixed(2)} / 5`}>
+              <div className="text-xl leading-none" title={`${(preprint.weighted_score || preprint.avg_score || 0).toFixed(2)} / 5`}>
                 {'💩'.repeat(score)}{'⚪'.repeat(5 - score)}
               </div>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1.5">
-                {preprint.weighted_score > 0 ? preprint.weighted_score.toFixed(2) : '—'} / 5
-                <span className="ml-2">({preprint.rating_count})</span>
+                {(preprint.weighted_score || preprint.avg_score || 0) > 0 ? (preprint.weighted_score || preprint.avg_score || 0).toFixed(2) : '—'} / 5
+                <span className="ml-2">({preprint.rating_count || 0})</span>
               </p>
             </>
           )}

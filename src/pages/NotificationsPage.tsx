@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { API } from '../lib/api';
 import { useAuth } from '../hooks/useAuth';
 
+// 🔥 对齐 FastAPI 吐出的嵌套字典结构
 interface Notification {
   id: string;
-  type: 'reply' | 'like' | 'new_comment';
-  actor_name: string;
-  manuscript_title: string | null;
-  comment_content: string | null;
-  submission_id: string;
+  type: 'reply' | 'like' | 'new_comment' | string;
   is_read: boolean;
   created_at: string;
+  actor: { id: string; display_name: string; avatar_url: string | null } | null;
+  article: { id: string; title: string } | null;
+  comment: { id: string; content: string } | null;
 }
 
 export const NotificationsPage: React.FC = () => {
@@ -24,26 +24,24 @@ export const NotificationsPage: React.FC = () => {
   useEffect(() => {
     if (!user) return;
 
-    const fetch = async () => {
-      const { data } = await supabase
-        .from('notifications_with_details')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      setNotifications((data as Notification[]) || []);
-      setLoading(false);
-
-      // Mark all as read
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
+    const fetchNotifs = async () => {
+      try {
+        // 🔥 一键呼叫后端，拿 50 条
+        const res = await API.notifications.getList(1, 50);
+        setNotifications(res.data || []);
+        
+        // 🔥 如果有未读消息，静默调用一键已读接口
+        if (res.unread_count && res.unread_count > 0) {
+          await API.notifications.readAll();
+        }
+      } catch (error) {
+        console.error("加载通知失败:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetch();
+    fetchNotifs();
   }, [user]);
 
   if (!user) {
@@ -67,12 +65,10 @@ export const NotificationsPage: React.FC = () => {
 
   const getDescription = (n: Notification) => {
     switch (n.type) {
-      case 'reply':
-        return '回复了你的评论';
-      case 'like':
-        return '给你的评论点了屎';
-      case 'new_comment':
-        return '评论了你的稿件';
+      case 'reply': return '回复了你的评论';
+      case 'like': return '给你的评论点了屎';
+      case 'new_comment': return '评论了你的稿件';
+      default: return '与你进行了互动';
     }
   };
 
@@ -81,6 +77,7 @@ export const NotificationsPage: React.FC = () => {
       case 'reply': return 'chat';
       case 'like': return '💩';
       case 'new_comment': return 'comment';
+      default: return 'notifications';
     }
   };
 
@@ -113,7 +110,8 @@ export const NotificationsPage: React.FC = () => {
           {notifications.slice(0, showCount).map(n => (
             <div
               key={n.id}
-              onClick={() => navigate(`/preprints/${n.submission_id}`)}
+              // 🔥 跳转时使用嵌套在 article 对象里的 id
+              onClick={() => n.article?.id && navigate(`/preprints/${n.article.id}`)}
               className={`px-5 py-4 cursor-pointer hover:bg-gray-50 transition-colors ${!n.is_read ? 'bg-amber-50/30' : ''}`}
             >
               <div className="flex items-start gap-3">
@@ -126,17 +124,23 @@ export const NotificationsPage: React.FC = () => {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-charcoal">
-                    <span className="font-bold">{n.actor_name}</span>
+                    {/* 🔥 提取 actor 名字 */}
+                    <span className="font-bold">{n.actor?.display_name || '匿名用户'}</span>
                     {' '}{getDescription(n)}
                   </p>
-                  {n.comment_content && (
-                    <p className="text-xs text-gray-400 mt-1 truncate">"{n.comment_content}"</p>
+                  
+                  {/* 🔥 提取 comment 内容 */}
+                  {n.comment?.content && (
+                    <p className="text-xs text-gray-400 mt-1 truncate">"{n.comment.content}"</p>
                   )}
-                  {n.manuscript_title && (
+                  
+                  {/* 🔥 提取 article 标题 */}
+                  {n.article?.title && (
                     <p className="text-xs text-gray-400 mt-1 truncate">
-                      《{n.manuscript_title}》
+                      《{n.article.title}》
                     </p>
                   )}
+                  
                   <p className="text-[10px] text-gray-300 mt-1.5">{formatTime(n.created_at)}</p>
                 </div>
                 {!n.is_read && (

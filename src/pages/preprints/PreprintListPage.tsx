@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { API } from '../../lib/api'; 
 import { PreprintCard } from './PreprintCard';
 import { ZONE_LABELS, DISCIPLINE_LABELS } from '../../lib/constants';
 import type { Zone, Discipline } from '../../lib/constants';
@@ -79,59 +79,34 @@ export const PreprintListPage: React.FC = () => {
       }
     }
 
+    // 🔥 2. 核心魔术：用 FastAPI 极简接口替换 Supabase 几十行链式调用
     const fetchPreprints = async () => {
       setLoading(true);
-      const from = (page - 1) * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
+      try {
+        // 直接把过滤条件扔给后端，后端 SQL 引擎会用毫秒级速度算好吐给你
+        const response = await API.articles.getList(zone, sort, discipline, page, PAGE_SIZE);
+        
+        // 兼容不同后端的返回格式 (防呆设计)
+        const fetchedData = response.data || response.items || [];
+        const fetchedCount = response.count || response.total || 0;
 
-      let query = supabase
-        .from('preprints_with_ratings_mat')
-        .select('id,manuscript_title,author_name,institution,viscosity,discipline,created_at,avg_score,rating_count,weighted_score,co_authors,solicited_topic,comment_count,unique_commenters,promoted_to_septic_at', { count: 'exact' })
-        .eq('zone', zone);
+        setPreprints(fetchedData);
+        setTotalCount(fetchedCount);
 
-      // Discipline filter
-      if (discipline !== 'all') {
-        query = query.eq('discipline', discipline);
+        // 重新写入缓存
+        const ttl = zone === 'latrine' ? CACHE_TTL.latrine : (CACHE_TTL[sort] || CACHE_TTL.newest);
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          data: fetchedData,
+          count: fetchedCount,
+          expiry: Date.now() + ttl,
+        }));
+      } catch (error) {
+        console.error("拉取文章列表失败:", error);
+        setPreprints([]);
+        setTotalCount(0);
+      } finally {
+        setLoading(false);
       }
-
-      // Zone-specific sorting
-      if (zone === 'latrine') {
-        query = query
-          .order('latrine_recency', { ascending: true })
-          .order('latrine_sort_key', { ascending: true });
-      } else if (sort === 'newest') {
-        if (zone === 'septic') {
-          query = query.order('promoted_to_septic_at', { ascending: false, nullsFirst: false });
-        } else {
-          query = query.order('created_at', { ascending: false });
-        }
-      } else if (sort === 'highest_rated') {
-        query = query
-          .order('weighted_score', { ascending: false })
-          .order('rating_count', { ascending: false });
-      } else if (sort === 'most_rated') {
-        query = query
-          .order('rating_count', { ascending: false })
-          .order('avg_score', { ascending: false });
-      } else if (sort === 'hottest') {
-        query = query
-          .order('comment_count', { ascending: false })
-          .order('unique_commenters', { ascending: false })
-          .order('rating_count', { ascending: false });
-      }
-
-      const { data, count } = await query.range(from, to);
-
-      setPreprints(data || []);
-      setTotalCount(count || 0);
-      setLoading(false);
-
-      const ttl = zone === 'latrine' ? CACHE_TTL.latrine : (CACHE_TTL[sort] || CACHE_TTL.newest);
-      sessionStorage.setItem(cacheKey, JSON.stringify({
-        data: data || [],
-        count: count || 0,
-        expiry: Date.now() + ttl,
-      }));
     };
 
     fetchPreprints();
@@ -158,6 +133,9 @@ export const PreprintListPage: React.FC = () => {
 
   const zoneInfo = ZONE_LABELS[zone];
 
+  // ---------------------------------------------------------
+  // 🔥 下面的 UI 渲染部分一字不差全部保留！这就是前后端解耦的魅力！
+  // ---------------------------------------------------------
   return (
     <div className="max-w-4xl mx-auto px-4 lg:px-8 py-12">
       {/* Header */}

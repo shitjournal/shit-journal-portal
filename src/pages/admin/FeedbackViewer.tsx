@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { API } from '../../lib/api';
 
 const PAGE_SIZE = 20;
 
 interface FeedbackItem {
   id: string;
-  user_id: string | null;
-  display_name: string | null;
-  email: string | null;
   content: string;
   created_at: string;
+  user: {
+    id: string;
+    display_name: string;
+    email: string;
+  } | null;
 }
 
 export const FeedbackViewer: React.FC = () => {
@@ -19,20 +21,19 @@ export const FeedbackViewer: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-
-    supabase
-      .from('feedback')
-      .select('*', { count: 'exact' })
-      .order('created_at', { ascending: false })
-      .range(from, to)
-      .then(({ data, count }) => {
-        setItems(data || []);
-        setTotalCount(count || 0);
+    const fetchFeedback = async () => {
+      setLoading(true);
+      try {
+        const res = await API.admin.getAllFeedback(page, PAGE_SIZE);
+        setItems(res.data || []);
+        setTotalCount(res.total || 0);
+      } catch (error) {
+        console.error("加载反馈失败:", error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchFeedback();
   }, [page]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -62,9 +63,9 @@ export const FeedbackViewer: React.FC = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-sm text-charcoal">
-                      {item.display_name || '匿名'}
+                      {item.user?.display_name || '匿名'}
                     </span>
-                    {item.user_id && (
+                    {item.user && (
                       <span className="text-[10px] font-bold text-accent-gold bg-yellow-50 px-1.5 py-0.5 rounded">
                         注册用户
                       </span>
@@ -74,8 +75,8 @@ export const FeedbackViewer: React.FC = () => {
                     {new Date(item.created_at).toLocaleString('zh-CN')}
                   </span>
                 </div>
-                {item.email && (
-                  <p className="text-xs text-gray-400 mb-2">{item.email}</p>
+                {item.user?.email && (
+                  <p className="text-xs text-gray-400 mb-2">{item.user.email}</p>
                 )}
                 <p className="text-sm text-charcoal whitespace-pre-wrap">{item.content}</p>
               </div>

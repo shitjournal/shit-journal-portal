@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { supabase } from '../../lib/supabase';
+import { API } from '../../lib/api';
 import { useAuth } from '../../hooks/useAuth';
 import { ASSIGNABLE_ROLES, ROLE_LABELS, type Role } from '../../lib/roles';
 
@@ -19,13 +19,14 @@ export const UserManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [page, setPage] = useState(0);
+  // 💡 分页从 1 开始，对应后端的 query parameter
+  const [page, setPage] = useState(1); 
   const [total, setTotal] = useState(0);
   const [updating, setUpdating] = useState<string | null>(null);
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [error, setError] = useState<string | null>(null);
 
-  // Debounce search input
+  // 防抖搜索
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(timer);
@@ -33,54 +34,44 @@ export const UserManagement: React.FC = () => {
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
-
-    const { data, error } = await supabase.rpc('admin_list_users', {
-      search_term: debouncedSearch.trim() || null,
-      role_filter: roleFilter === 'all' ? null : roleFilter,
-      page_offset: page * PAGE_SIZE,
-      page_limit: PAGE_SIZE,
-    });
-
-    if (!error && data) {
-      const rows = data as any[];
-      setUsers(rows.map(r => ({
-        id: r.id,
-        display_name: r.display_name,
-        email: r.email || '',
-        role: r.role,
-        created_at: r.created_at,
-      })));
-      setTotal(rows.length > 0 ? rows[0].total_count : 0);
+    try {
+      const res = await API.admin.listUsers(
+        debouncedSearch.trim() || undefined, 
+        roleFilter === 'all' ? undefined : roleFilter, 
+        page, 
+        PAGE_SIZE
+      );
+      setUsers(res.data || []);
+      setTotal(res.total || 0);
       setError(null);
-    } else {
-      console.error('admin_list_users error:', error);
+    } catch (err: any) {
+      console.error(err);
       setUsers([]);
       setTotal(0);
-      setError(error?.message || 'Unknown error');
+      setError(err.message || '加载用户列表失败');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [page, debouncedSearch, roleFilter]);
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  // Reset page when search/filter changes
-  useEffect(() => { setPage(0); }, [debouncedSearch, roleFilter]);
+  // 搜索或过滤条件改变时，重置回第一页
+  useEffect(() => { setPage(1); }, [debouncedSearch, roleFilter]);
 
   const handleRoleChange = async (userId: string, newRole: Role) => {
     if (userId === user?.id) return;
     setUpdating(userId);
     setError(null);
-    const { error: updateError } = await supabase.rpc('admin_update_user_role', {
-      target_user_id: userId,
-      new_role: newRole,
-    });
-    if (!updateError) {
+    try {
+      await API.admin.updateUserRole(userId, newRole);
+      // 乐观更新 UI
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
-    } else {
-      console.error('Role update error:', updateError);
-      setError(`角色修改失败: ${updateError.message}`);
+    } catch (err: any) {
+      setError(`角色修改失败: ${err.message}`);
+    } finally {
+      setUpdating(null);
     }
-    setUpdating(null);
   };
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -117,7 +108,7 @@ export const UserManagement: React.FC = () => {
       {/* Error */}
       {error && (
         <div className="bg-red-50 border border-red-200 p-4 mb-6 text-sm text-red-700">
-          <span className="font-bold">RPC Error:</span> {error}
+          <span className="font-bold">API Error:</span> {error}
         </div>
       )}
 
@@ -199,18 +190,18 @@ export const UserManagement: React.FC = () => {
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-6 text-sm">
           <button
-            onClick={() => setPage(p => p - 1)}
-            disabled={page === 0}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
             className="px-4 py-2 border border-gray-200 text-xs font-bold disabled:opacity-30 hover:bg-gray-50 cursor-pointer disabled:cursor-not-allowed"
           >
             上一页
           </button>
           <span className="text-xs text-gray-400">
-            {page + 1} / {totalPages}
+            {page} / {totalPages}
           </span>
           <button
-            onClick={() => setPage(p => p + 1)}
-            disabled={page >= totalPages - 1}
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
             className="px-4 py-2 border border-gray-200 text-xs font-bold disabled:opacity-30 hover:bg-gray-50 cursor-pointer disabled:cursor-not-allowed"
           >
             下一页

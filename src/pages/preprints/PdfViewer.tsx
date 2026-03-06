@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import { supabase } from '../../lib/supabase';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -13,10 +12,7 @@ interface PdfViewerProps {
 const DISCLAIMER = '本内容纯属整活，不代表任何学术观点或现实指导建议。请保持理智，切勿模仿。';
 
 const Watermark: React.FC = () => (
-  <div
-    className="absolute inset-0 z-10 pointer-events-none overflow-hidden"
-    aria-hidden="true"
-  >
+  <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" aria-hidden="true">
     <div className="w-full h-full"
       style={{
         backgroundImage: `repeating-linear-gradient(
@@ -48,44 +44,14 @@ const Watermark: React.FC = () => (
 );
 
 export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [numPages, setNumPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    if (!pdfPath) {
-      setLoading(false);
-      return;
-    }
-
-    const cacheKey = `pdf_url_${pdfPath}`;
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-      const { url, expiry } = JSON.parse(cached);
-      if (Date.now() < expiry) {
-        setPdfUrl(url);
-        setLoading(false);
-        return;
-      }
-    }
-
-    const getUrl = async () => {
-      const { data } = await supabase.storage
-        .from('manuscripts')
-        .createSignedUrl(pdfPath, 3600);
-
-      if (data?.signedUrl) {
-        setPdfUrl(data.signedUrl);
-        sessionStorage.setItem(cacheKey, JSON.stringify({
-          url: data.signedUrl,
-          expiry: Date.now() + 30 * 60 * 1000, // 30 min cache
-        }));
-      }
-      setLoading(false);
-    };
-
-    getUrl();
+  // 🔥 极简解析逻辑：如果是完整 URL 直接用，如果是纯文件名，自动拼上 CF 域名防呆！
+  const pdfUrl = useMemo(() => {
+    if (!pdfPath) return null;
+    if (pdfPath.startsWith('http')) return pdfPath;
+    return `https://files.shitjournal.org/${pdfPath}`;
   }, [pdfPath]);
 
   // Keyboard navigation
@@ -104,16 +70,8 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
 
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
+    setCurrentPage(1); // 切换新文档时重置到第一页
   }, []);
-
-  if (loading) {
-    return (
-      <div className="text-center py-12">
-        <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
-        <p className="text-sm text-gray-400 mt-2">Loading document / 加载文档中...</p>
-      </div>
-    );
-  }
 
   if (!pdfUrl) {
     return (

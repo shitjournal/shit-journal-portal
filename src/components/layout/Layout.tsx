@@ -7,7 +7,7 @@ import { StickyHeader } from './StickyHeader';
 import { MobileMenu } from './MobileMenu';
 import { Footer } from './Footer';
 import { useAuth } from '../../hooks/useAuth';
-import { supabase } from '../../lib/supabase';
+import { API } from '../../lib/api';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { pathname } = useLocation();
@@ -19,12 +19,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) return;
-    const { count } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('is_read', false);
-    setUnreadCount(count || 0);
+    try {
+      const res = await API.notifications.getUnreadCount();
+      setUnreadCount(res.count || 0);
+    } catch (error) {
+      console.error("轮询未读通知失败:", error);
+    }
   }, [user]);
 
   // Single notification poll with visibility awareness
@@ -33,7 +33,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
     const startPolling = () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      intervalRef.current = setInterval(fetchUnreadCount, 60000);
+      intervalRef.current = setInterval(fetchUnreadCount, 60000); // 60秒轮询一次
     };
 
     const stopPolling = () => {

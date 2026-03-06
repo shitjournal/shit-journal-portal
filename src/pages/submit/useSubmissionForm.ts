@@ -1,27 +1,22 @@
 import { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { API } from '../../lib/api';
 import { useAuth } from '../../hooks/useAuth';
 import type { CoAuthor } from './CoAuthorsSection';
 
 export interface SubmissionFormData {
   email: string;
   manuscriptTitle: string;
-  authorName: string;
-  institution: string;
-  socialMedia: string;
   coAuthors: CoAuthor[];
-  viscosity: string;
+  tag: string; 
   discipline: string;
   pdfFile: File | null;
-  solicitedTopic: string | null;
+  topic: string; // 🔥 新增主题字段
 }
 
 interface FormErrors {
   email?: string;
   manuscriptTitle?: string;
-  authorName?: string;
-  institution?: string;
-  viscosity?: string;
+  tag?: string; 
   discipline?: string;
   pdfFile?: string;
   coAuthors?: string;
@@ -29,18 +24,15 @@ interface FormErrors {
 }
 
 export function useSubmissionForm() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth(); // 只需要取邮箱就行了
   const [formData, setFormData] = useState<SubmissionFormData>({
     email: user?.email || '',
     manuscriptTitle: '',
-    authorName: profile?.display_name || '',
-    institution: profile?.institution || '',
-    socialMedia: profile?.social_media || '',
     coAuthors: [],
-    viscosity: '',
+    tag: '', 
     discipline: '',
     pdfFile: null,
-    solicitedTopic: null,
+    topic: '', // 🔥 初始化为空字符串，代表“无”
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,29 +48,23 @@ export function useSubmissionForm() {
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.authorName.trim()) {
-      newErrors.authorName = 'Name is required / 笔名不能为空';
-    }
     if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email / 请输入有效邮箱';
     }
     if (!formData.manuscriptTitle.trim()) {
       newErrors.manuscriptTitle = 'Title is required / 标题不能为空';
     }
-    if (!formData.institution.trim()) {
-      newErrors.institution = 'Institution is required / 单位不能为空';
-    }
-    if (!formData.viscosity) {
-      newErrors.viscosity = 'Please select viscosity / 请选择粘度';
+    if (!formData.tag) {
+      newErrors.tag = 'Please select a tag / 请选择文章分类'; 
     }
     if (!formData.discipline) {
       newErrors.discipline = 'Please select discipline / 请选择学科';
     }
     if (!formData.pdfFile) {
-      newErrors.pdfFile = 'Please upload a PDF file / 请上传PDF文件';
+      newErrors.pdfFile = 'Please upload a PDF file / 请上传 PDF 文件';
     }
 
-    // Validate co-authors that have been partially filled
+    // 校验共同作者
     for (let i = 0; i < formData.coAuthors.length; i++) {
       const ca = formData.coAuthors[i];
       if (!ca.name.trim() || !ca.email.trim()) {
@@ -91,12 +77,10 @@ export function useSubmissionForm() {
     const firstError = Object.keys(newErrors)[0] as keyof FormErrors | undefined;
     if (firstError) {
       const sectionMap: Record<string, string> = {
-        authorName: 'section-identity',
         email: 'section-identity',
         manuscriptTitle: 'section-identity',
-        institution: 'section-identity',
         coAuthors: 'section-coauthors',
-        viscosity: 'section-viscosity',
+        tag: 'section-tag', 
         discipline: 'section-discipline',
         pdfFile: 'section-payload',
       };
@@ -111,8 +95,8 @@ export function useSubmissionForm() {
   const getCurrentStep = (): number => {
     if (formData.pdfFile) return 4;
     if (formData.discipline) return 4;
-    if (formData.viscosity) return 3;
-    if (formData.email || formData.manuscriptTitle || formData.authorName) return 2;
+    if (formData.tag) return 3; 
+    if (formData.email || formData.manuscriptTitle) return 2;
     return 1;
   };
 
@@ -123,79 +107,18 @@ export function useSubmissionForm() {
     setErrors(prev => ({ ...prev, submit: undefined }));
 
     try {
-      // Check submission limit (max 5 per user)
-      const { count, error: countError } = await supabase
-        .from('submissions')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user?.id);
-
-      if (!countError && count !== null && count >= 5) {
-        setErrors(prev => ({ ...prev, submit: 'You have reached the submission limit (5 papers max) / 您已达到投稿上限（最多 5 篇）' }));
-        setIsSubmitting(false);
-        return;
-      }
-
-      const pdfFile = formData.pdfFile!;
-      const submissionId = crypto.randomUUID();
-
-      const safeName = formData.authorName.replace(/[^a-zA-Z0-9]/g, '_');
-      const safeEmail = formData.email.replace(/[@.]/g, '_');
-      const pdfPath = `${submissionId}/${safeName}_${safeEmail}.pdf`;
-
-      // Upload PDF file
-      const { error: pdfUploadError } = await supabase.storage
-        .from('manuscripts')
-        .upload(pdfPath, pdfFile, { contentType: 'application/pdf' });
-
-      if (pdfUploadError) {
-        throw new Error(`PDF upload failed / PDF上传失败: ${pdfUploadError.message}`);
-      }
-
-      // Insert submission record
-      const { error: dbError } = await supabase
-        .from('submissions')
-        .insert({
-          id: submissionId,
-          user_id: user?.id || null,
-          email: formData.email,
-          manuscript_title: formData.manuscriptTitle,
-          author_name: formData.authorName,
-          institution: formData.institution,
-          social_media: formData.socialMedia || null,
-          co_authors: formData.coAuthors.length > 0 ? formData.coAuthors : [],
-          viscosity: formData.viscosity,
-          discipline: formData.discipline,
-          discipline_user_edited: true,
-          file_path: pdfPath,
-          file_name: pdfFile.name,
-          file_size_bytes: pdfFile.size,
-          pdf_path: pdfPath,
-          solicited_topic: formData.solicitedTopic,
-        });
-
-      if (dbError) {
-        throw new Error(`Database error / 数据库错误: ${dbError.message}`);
-      }
-
-      // Send confirmation email (fire-and-forget, don't block submission)
-      try {
-        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
-          body: {
-            email: formData.email,
-            authorName: formData.authorName,
-            manuscriptTitle: formData.manuscriptTitle,
-            submissionId,
-          },
-        });
-        if (emailError) console.error('Email function error:', emailError);
-        else console.log('Confirmation email sent:', emailData);
-      } catch (e) {
-        console.error('Email call failed:', e);
-      }
+      await API.articles.upload(
+        formData.manuscriptTitle,
+        formData.tag,           
+        formData.discipline,    
+        formData.topic,         // 🔥 把 topic 传给 api.ts
+        formData.coAuthors,     
+        formData.pdfFile!       
+      );
 
       setIsSubmitted(true);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Submission failed / 提交失败';
+    } catch (error: any) {
+      const message = error.message || 'Submission failed / 提交失败，请联系管理员';
       setErrors(prev => ({ ...prev, submit: message }));
     } finally {
       setIsSubmitting(false);

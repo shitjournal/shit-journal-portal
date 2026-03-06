@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { useSnifferBadge } from '../../hooks/useSnifferBadge';
-import { useAuthorBadge } from '../../hooks/useAuthorBadge';
+import { API } from '../../lib/api';
 import type { Profile } from '../../contexts/AuthContext';
 
 function getBadge(role: Profile['role']): { en: string; cn: string } {
@@ -18,15 +16,18 @@ function getBadge(role: Profile['role']): { en: string; cn: string } {
 
 export const ProfileSidebar: React.FC<{ submissionCount: number }> = ({ submissionCount }) => {
   const { profile, refreshProfile } = useAuth();
-  const { isSnifferToday } = useSnifferBadge(profile?.id);
-  const { badge: authorBadge } = useAuthorBadge(profile?.id);
+  
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({ display_name: '', institution: '', social_media: '' });
   const [saving, setSaving] = useState(false);
 
   if (!profile) return null;
 
-  const badge = getBadge(profile.role);
+  const badge = getBadge(profile.role || 'author');
+
+  // 🔥 毫无妥协：直接从 AuthContext 内存里秒读后端吐出的徽章状态！0 网络延迟！
+  const authorBadge = profile.author_badge;
+  const isSnifferToday = profile.is_sniffer_today;
 
   const startEditing = () => {
     setEditData({
@@ -39,17 +40,22 @@ export const ProfileSidebar: React.FC<{ submissionCount: number }> = ({ submissi
 
   const handleSave = async () => {
     setSaving(true);
-    await supabase
-      .from('profiles')
-      .update({
-        display_name: editData.display_name,
-        institution: editData.institution || null,
-        social_media: editData.social_media || null,
-      })
-      .eq('id', profile.id);
-    await refreshProfile();
-    setIsEditing(false);
-    setSaving(false);
+    try {
+      await API.users.updateProfile(
+        editData.display_name,
+        undefined, // avatarUrl 先不传
+        editData.institution || undefined,
+        editData.social_media || undefined
+      );
+      
+      // 更新成功后重新拉取个人信息，UI 瞬间更新
+      await refreshProfile();
+      setIsEditing(false);
+    } catch (error: any) {
+      alert(error.message || '保存失败，请稍后重试');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => setIsEditing(false);

@@ -5,6 +5,12 @@ export const STATUS_LABELS: Record<string, { en: string; cn: string; color: stri
   accepted: { en: 'Approved for Flush', cn: '批准冲水', color: 'bg-green-50 text-green-700' },
   rejected: { en: 'Clogged', cn: '堵塞了', color: 'bg-red-50 text-red-700' },
   flushed: { en: 'Desk Flushed', cn: '直接冲掉', color: 'bg-red-50 text-red-500' },
+
+  '待预审': { en: 'Pending', cn: '待预审', color: 'bg-gray-100 text-gray-500' },
+  '通过预审': { en: 'Scooper Review', cn: '铲屎官评审中', color: 'bg-yellow-50 text-yellow-700' },
+  '退回修改': { en: 'Revisions Requested', cn: '需要修改', color: 'bg-blue-50 text-blue-700' },
+  '被退回': { en: 'Desk Flushed', cn: '直接冲掉', color: 'bg-red-50 text-red-500' },
+  '被删除': { en: 'Deleted', cn: '被删除', color: 'bg-red-50 text-red-700' },
 };
 
 export const EDITOR_STATUS_LABELS: Record<string, { en: string; cn: string; color: string }> = {

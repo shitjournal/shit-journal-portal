@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StepIndicator } from './StepIndicator';
-import { IdentitySection } from './IdentitySection';
 import { CoAuthorsSection } from './CoAuthorsSection';
-import { ViscositySection } from './ViscositySection';
+// 🔥 彻底删除了 import { ViscositySection } from './ViscositySection';
 import { DisciplineSection } from './DisciplineSection';
 import { PayloadSection } from './PayloadSection';
 import { useSubmissionForm } from './useSubmissionForm';
@@ -57,26 +56,99 @@ export const SubmissionForm: React.FC = () => {
       <StepIndicator currentStep={currentStep} />
 
       <div className="space-y-12">
-        <div id="section-identity">
-          <IdentitySection
-            email={formData.email}
-            manuscriptTitle={formData.manuscriptTitle}
-            authorName={formData.authorName}
-            institution={formData.institution}
-            socialMedia={formData.socialMedia}
-            onEmailChange={v => updateField('email', v)}
-            onTitleChange={v => updateField('manuscriptTitle', v)}
-            onAuthorNameChange={v => updateField('authorName', v)}
-            onInstitutionChange={v => updateField('institution', v)}
-            onSocialMediaChange={v => updateField('socialMedia', v)}
-          />
-          {(errors.authorName || errors.email || errors.manuscriptTitle || errors.institution) && (
-            <p className="text-science-red text-xs mt-2 font-bold">
-              {errors.authorName || errors.email || errors.manuscriptTitle || errors.institution}
-            </p>
+        
+        {/* 🚀 1. 基本信息区 */}
+        <div id="section-identity" className="bg-white border border-gray-200 p-8">
+          <h3 className="text-xl font-serif font-bold text-charcoal mb-6 border-b border-gray-100 pb-4">
+            Basic Information / 基本信息
+          </h3>
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wide">
+                Manuscript Title / 稿件标题 <span className="text-science-red">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.manuscriptTitle}
+                onChange={e => updateField('manuscriptTitle', e.target.value)}
+                className={`w-full border ${errors.manuscriptTitle ? 'border-science-red' : 'border-gray-300'} p-3 font-serif focus:border-accent-gold focus:ring-1 focus:ring-accent-gold outline-none transition-colors`}
+                placeholder="Enter the full title of your manuscript"
+              />
+              {errors.manuscriptTitle && <p className="text-science-red text-xs mt-2 font-bold">{errors.manuscriptTitle}</p>}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wide">
+                Contact Email / 联系邮箱 <span className="text-science-red">*</span>
+              </label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={e => updateField('email', e.target.value)}
+                className={`w-full border ${errors.email ? 'border-science-red' : 'border-gray-300'} p-3 focus:border-accent-gold focus:ring-1 focus:ring-accent-gold outline-none transition-colors`}
+                placeholder="author@institution.edu"
+              />
+              {errors.email && <p className="text-science-red text-xs mt-2 font-bold">{errors.email}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wide">
+                Submission Topic / 约稿主题
+              </label>
+              <select
+                value={formData.topic}
+                onChange={e => updateField('topic', e.target.value)}
+                className="w-full border border-gray-300 p-3 text-sm focus:border-accent-gold focus:ring-1 focus:ring-accent-gold outline-none transition-colors appearance-none bg-white cursor-pointer"
+              >
+                <option value="">无 / None</option>
+                <option value="S.H.I.T社区治理1.0">S.H.I.T 社区治理 1.0 (约稿专题)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* 🚀 2. Tag 文章分类区（彻底替代原粘度） */}
+        <div id="section-tag" className="bg-white border border-gray-200 p-8">
+          <h3 className="text-xl font-serif font-bold text-charcoal mb-6 border-b border-gray-100 pb-4">
+            Article Tag / 文章分类 <span className="text-science-red">*</span>
+          </h3>
+          <div className="space-y-4">
+            <label className={`flex items-start gap-3 p-4 border cursor-pointer transition-colors ${formData.tag === 'hardcore' ? 'border-accent-gold bg-amber-50' : 'border-gray-200 hover:border-accent-gold'}`}>
+              <input
+                type="radio"
+                name="article_tag"
+                value="hardcore"
+                checked={formData.tag === 'hardcore'}
+                onChange={e => updateField('tag', e.target.value)}
+                className="mt-1 accent-accent-gold cursor-pointer"
+              />
+              <div>
+                <div className="font-bold text-charcoal">硬核学术 (Hardcore)</div>
+                <div className="text-xs text-gray-500 mt-1">披着胡说八道外衣的一本正经学术。格式极其严谨，论证极其离谱，引经据典，论证过程坚不可摧。</div>
+              </div>
+            </label>
+            
+            <label className={`flex items-start gap-3 p-4 border cursor-pointer transition-colors ${formData.tag === 'meme' ? 'border-accent-gold bg-amber-50' : 'border-gray-200 hover:border-accent-gold'}`}>
+              <input
+                type="radio"
+                name="article_tag"
+                value="meme"
+                checked={formData.tag === 'meme'}
+                onChange={e => updateField('tag', e.target.value)}
+                className="mt-1 accent-accent-gold cursor-pointer"
+              />
+              <div>
+                <div className="font-bold text-charcoal">纯享整活 (Meme)</div>
+                <div className="text-xs text-gray-500 mt-1">用严格的八股文论文格式包装的纯粹的灵光一闪、科幻设定或学术段子，主打痛快和想象力。</div>
+              </div>
+            </label>
+          </div>
+          {errors.tag && (
+            <p className="text-science-red text-xs mt-2 font-bold">{errors.tag}</p>
           )}
         </div>
 
+        {/* 🚀 3. 共同作者 */}
         <div id="section-coauthors">
           <CoAuthorsSection
             coAuthors={formData.coAuthors}
@@ -87,16 +159,7 @@ export const SubmissionForm: React.FC = () => {
           )}
         </div>
 
-        <div id="section-viscosity">
-          <ViscositySection
-            viscosity={formData.viscosity}
-            onChange={v => updateField('viscosity', v)}
-          />
-          {errors.viscosity && (
-            <p className="text-science-red text-xs mt-2 font-bold">{errors.viscosity}</p>
-          )}
-        </div>
-
+        {/* 🚀 4. 学科 */}
         <div id="section-discipline">
           <DisciplineSection
             discipline={formData.discipline}
@@ -107,6 +170,7 @@ export const SubmissionForm: React.FC = () => {
           )}
         </div>
 
+        {/* 🚀 5. 上传 PDF */}
         <div id="section-payload">
           <PayloadSection
             pdfFile={formData.pdfFile}
@@ -117,60 +181,7 @@ export const SubmissionForm: React.FC = () => {
           )}
         </div>
 
-        {/* Solicited submission checkbox */}
-        <div className="bg-amber-50 border border-amber-200">
-          <label className="flex items-start gap-3 p-5 cursor-pointer hover:bg-amber-100 transition-colors">
-            <input
-              type="checkbox"
-              checked={formData.solicitedTopic === 'S.H.I.T社区治理1.0'}
-              onChange={e => updateField('solicitedTopic', e.target.checked ? 'S.H.I.T社区治理1.0' : null)}
-              className="mt-0.5 w-4 h-4 accent-accent-gold cursor-pointer"
-            />
-            <div>
-              <span className="text-sm font-bold text-charcoal">本稿件为《S.H.I.T社区治理1.0》专题约稿</span>
-              <p className="text-xs text-gray-500 mt-1">
-                勾选此项表示您的稿件是针对"S.H.I.T 治理公约 1.0：学术去中心化方案"征稿主题撰写的。如非约稿请勿勾选。
-              </p>
-            </div>
-          </label>
-
-          {formData.solicitedTopic && (
-            <div className="px-5 pb-5 border-t border-amber-200">
-              <h4 className="font-serif font-bold text-charcoal mt-4 mb-2">S.H.I.T 治理公约 1.0：学术去中心化方案征稿</h4>
-              <p className="text-xs text-charcoal leading-relaxed mb-3">
-                <span className="font-bold">项目背景：</span>本社会实验旨在通过构建一套自运行的评价与治理逻辑，探讨在无行政干预、无传统同行评审（Peer Review）的环境下，学术平权与内容质量自治的可能性。
-              </p>
-              <p className="text-xs text-science-red leading-relaxed mb-3 font-bold">
-                重要提示：本征稿不接受以 AI 为核心的治理方案。我们寻求的是人类社区自治逻辑，而非将决策外包给算法黑箱。
-              </p>
-              <h5 className="text-xs font-bold text-charcoal mb-2">结构建议：四大核心模块</h5>
-              <p className="text-xs text-gray-500 mb-3">我们诚邀各位"嗅探兽"针对以下机制缺陷提交辩稿方案：</p>
-              <ol className="space-y-3 text-xs text-charcoal leading-relaxed list-decimal list-inside">
-                <li>
-                  <span className="font-bold">价值度量模块：贡献度的量化模型</span>
-                  <p className="ml-4 mt-1 text-gray-600">研究课题：如何精准定义"排泄者"（创作者）与"嗅探兽"（审稿人）的行为权重？</p>
-                  <p className="ml-4 text-gray-500">方案要求：设计一套博弈论模型，量化个人贡献，确保社区话语权随学术输出质量动态调整，而非受身份地位驱动。</p>
-                </li>
-                <li>
-                  <span className="font-bold">见刊判定模块：化粪池自动降解与晋升算法</span>
-                  <p className="ml-4 mt-1 text-gray-600">研究课题：稿件如何从预印本（Preprint Reservoir）自动转化为"已见刊"状态？</p>
-                  <p className="ml-4 text-gray-500">方案要求：设定"S.H.I.T 分数"的具体加权算法（包含阅读量、争议度、深度评价等），明确自动晋升的阈值。</p>
-                </li>
-                <li>
-                  <span className="font-bold">冲突解决机制：学术不端自动降解系统</span>
-                  <p className="ml-4 mt-1 text-gray-600">研究课题：在捍卫学术自由的同时，如何识别并清除真正的毒素？</p>
-                  <p className="ml-4 text-gray-500">方案要求：建立一套基于算法的"降解协议"，在无需编辑部介入的前提下，有效识别并处理人身攻击、数据造假或恶意灌水。</p>
-                </li>
-                <li>
-                  <span className="font-bold">资源配置模块：有限资源下的逻辑闭环</span>
-                  <p className="ml-4 mt-1 text-gray-600">研究课题：如何在低算力的极端环境下维持系统运行？</p>
-                  <p className="ml-4 text-gray-500">方案要求：提供一套自治的社群激励与技术运行方案，防止系统因过载或资源枯萎而崩塌。</p>
-                </li>
-              </ol>
-            </div>
-          )}
-        </div>
-
+        {/* 提交按钮 */}
         <div className="pt-6">
           {errors.submit && (
             <div className="mb-4 p-4 bg-red-50 border border-science-red text-science-red text-sm font-bold">
