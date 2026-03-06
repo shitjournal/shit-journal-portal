@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-// 🔥 1. 彻底移除 supabase，接入咱们的兵工厂
 import { API } from '../lib/api'; 
-import { REGISTRATION_CLOSED } from '../lib/maintenanceConfig';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +13,13 @@ export const RegisterPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const [maintenance, setMaintenance] = useState({
+    registration: false,
+    comment: false,
+    submit: false
+  });
+  const [maintLoading, setMaintLoading] = useState(true);
+
   // OTP verification
   const [otp, setOtp] = useState('');
   const [verifying, setVerifying] = useState(false);
@@ -22,6 +27,22 @@ export const RegisterPage: React.FC = () => {
   const [resent, setResent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval>>();
+
+  useEffect(() => {
+    const fetchMaint = async () => {
+      try {
+        const res = await API.maintainance.getList();
+        if (res) {
+          setMaintenance(res);
+        }
+      } catch (err) {
+        console.error("无法加载维护信息", err);
+      } finally {
+        setMaintLoading(false);
+      }
+    };
+    fetchMaint();
+  }, []);
 
   useEffect(() => {
     if (cooldown <= 0) { clearInterval(cooldownRef.current); return; }
@@ -82,10 +103,7 @@ export const RegisterPage: React.FC = () => {
     } catch (err) {}
   };
 
-  // --------------------------------------------------------------------------
-  // 下方的 UI 渲染部分一字不改，完美兼容！
-  // --------------------------------------------------------------------------
-  if (REGISTRATION_CLOSED) {
+  if (maintenance.registration) {
     return (
       <div className="max-w-md mx-auto px-4 py-20">
         <div className="text-center mb-10">

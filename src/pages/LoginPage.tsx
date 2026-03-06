@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { API } from '../lib/api'; 
-import { REGISTRATION_CLOSED } from '../lib/maintenanceConfig';
 
 type ResetStep = 'email' | 'otp' | 'password' | 'done';
 
@@ -16,6 +15,12 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [maintenance, setMaintenance] = useState({
+    registration: false,
+    comment: false,
+    submit: false
+  });
+
   // Reset password state
   const [resetStep, setResetStep] = useState<ResetStep>('email');
   const [otp, setOtp] = useState('');
@@ -26,6 +31,14 @@ export const LoginPage: React.FC = () => {
   const [resent, setResent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval>>();
+
+  useEffect(() => {
+    API.maintainance.getList()
+      .then(res => {
+        if (res) setMaintenance(res);
+      })
+      .catch(err => console.error("Login: 无法同步维护配置", err));
+  }, []);
 
   useEffect(() => {
     if (cooldown <= 0) { clearInterval(cooldownRef.current); return; }
@@ -246,7 +259,7 @@ export const LoginPage: React.FC = () => {
         <button type="submit" disabled={loading} className="w-full py-4 bg-accent-gold text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#B18E26] transition-colors shadow-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
           {loading ? 'Authenticating... / 验证中...' : 'Log In / 登录'}
         </button>
-        {REGISTRATION_CLOSED ? (
+        {maintenance.registration ? (
           <p className="text-center text-sm text-gray-400"><Link to="/register" className="hover:text-accent-gold transition-colors">注册通道暂时关闭 / Registration temporarily closed</Link></p>
         ) : (
           <p className="text-center text-sm text-gray-500">Don't have an account?{' '}<Link to="/register" className="text-accent-gold font-bold hover:underline">Register / 注册</Link></p>

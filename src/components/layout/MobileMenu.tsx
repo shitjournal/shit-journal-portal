@@ -3,29 +3,52 @@ import { Link, useNavigate } from 'react-router-dom';
 import { NAV_LINKS_FULL } from './navData';
 import { useAuth } from '../../hooks/useAuth';
 import { API } from '../../lib/api';
-import { REGISTRATION_CLOSED } from '../../lib/maintenanceConfig';
 import { isEditor as checkIsEditor, isAdmin as checkIsAdmin, isSuperAdmin as checkIsSuperAdmin } from '../../lib/roles';
 
 export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { user, profile, signOut } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
+  
+  const [maintenance, setMaintenance] = useState({
+    registration: false,
+    comment: false,
+    submit: false
+  });
 
   useEffect(() => {
-    if (!user) return;
-    
-    // 🔥 替换为咱们的统一 API 接口
-    const fetchUnreadCount = async () => {
+    // 📡 并行获取通知数和维护状态
+    const fetchData = async () => {
       try {
-        const res = await API.notifications.getList(1, 50);
-        // 如果后端直接返回了 unread_count 就用后端的，否则前端过滤一下当页的未读数
-        const count = res.unread_count ?? (res.data?.filter((n: any) => !n.is_read)?.length || 0);
-        setUnreadCount(count);
+        const requests: Promise<any>[] = [
+          API.maintainance.getList().catch(() => null)
+        ];
+        
+        if (user) {
+          requests.push(API.notifications.getList(1, 50).catch(() => null));
+        }
+
+        const [maintData, notifyData] = await Promise.all(requests);
+
+        // 处理维护状态
+        if (maintData) {
+          setMaintenance({
+            registration: maintData.registration,
+            comment: maintData.comment,
+            submit: maintData.submit
+          });
+        }
+
+        // 处理未读通知
+        if (notifyData) {
+          const count = notifyData.unread_count ?? (notifyData.data?.filter((n: any) => !n.is_read)?.length || 0);
+          setUnreadCount(count);
+        }
       } catch (error) {
-        console.error("加载通知失败:", error);
+        console.error("加载菜单数据失败:", error);
       }
     };
 
-    fetchUnreadCount();
+    fetchData();
   }, [user]);
   
   const navigate = useNavigate();
@@ -134,7 +157,7 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               >
                 Log In / 登录
               </Link>
-              {!REGISTRATION_CLOSED && (
+              {!maintenance.registration && (
                 <Link
                   to="/register"
                   onClick={onClose}

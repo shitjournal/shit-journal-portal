@@ -237,6 +237,12 @@ export const API = {
     getUnreadCount: async () => fetchAPI('/api/notifications/unread-count'),
   },
 
+  maintainance: {
+    getList: async () => {
+      return fetchAPI(`/api/maintainance/`);
+    }
+  },
+
   feedback: {
     checkMine: async () => fetchAPI('/api/feedback/me'),
     submit: async (content: string) => fetchAPI('/api/feedback/submit', {

@@ -7,7 +7,6 @@ import type { Zone, Discipline } from '../../lib/constants';
 import { PdfViewer } from './PdfViewer';
 import { RatingWidget } from './RatingWidget';
 import { LatrineRatingWidget } from './LatrineRatingWidget';
-import { MAINTENANCE_MODE } from '../../lib/maintenanceConfig';
 import { isAdmin } from '../../lib/roles';
 
 // ---------------------------------------------------------
@@ -37,6 +36,11 @@ export const PreprintDetailPage: React.FC = () => {
   const [comments, setComments] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
+  const [maintenance, setMaintenance] = useState({
+    registration: false,
+    comment: false,
+    submit: false
+  });
   const [editingDiscipline, setEditingDiscipline] = useState<string | null>(null);
   const [savingDiscipline, setSavingDiscipline] = useState(false);
   const [togglingHidden, setTogglingHidden] = useState(false);
@@ -51,7 +55,10 @@ export const PreprintDetailPage: React.FC = () => {
     if (!id) return;
     try {
       setLoading(true);
-      const data = await API.articles.getDetail(id);
+      const [data, maintData] = await Promise.all([
+        API.articles.getDetail(id),
+        API.maintainance.getList().catch(() => null)
+      ]);
       setPreprint(data.article);
       setComments(data.comments || []);
     } catch (error) {
@@ -366,7 +373,7 @@ export const PreprintDetailPage: React.FC = () => {
       <div className="bg-white border border-gray-200 p-6">
         
         {/* 输入框顶部 */}
-        {MAINTENANCE_MODE ? (
+        {maintenance.comment ? (
           <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-sm text-amber-700">评论功能维护中，暂时关闭</div>
         ) : user?.id ? (
           <div className="mb-6">

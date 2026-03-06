@@ -1,7 +1,7 @@
-import React from 'react';
+import { React, useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { MAINTENANCE_MODE } from '../lib/maintenanceConfig';
+import { API } from '../lib/api';
 import { MaintenanceAnnouncement } from './submit/MaintenanceAnnouncement';
 import { SubmissionForm } from './submit/SubmissionForm';
 import { SubmissionGuidelines } from '../components/sidebar/SubmissionGuidelines';
@@ -11,8 +11,42 @@ import { COPEMember } from '../components/sidebar/COPEMember';
 export const SubmitPage: React.FC = () => {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const [maintenance, setMaintenance] = useState({
+    registration: false,
+    comment: false,
+    submit: false
+  });
+  const [maintLoading, setMaintLoading] = useState(true);
 
-  if (MAINTENANCE_MODE) {
+  useEffect(() => {
+    const checkMaintenance = async () => {
+      try {
+        const res = await API.maintainance.getList();
+        if (res) {
+          setMaintenance({
+            registration: res.registration,
+            comment: res.comment,
+            submit: res.submit
+          });
+        }
+      } catch (error) {
+        console.error("无法获取维护状态", error);
+      } finally {
+        setMaintLoading(false);
+      }
+    };
+    checkMaintenance();
+  }, []);
+
+  if (loading || maintLoading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse" />
+      </div>
+    );
+  }
+
+  if (maintenance.submit) {
     return (
       <div className="max-w-5xl mx-auto px-4 lg:px-8 py-12">
         <MaintenanceAnnouncement />
