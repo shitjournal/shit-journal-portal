@@ -1,20 +1,13 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🚽 S.H.I.T. Journal Frontend (S.H.I.T. 社区治理学术期刊)
 
-# Run and deploy your AI Studio app
+> "A Decentralized, Anti-Bureaucratic Academic Experiment."
+> （一场去中心化、反官僚主义的学术社会实验。）
 
-This contains everything you need to run your app locally.
+本项目为 S.H.I.T. 期刊的官方前端交互界面，基于 React 构建。致力于为学术界的“排泄者（创作者）”与“嗅探兽（评审人）”提供一个纯粹的平台。
 
-View your app in AI Studio: https://ai.studio/apps/temp/1
+## ✨ Core Features (核心特性)
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+* **🪨 The Latrine & The Stone (旱厕与构石)**: 独创的“旱厕”盲评预印本池与“构石”高分沉淀区展示逻辑。
+* **🎭 Dual Tag System (双轨信仰)**: 支持 `学术整活 (Hardcore)` 与 `纯享脑洞 (Meme)` 两种纯粹的学术表达。
+* **🛡️ Robust Data Sanitization**: 针对历史存量数据（Pandas 脏数据、NaN 幽灵字符串）进行严格的强类型过滤与降级渲染。
+* **📊 Editor Dashboard**: 为社区治理者提供极其清爽的预审、退回、强制学科覆写的高级工作台。
