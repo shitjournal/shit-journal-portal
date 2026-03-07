@@ -14,4 +14,6 @@
 
 ## 📘 Frontend Docs
 
-运行方式、Mock API 与真实接口切换、以及本地调试账号说明见 [`FRONTEND_DEVELOPMENT.md`](/Users/bukolosier/Desktop/github/shit-journal-portal/FRONTEND_DEVELOPMENT.md)。
+运行方式、Mock API 与真实接口切换、以及本地调试账号说明见 [`doc/FRONTEND_DEVELOPMENT.md`](/Users/bukolosier/Desktop/github/shit-journal-portal/doc/FRONTEND_DEVELOPMENT.md)。
+
+前端单元测试、组件测试、`Vitest + React Testing Library + user-event + MSW`、以及 `Cypress Component Testing` 的说明见 [`doc/FRONTEND_TESTING.md`](/Users/bukolosier/Desktop/github/shit-journal-portal/doc/FRONTEND_TESTING.md)。
