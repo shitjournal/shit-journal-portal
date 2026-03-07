@@ -1,10 +1,10 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { API } from '../lib/api';
 import { MaintenanceAnnouncement } from './submit/MaintenanceAnnouncement';
 import { SubmissionForm } from './submit/SubmissionForm';
-import { SubmissionGuidelines } from '../components/sidebar/SubmissionGuidelines';
+import { SubmissionGuidelinesComponent } from '../components/sidebar/SubmissionGuidelines';
 import { JournalMetrics } from '../components/sidebar/JournalMetrics';
 import { COPEMember } from '../components/sidebar/COPEMember';
 
@@ -26,8 +26,9 @@ export const SubmitPage: React.FC = () => {
         if (res) {
           setMaintenance({
             registration: res.registration,
-            comment: res.comment,
-            submit: res.submit
+            comment_send: res.comment_send,
+            submit: res.submit,
+            comment_show: res.comment_show,
           });
         }
       } catch (error) {
@@ -74,7 +75,7 @@ export const SubmitPage: React.FC = () => {
           <SubmissionForm />
         </div>
         <aside className="space-y-8">
-          <SubmissionGuidelines />
+          <SubmissionGuidelinesComponent />
           <JournalMetrics compact />
           <COPEMember />
         </aside>
