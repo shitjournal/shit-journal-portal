@@ -259,7 +259,7 @@ export const PreprintDetailPage: React.FC = () => {
   const coAuthors = Array.isArray(preprint.co_authors) ? preprint.co_authors : [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 lg:px-8 py-12">
+    <div className="max-w-4xl mx-auto px-2 lg:px-8 py-6">
       <button onClick={() => navigate(-1)} className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-accent-gold mb-8">← Back</button>
 
       {/* 管理员操作 */}
