@@ -58,20 +58,27 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }>
     >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <div className="mb-2 flex items-start gap-2.5">
             {isStone && (
-              <span className="text-lg" title="构石 / The Stone">🪨</span>
+              <span className="mt-0.5 shrink-0 text-lg" title="构石 / The Stone">🪨</span>
             )}
-            <h4 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors leading-tight">
-              {displayTitle}
-            </h4>
-            
-            {/* 🔥 绝对不会再出现黄橙色的 NaN 框框了 */}
-            {displayTopic && (
-              <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-300 whitespace-nowrap shrink-0">
-                {displayTopic}
-              </span>
-            )}
+
+            <div className="min-w-0 flex-1">
+              <h4
+                className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors leading-snug line-clamp-2 [overflow-wrap:anywhere]"
+              >
+                {displayTitle}
+              </h4>
+
+              {/* 🔥 绝对不会再出现黄橙色的 NaN 框框了 */}
+              {displayTopic && (
+                <div className="mt-2">
+                  <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-300 whitespace-nowrap">
+                    {displayTopic}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
           
           <p className="text-sm text-charcoal-light mb-1">

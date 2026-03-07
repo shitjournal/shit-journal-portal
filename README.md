@@ -11,3 +11,9 @@
 * **🎭 Dual Tag System (双轨信仰)**: 支持 `学术整活 (Hardcore)` 与 `纯享脑洞 (Meme)` 两种纯粹的学术表达。
 * **🛡️ Robust Data Sanitization**: 针对历史存量数据（Pandas 脏数据、NaN 幽灵字符串）进行严格的强类型过滤与降级渲染。
 * **📊 Editor Dashboard**: 为社区治理者提供极其清爽的预审、退回、强制学科覆写的高级工作台。
+
+## 📘 Frontend Docs
+
+运行方式、Mock API 与真实接口切换、以及本地调试账号说明见 [`doc/FRONTEND_DEVELOPMENT.md`](./doc/FRONTEND_DEVELOPMENT.md)。
+
+前端单元测试、组件测试、`Vitest + React Testing Library + user-event + MSW`、以及 `Cypress Component Testing` 的说明见 [`doc/FRONTEND_TESTING.md`](./doc/FRONTEND_TESTING.md)。

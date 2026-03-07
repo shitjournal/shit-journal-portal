@@ -9,8 +9,27 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+
+async function enableMocking() {
+  if (!import.meta.env.DEV) return;
+  if (import.meta.env.VITE_ENABLE_MSW !== 'true') return;
+
+  const { worker } = await import('./mocks/browser');
+  await worker.start({
+    onUnhandledRequest: 'bypass',
+    serviceWorker: {
+      url: '/mockServiceWorker.js',
+    },
+  });
+}
+
+async function bootstrap() {
+  await enableMocking();
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}
+
+void bootstrap();

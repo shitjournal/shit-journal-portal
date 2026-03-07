@@ -1,6 +1,6 @@
 // src/lib/api.ts
 
-const BASE_URL = 'https://api.shitjournal.org'; 
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || 'https://api.shitjournal.org';
 
 /**
  * 核心拦截器：所有请求都要经过这个管道
@@ -19,7 +19,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers,
   });
