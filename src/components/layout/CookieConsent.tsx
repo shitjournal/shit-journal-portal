@@ -1,18 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useId, useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 export const CookieConsent: React.FC = () => {
+  const location = useLocation();
+  const consentCheckboxId = useId();
   const [isVisible, setIsVisible] = useState(false);
   const [hasAgreed, setHasAgreed] = useState(false);
+  const [isConsentTextHovered, setIsConsentTextHovered] = useState(false);
+  const isLegalPage = location.pathname === '/terms' || location.pathname === '/privacy';
 
   useEffect(() => {
+    if (isLegalPage) {
+      setIsVisible(false);
+      document.body.style.overflow = 'unset';
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }
+
     const consent = localStorage.getItem('shit_journal_consent');
     if (!consent) {
       setIsVisible(true);
       // 🔒 强制锁死底层页面的滚动，逼迫用户必须处理这个弹窗
       document.body.style.overflow = 'hidden';
+    } else {
+      setIsVisible(false);
+      document.body.style.overflow = 'unset';
     }
-  }, []);
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isLegalPage]);
 
   const handleAccept = () => {
     if (!hasAgreed) return;
@@ -22,7 +41,7 @@ export const CookieConsent: React.FC = () => {
     document.body.style.overflow = 'unset';
   };
 
-  if (!isVisible) return null;
+  if (isLegalPage || !isVisible) return null;
 
   return (
     // 🌑 全屏遮罩 + 深度模糊，彻底阻断背景交互
@@ -61,25 +80,57 @@ export const CookieConsent: React.FC = () => {
 
         {/* ⚠️ 强制交互区 */}
         <div className="flex flex-col gap-6">
-          <label className="flex items-start gap-3 cursor-pointer group">
+          <div className="flex items-start gap-3">
             <div className="pt-0.5">
               <input 
+                id={consentCheckboxId}
                 type="checkbox" 
                 checked={hasAgreed}
                 onChange={(e) => setHasAgreed(e.target.checked)}
                 className="w-5 h-5 accent-accent-gold cursor-pointer"
               />
             </div>
-            <div className="text-sm text-charcoal font-bold group-hover:text-accent-gold transition-colors select-none">
-              我已年满 18 周岁，并已仔细阅读且同意遵守本平台的 
-              <Link to="/terms" target="_blank" className="text-accent-gold underline mx-1">《用户协议》</Link> 
-              与 
-              <Link to="/privacy" target="_blank" className="text-accent-gold underline mx-1">《隐私政策》</Link>。
-              <span className="block text-xs text-gray-400 font-normal mt-1">
+            <div className="text-sm text-charcoal font-bold transition-colors">
+              <label
+                htmlFor={consentCheckboxId}
+                onMouseEnter={() => setIsConsentTextHovered(true)}
+                onMouseLeave={() => setIsConsentTextHovered(false)}
+                className={`cursor-pointer select-none ${isConsentTextHovered ? 'text-accent-gold' : ''}`}
+              >
+                我已年满 18 周岁，并已仔细阅读且同意遵守本平台的
+              </label>
+              <Link to="/terms" target="_blank" rel="noreferrer" className="text-accent-gold underline mx-1">
+                《用户协议》
+              </Link>
+              <label
+                htmlFor={consentCheckboxId}
+                onMouseEnter={() => setIsConsentTextHovered(true)}
+                onMouseLeave={() => setIsConsentTextHovered(false)}
+                className={`cursor-pointer select-none ${isConsentTextHovered ? 'text-accent-gold' : ''}`}
+              >
+                与
+              </label>
+              <Link to="/privacy" target="_blank" rel="noreferrer" className="text-accent-gold underline mx-1">
+                《隐私政策》
+              </Link>
+              <label
+                htmlFor={consentCheckboxId}
+                onMouseEnter={() => setIsConsentTextHovered(true)}
+                onMouseLeave={() => setIsConsentTextHovered(false)}
+                className={`cursor-pointer select-none ${isConsentTextHovered ? 'text-accent-gold' : ''}`}
+              >
+                。
+              </label>
+              <label
+                htmlFor={consentCheckboxId}
+                onMouseEnter={() => setIsConsentTextHovered(true)}
+                onMouseLeave={() => setIsConsentTextHovered(false)}
+                className={`block cursor-pointer select-none text-xs font-normal mt-1 ${isConsentTextHovered ? 'text-accent-gold' : 'text-gray-400'}`}
+              >
                 I am over 18 and agree to the Terms of Service and Privacy Policy.
-              </span>
+              </label>
             </div>
-          </label>
+          </div>
 
           <button
             onClick={handleAccept}

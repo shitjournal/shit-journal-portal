@@ -34,6 +34,7 @@ describe('PreprintCard', () => {
 
     expect(title.className).toContain('line-clamp-2');
     expect(title.className).toContain('[overflow-wrap:anywhere]');
+    expect(title).toHaveAttribute('title', longTitle);
     expect(topic.parentElement?.previousElementSibling).toBe(title);
     expect(screen.getByTitle('构石 / The Stone')).toBeInTheDocument();
     expect(screen.getByText(/4\.82 \/ 5/)).toBeInTheDocument();
@@ -68,6 +69,7 @@ describe('PreprintCard', () => {
 
     expect(title.className).toContain('line-clamp-2');
     expect(title.className).toContain('[overflow-wrap:anywhere]');
+    expect(title).toHaveAttribute('title', longUnbrokenTitle);
     expect(screen.getByText('评价进度 / Progress')).toBeInTheDocument();
     expect(screen.getByText('12 / 30')).toBeInTheDocument();
   });
