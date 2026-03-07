@@ -26,8 +26,8 @@ export const Footer: React.FC = () => (
         <div className="lg:col-span-3">
           <h5 className="text-[11px] font-bold uppercase tracking-widest text-white mb-6 border-b border-gray-800 pb-2">Guidelines / 指南</h5>
           <ul className="space-y-4 font-serif text-gray-400 text-sm">
-            <li><a className="hover:text-white transition-colors" href="#">Submission Ethics / 投稿伦理</a></li>
-            <li><a className="hover:text-white transition-colors" href="#">Scooper Review / 铲屎官评审</a></li>
+            <li><a className="hover:text-white transition-colors" href="/submission-guidelines">Submission Guidelines / 投稿准则</a></li>
+            <li><a className="hover:text-white transition-colors" href="/daily-recruitment-guidelines">Daily Recruitment Guidelines / 每日录用准则</a></li>
             <li><a className="hover:text-white transition-colors" href="#">Open Stink / 开放嗅探</a></li>
           </ul>
         </div>

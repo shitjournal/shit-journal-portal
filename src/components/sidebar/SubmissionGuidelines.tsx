@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const SubmissionGuidelines: React.FC = () => (
+export const SubmissionGuidelinesComponent: React.FC = () => (
   <div className="bg-white border border-gray-200 p-6">
     <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 border-b border-gray-100 pb-2">Submission Guidelines / 投稿指南</h3>
     <div className="space-y-4">
