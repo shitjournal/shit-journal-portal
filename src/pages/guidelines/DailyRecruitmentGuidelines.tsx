@@ -64,7 +64,7 @@ export const DailyRecruitmentGuidelines: React.FC = () => {
           </h2>
           <div className="pl-4 space-y-4 text-gray-700 border-l-2 border-gray-100">
             <p>
-              <span className="font-bold text-charcoal">3.1 审核准入制：</span> 本刊每日仅接收当日投稿队列中的 <span className="font-mono font-bold text-accent-gold">前 [数量] 篇</span> 进入审核流程与当日候选池。
+              <span className="font-bold text-charcoal">3.1 审核准入制：</span> 本刊每日仅接收当日投稿队列中的 <span className="font-mono font-bold text-accent-gold">前 500 篇</span> 进入审核流程与当日候选池。
             </p>
             <p>
               <span className="font-bold text-charcoal">3.2 熔断机制：</span> 超过当日名额的投稿将无法成功上传。作者需待系统于次日重新开放后再次尝试。
