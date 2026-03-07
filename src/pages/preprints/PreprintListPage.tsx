@@ -40,11 +40,11 @@ const DISCIPLINES = [
 
 // Tiered cache TTL (ms) based on sort mode
 const CACHE_TTL: Record<string, number> = {
-  highest_rated: 30 * 1000,
-  most_rated: 30 * 1000,
-  newest: 30 * 1000,
-  hottest: 30 * 1000,
-  latrine: 30 * 1000,
+  highest_rated: 60 * 1000,
+  most_rated: 60 * 1000,
+  newest: 60 * 1000,
+  hottest: 60 * 1000,
+  latrine: 60 * 1000,
 };
 
 export const PreprintListPage: React.FC = () => {
