@@ -138,7 +138,7 @@ export const PreprintListPage: React.FC = () => {
   // 🔥 下面的 UI 渲染部分一字不差全部保留！这就是前后端解耦的魅力！
   // ---------------------------------------------------------
   return (
-    <div className="max-w-4xl mx-auto px-4 lg:px-8 py-12">
+    <div className="max-w-4xl mx-auto px-2 lg:px-8 py-6">
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-3xl font-serif font-bold mb-1">
@@ -197,7 +197,7 @@ export const PreprintListPage: React.FC = () => {
         <select
           value={discipline}
           onChange={e => setParam('discipline', e.target.value)}
-          className="border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:border-accent-gold bg-white cursor-pointer"
+          className="border border-gray-300 px-1 py-[6px] md:px-3 md:py-1.5 text-sm focus:outline-none focus:border-accent-gold bg-white cursor-pointer"
         >
           {DISCIPLINES.map(d => (
             <option key={d.value} value={d.value}>{d.cn} / {d.en}</option>
@@ -213,7 +213,7 @@ export const PreprintListPage: React.FC = () => {
             <button
               key={opt.value}
               onClick={() => setParam('sort', opt.value)}
-              className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border transition-colors cursor-pointer ${
+              className={`px-1 py-[6px] md:px-3 md:py-1.5 text-[10px] font-bold uppercase tracking-widest border transition-colors cursor-pointer ${
                 sort === opt.value
                   ? 'border-accent-gold text-accent-gold bg-yellow-50'
                   : 'border-gray-300 text-gray-400 hover:border-accent-gold hover:text-accent-gold'

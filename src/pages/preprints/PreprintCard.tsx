@@ -65,6 +65,7 @@ export const PreprintCard: React.FC<{ preprint: PreprintCardProps; zone: Zone }>
 
             <div className="min-w-0 flex-1">
               <h4
+                title={displayTitle}
                 className="font-serif font-bold text-lg text-charcoal group-hover:text-accent-gold transition-colors leading-snug line-clamp-2 [overflow-wrap:anywhere]"
               >
                 {displayTitle}
