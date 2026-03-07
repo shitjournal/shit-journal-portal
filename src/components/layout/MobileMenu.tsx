@@ -16,21 +16,10 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     comment_show: false,
   });
 
+  // 🛡️ 拆弹方案 1：全局维护状态，【绝对的空数组】，保证整个生命周期只查 1 次！
   useEffect(() => {
-    // 📡 并行获取通知数和维护状态
-    const fetchData = async () => {
-      try {
-        const requests: Promise<any>[] = [
-          API.maintainance.getList().catch(() => null)
-        ];
-        
-        if (user) {
-          requests.push(API.notifications.getList(1, 50).catch(() => null));
-        }
-
-        const [maintData, notifyData] = await Promise.all(requests);
-
-        // 处理维护状态
+    API.maintainance.getList()
+      .then(maintData => {
         if (maintData) {
           setMaintenance({
             registration: maintData.registration,
@@ -38,19 +27,24 @@ export const MobileMenu: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             submit: maintData.submit
           });
         }
+      })
+      .catch(err => console.error("获取维护状态失败:", err));
+  }, []); // 👈 空数组：天王老子来了它也只执行一次！
 
-        // 处理未读通知
+  // 🛡️ 拆弹方案 2：个人通知，依赖项精确到 【user?.id】（字符串）！
+  useEffect(() => {
+    // 如果没有用户 id，直接拦截，不发请求
+    if (!user?.id) return;
+
+    API.notifications.getList(1, 50)
+      .then(notifyData => {
         if (notifyData) {
           const count = notifyData.unread_count ?? (notifyData.data?.filter((n: any) => !n.is_read)?.length || 0);
           setUnreadCount(count);
         }
-      } catch (error) {
-        console.error("加载菜单数据失败:", error);
-      }
-    };
-
-    fetchData();
-  }, [user]);
+      })
+      .catch(err => console.error("获取通知失败:", err));
+  }, [user?.id]); // 👈 核心机密：只监听 id 字符串的变化！
   
   const navigate = useNavigate();
   const editorAccess = checkIsEditor(profile?.role);

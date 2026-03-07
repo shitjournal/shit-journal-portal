@@ -10,8 +10,8 @@ export const TopUtilityBar: React.FC = () => {
   const [registrationEnabled, setRegistrationEnabled] = useState(true);
 
   useEffect(() => {
-    // 如果用户已经登录，就没必要查注册开关了
-    if (user) return;
+    // 🛡️ 防御式编程：通过 user?.id 判断是否登录，而不是整个 user 对象
+    if (user?.id) return;
 
     const checkMaintenance = async () => {
       try {
@@ -27,7 +27,7 @@ export const TopUtilityBar: React.FC = () => {
       }
     };
     checkMaintenance();
-  }, [user]);
+  }, [user?.id]); // 👈 核心机密：将依赖项从 [user] 改为 [user?.id]
 
   const handleSignOut = async () => {
     await signOut();
