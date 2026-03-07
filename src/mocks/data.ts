@@ -98,6 +98,8 @@ const isoFromNow = (daysAgo: number, hourOffset = 0) => {
   return value.toISOString();
 };
 
+const LOCAL_DAIYU_PDF_PATH = '/探究林黛玉的真实武力值以及她长期被树立为弱不禁风形象的深层原因——由一系列网络meme视频所触发的思考.pdf';
+
 export const DEMO_ACCOUNTS = [
   { email: 'bukolosier@gmail.com', password: 'mock123456', role: 'super_admin', label: 'Super Admin' },
   { email: 'editor@shitjournal.org', password: 'mock123456', role: 'editor', label: 'Editor' },
@@ -275,6 +277,31 @@ const articles: MockArticle[] = [
     file_path: '/mock-manuscript.pdf',
     file_name: 'over-flushing.pdf',
     file_size_bytes: 166512,
+  },
+  {
+    id: 'art-daiyu-1',
+    title: '探究林黛玉的真实武力值以及她长期被树立为弱不禁风形象的深层原因',
+    manuscript_title: '探究林黛玉的真实武力值以及她长期被树立为弱不禁风形象的深层原因——由一系列网络meme视频所触发的思考',
+    tag: 'meme',
+    discipline: 'humanities',
+    status: 'passed',
+    created_at: isoFromNow(3, 4),
+    topic: '红楼梦 meme 研究',
+    avg_score: 4.48,
+    weighted_score: 4.36,
+    rating_count: 34,
+    co_authors: [],
+    author: {
+      id: 'user-kl',
+      display_name: 'KL',
+      institution: 'Bowel Systems Lab',
+      social_media: '@bukolosier',
+      email: 'bukolosier@gmail.com',
+    },
+    pdf_url: LOCAL_DAIYU_PDF_PATH,
+    file_path: LOCAL_DAIYU_PDF_PATH,
+    file_name: '探究林黛玉的真实武力值以及她长期被树立为弱不禁风形象的深层原因——由一系列网络meme视频所触发的思考.pdf',
+    file_size_bytes: 851192,
   },
   {
     id: 'art-pending-1',

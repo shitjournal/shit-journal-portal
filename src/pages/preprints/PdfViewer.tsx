@@ -47,10 +47,11 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPath }) => {
   const [numPages, setNumPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 🔥 极简解析逻辑：如果是完整 URL 直接用，如果是纯文件名，自动拼上 CF 域名防呆！
+  // Root-relative paths are served from Vite/public in local mock mode.
   const pdfUrl = useMemo(() => {
     if (!pdfPath) return null;
     if (pdfPath.startsWith('http')) return pdfPath;
+    if (pdfPath.startsWith('/')) return pdfPath;
     return `https://files.shitjournal.org/${pdfPath}`;
   }, [pdfPath]);
 

@@ -3,6 +3,10 @@ import { createInitialMockDatabase, type MockArticle, type MockDatabase, type Mo
 
 let db = createInitialMockDatabase();
 
+export function resetMockDb() {
+  db = createInitialMockDatabase();
+}
+
 const MOCK_DELAY_MS = 120;
 
 const maintenanceConfig = {
