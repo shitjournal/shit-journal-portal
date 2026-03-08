@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 interface StickyHeaderProps {
   onToggleMenu: () => void;
+  onToggleSearch: () => void;
+  searchOpen: boolean;
   hasUnread: boolean;
 }
 
-export const StickyHeader: React.FC<StickyHeaderProps> = ({ onToggleMenu, hasUnread }) => {
+export const StickyHeader: React.FC<StickyHeaderProps> = ({ onToggleMenu, onToggleSearch, searchOpen, hasUnread }) => {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-black z-50 shadow-lg animate-slideDown">
@@ -26,7 +28,15 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ onToggleMenu, hasUnr
           </div>
         </Link>
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-white text-xl cursor-pointer hover:text-accent-gold transition-colors">search</span>
+          <button
+            type="button"
+            aria-label={searchOpen ? 'Close search panel' : 'Open search panel'}
+            aria-pressed={searchOpen}
+            onClick={onToggleSearch}
+            className="inline-flex cursor-pointer items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:text-accent-gold"
+          >
+            <span className="material-symbols-outlined text-xl">search</span>
+          </button>
           <a className="px-4 py-1.5 bg-science-red text-white text-[9px] font-bold uppercase tracking-widest rounded-sm hover:bg-red-700 transition-colors hidden sm:block" href="#">
             Member / 会员
           </a>

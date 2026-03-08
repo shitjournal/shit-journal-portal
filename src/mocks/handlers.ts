@@ -304,6 +304,47 @@ export const handlers = [
     return json({ total_count: totalCount });
   }),
 
+  http.get('*/api/search/article', async ({ request }) => {
+    await delay(MOCK_DELAY_MS);
+    const url = new URL(request.url);
+    const query = (url.searchParams.get('q') ?? '').trim().toLowerCase();
+    const type = (url.searchParams.get('type') ?? 'article').trim().toLowerCase();
+    const limit = Math.min(30, Number(url.searchParams.get('limit') ?? '10'));
+
+    if (query.length < 2) {
+      return json({ detail: 'Search term must be at least 2 characters' }, { status: 422 });
+    }
+
+    const matched = db.articles
+      .filter(article => article.status !== 'hidden' && article.status !== 'deleted')
+      .filter(article => {
+        const titleHit = article.title.toLowerCase().includes(query) || article.topic?.toLowerCase().includes(query);
+        const authorHit = article.author.display_name.toLowerCase().includes(query);
+
+        if (type === 'author') return authorHit;
+        return titleHit;
+      })
+      .sort((left, right) => right.created_at.localeCompare(left.created_at))
+      .slice(0, limit)
+      .map(article => ({
+        id: article.id,
+        title: article.title,
+        tag: article.tag,
+        zones: getZone(article),
+        status: article.status,
+        topic: article.topic,
+        discipline: article.discipline,
+        created_at: article.created_at,
+        rating_count: article.rating_count,
+        avg_score: article.avg_score,
+        weighted_score: article.weighted_score,
+        comment_count: commentCountForArticle(article.id),
+        author: article.author,
+      }));
+
+    return json({ status: 'success', data: matched });
+  }),
+
   http.get('*/api/articles/:articleId', async ({ params, request }) => {
     await delay(MOCK_DELAY_MS);
     const articleId = params.articleId as string;

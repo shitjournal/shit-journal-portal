@@ -1,4 +1,6 @@
 // src/lib/api.ts
+import type { SearchArticleItem, SearchScope } from './search';
+import { TAG_SEARCH_ALIASES, normalizeSearchKeyword } from './search';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || 'https://api.shitjournal.org';
 
@@ -46,6 +48,14 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   }
 
   return response.json();
+}
+
+function normalizeSearchItems(response: any): SearchArticleItem[] {
+  return response.data || response.items || [];
+}
+
+function dedupeSearchItems(items: SearchArticleItem[]) {
+  return items.filter((item, index, collection) => collection.findIndex(candidate => candidate.id === item.id) === index);
 }
 
 /**
@@ -258,6 +268,63 @@ export const API = {
       method: 'POST',
       body: JSON.stringify({ content }),
     })
+  },
+
+  search: {
+    articles: async (query: string, scope: SearchScope = 'anywhere', limit = 10) => {
+      const trimmed = query.trim();
+      if (!trimmed) return { data: [] };
+
+      const request = async (type: 'article' | 'author') => {
+        const params = new URLSearchParams({
+          q: trimmed,
+          type,
+          limit: String(limit),
+        });
+
+        const response = await fetchAPI(`/api/search/article?${params.toString()}`);
+        return normalizeSearchItems(response);
+      };
+
+      const collectByTag = async () => {
+        const zones = ['latrine', 'septic', 'stone', 'sediment'];
+        const responses = await Promise.all(
+          zones.map(zone => API.articles.getList(zone, 'newest', 'all', 1, 30)),
+        );
+        const normalizedQuery = normalizeSearchKeyword(trimmed);
+
+        return dedupeSearchItems(
+          responses
+            .flatMap(response => normalizeSearchItems(response))
+            .filter(item => {
+              const rawTag = String(item.tag || '').toLowerCase();
+              const aliases = TAG_SEARCH_ALIASES[rawTag] || [rawTag];
+              return aliases.some(alias => normalizeSearchKeyword(alias).includes(normalizedQuery));
+            }),
+        )
+          .sort((left, right) => right.created_at.localeCompare(left.created_at))
+          .slice(0, limit);
+      };
+
+      if (scope === 'tag') {
+        return { data: await collectByTag() };
+      }
+
+      if (scope === 'article' || scope === 'author') {
+        return { data: await request(scope) };
+      }
+
+      const [articleResults, authorResults] = await Promise.all([
+        request('article'),
+        request('author'),
+      ]);
+
+      const deduped = dedupeSearchItems([...articleResults, ...authorResults])
+        .sort((left, right) => right.created_at.localeCompare(left.created_at))
+        .slice(0, limit);
+
+      return { data: deduped };
+    },
   },
 
   admin: {

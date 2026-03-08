@@ -29,6 +29,7 @@ import { TermsOfService } from './pages/legal/TermsOfService';
 import { CookieConsent } from './components/layout/CookieConsent';
 import { SubmissionGuidelines } from './pages/guidelines/SubmissionGuidelines';
 import { DailyRecruitmentGuidelines } from './pages/guidelines/DailyRecruitmentGuidelines';
+import { SearchPage } from './pages/SearchPage';
 
 const App: React.FC = () => (
   <BrowserRouter>
@@ -56,6 +57,7 @@ const App: React.FC = () => (
           <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/submission-guidelines" element={<SubmissionGuidelines />} />
           <Route path="/daily-recruitment-guidelines" element={<DailyRecruitmentGuidelines />} />
           <Route path="*" element={<ComingSoon />} />

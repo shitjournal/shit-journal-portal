@@ -17,3 +17,4 @@
 运行方式、Mock API 与真实接口切换、以及本地调试账号说明见 [`doc/FRONTEND_DEVELOPMENT.md`](./doc/FRONTEND_DEVELOPMENT.md)。
 
 前端单元测试、组件测试、`Vitest + React Testing Library + user-event + MSW`、以及 `Cypress Component Testing` 的说明见 [`doc/FRONTEND_TESTING.md`](./doc/FRONTEND_TESTING.md)。
+拉取最新 OpenAPI、更新本地 [`openapi.json`](./openapi.json)、以及生成 Mock 覆盖文档的说明见 [`doc/MOCK_API_COVERAGE.md`](./doc/MOCK_API_COVERAGE.md)。

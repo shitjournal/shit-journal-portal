@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "sync:openapi": "node scripts/sync-openapi-and-generate-mock-docs.mjs",
     "test:unit": "vitest",
     "test:unit:run": "vitest run",
     "test:ct": "cypress open --component",

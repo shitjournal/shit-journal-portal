@@ -21,6 +21,17 @@ npm run build
 npm run preview
 ```
 
+同步线上 OpenAPI 并生成 mock 覆盖文档：
+
+```bash
+npm run sync:openapi
+```
+
+这个命令会：
+
+* 从 `https://api.shitjournal.org/openapi.json` 拉取最新接口定义并覆盖根目录 [`openapi.json`](/Users/bukolosier/Desktop/github/shit-journal-portal/openapi.json)
+* 基于 [`src/mocks/handlers.ts`](/Users/bukolosier/Desktop/github/shit-journal-portal/src/mocks/handlers.ts) 生成 mock 覆盖文档 [`doc/MOCK_API_COVERAGE.md`](/Users/bukolosier/Desktop/github/shit-journal-portal/doc/MOCK_API_COVERAGE.md)
+
 ## API Environment Switching
 
 本项目现在支持两种接口模式：

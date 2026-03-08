@@ -1,1744 +1,4277 @@
 {
-    "openapi": "3.1.0",
-    "info": {
-        "title": "S.H.I.T. Journal API",
-        "version": "2.0"
-    },
-    "paths": {
-        "/api/admin/articles/status": {
-            "get": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Get Pending Articles",
-                "operationId": "get_pending_articles_api_admin_articles_status_get",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "status",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "description": "状态",
-                            "default": "pending",
-                            "title": "Status"
-                        },
-                        "description": "状态"
-                    },
-                    {
-                        "name": "sort",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "description": "排序",
-                            "default": "newest",
-                            "title": "Sort"
-                        },
-                        "description": "排序"
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "default": 1,
-                            "title": "Page"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "maximum": 50,
-                            "default": 10,
-                            "title": "Limit"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/articles/{article_id}/review": {
-            "put": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Review Article",
-                "operationId": "review_article_api_admin_articles__article_id__review_put",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Article Id"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_review_article_api_admin_articles__article_id__review_put"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/articles/{article_id}": {
-            "delete": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Delete Article",
-                "operationId": "delete_article_api_admin_articles__article_id__delete",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Article Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/comments/{comment_id}": {
-            "delete": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Delete Comment",
-                "operationId": "delete_comment_api_admin_comments__comment_id__delete",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "comment_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Comment Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/users/{user_id}/role": {
-            "put": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Update User Role",
-                "operationId": "update_user_role_api_admin_users__user_id__role_put",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "User Id"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_update_user_role_api_admin_users__user_id__role_put"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/": {
-            "get": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Get All Feedback",
-                "operationId": "get_all_feedback_api_admin__get",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 1,
-                            "title": "Page"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 20,
-                            "title": "Limit"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/articles/": {
-            "get": {
-                "tags": [
-                    "Articles"
-                ],
-                "summary": "Get Articles",
-                "operationId": "get_articles_api_articles__get",
-                "parameters": [
-                    {
-                        "name": "zone",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "description": "分区",
-                            "default": "latrine",
-                            "title": "Zone"
-                        },
-                        "description": "分区"
-                    },
-                    {
-                        "name": "sort",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "description": "排序",
-                            "default": "newest",
-                            "title": "Sort"
-                        },
-                        "description": "排序"
-                    },
-                    {
-                        "name": "discipline",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "description": "学科过滤",
-                            "default": "all",
-                            "title": "Discipline"
-                        },
-                        "description": "学科过滤"
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "default": 1,
-                            "title": "Page"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "maximum": 50,
-                            "default": 10,
-                            "title": "Limit"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/articles/{article_id}": {
-            "get": {
-                "tags": [
-                    "Articles"
-                ],
-                "summary": "Get Article Detail",
-                "operationId": "get_article_detail_api_articles__article_id__get",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Article Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
+  "openapi": "3.1.0",
+  "info": {
+    "title": "S.H.I.T. Journal API",
+    "version": "2.0"
+  },
+  "paths": {
+    "/api/admin/articles/status": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "获取特定状态的文章列表",
+        "operationId": "get_pending_articles_api_admin_articles_status_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "状态",
+              "default": "pending",
+              "title": "Status"
             },
-            "delete": {
-                "tags": [
-                    "Articles"
-                ],
-                "summary": "Delete My Article",
-                "operationId": "delete_my_article_api_articles__article_id__delete",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Article Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/articles/upload": {
-            "post": {
-                "tags": [
-                    "Articles"
-                ],
-                "summary": "Upload Article",
-                "operationId": "upload_article_api_articles_upload_post",
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_upload_article_api_articles_upload_post"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/articles/{article_id}/info": {
-            "put": {
-                "tags": [
-                    "Articles"
-                ],
-                "summary": "Update Article Info",
-                "operationId": "update_article_info_api_articles__article_id__info_put",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Article Id"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_update_article_info_api_articles__article_id__info_put"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/articles/{article_id}/file": {
-            "put": {
-                "tags": [
-                    "Articles"
-                ],
-                "summary": "Reupload Article File",
-                "operationId": "reupload_article_file_api_articles__article_id__file_put",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "article_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Article Id"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_reupload_article_file_api_articles__article_id__file_put"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/send-code": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Send Code",
-                "operationId": "send_code_api_auth_send_code_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SendCodeRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/login": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Login",
-                "operationId": "login_api_auth_login_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LoginRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/register": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Register",
-                "operationId": "register_api_auth_register_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RegisterRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/forgot-password": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Forgot Password",
-                "operationId": "forgot_password_api_auth_forgot_password_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ResetPasswordRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/feedback/me": {
-            "get": {
-                "tags": [
-                    "Feedback"
-                ],
-                "summary": "Check My Feedback",
-                "operationId": "check_my_feedback_api_feedback_me_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/feedback/submit": {
-            "post": {
-                "tags": [
-                    "Feedback"
-                ],
-                "summary": "Submit Feedback",
-                "operationId": "submit_feedback_api_feedback_submit_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_submit_feedback_api_feedback_submit_post"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/interactions/rate": {
-            "post": {
-                "tags": [
-                    "Interactions"
-                ],
-                "summary": "Submit Rating",
-                "operationId": "submit_rating_api_interactions_rate_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RatingRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/interactions/comment": {
-            "post": {
-                "tags": [
-                    "Interactions"
-                ],
-                "summary": "Submit Comment",
-                "operationId": "submit_comment_api_interactions_comment_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CommentRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/interactions/comment/{comment_id}/like": {
-            "post": {
-                "tags": [
-                    "Interactions"
-                ],
-                "summary": "Toggle Comment Like",
-                "operationId": "toggle_comment_like_api_interactions_comment__comment_id__like_post",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "comment_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Comment Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notifications/": {
-            "get": {
-                "tags": [
-                    "Notifications"
-                ],
-                "summary": "Get My Notifications",
-                "operationId": "get_my_notifications_api_notifications__get",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 1,
-                            "title": "Page"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 20,
-                            "title": "Limit"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notifications/read-all": {
-            "put": {
-                "tags": [
-                    "Notifications"
-                ],
-                "summary": "Mark All As Read",
-                "operationId": "mark_all_as_read_api_notifications_read_all_put",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/notifications/{notif_id}/read": {
-            "put": {
-                "tags": [
-                    "Notifications"
-                ],
-                "summary": "Mark Single As Read",
-                "operationId": "mark_single_as_read_api_notifications__notif_id__read_put",
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "notif_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "title": "Notif Id"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/users/me": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get My Profile",
-                "operationId": "get_my_profile_api_users_me_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
+            "description": "状态"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序",
+              "default": "newest",
+              "title": "Sort"
             },
-            "put": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Update My Profile",
-                "operationId": "update_my_profile_api_users_me_put",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Body_update_my_profile_api_users_me_put"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
+            "description": "排序"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
             }
-        },
-        "/api/users/badges/batch": {
-            "post": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get Batch Badges",
-                "operationId": "get_batch_badges_api_users_badges_batch_post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BadgeBatchRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminArticleListResponse"
                 }
+              }
             }
-        },
-        "/api/users/me/articles": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get My Articles",
-                "operationId": "get_my_articles_api_users_me_articles_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearer": []
-                    }
-                ]
-            }
-        },
-        "/api/health": {
-            "get": {
-                "tags": [
-                    "System"
-                ],
-                "summary": "Health Check",
-                "operationId": "health_check_api_health_get",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
+              }
             }
+          }
         }
+      }
     },
-    "components": {
-        "schemas": {
-            "ArticleStatus": {
-                "type": "string",
-                "enum": [
-                    "待预审",
-                    "退回修改",
-                    "被退回",
-                    "被删除",
-                    "通过预审"
-                ],
-                "title": "ArticleStatus"
-            },
-            "ArticleTag": {
-                "type": "string",
-                "enum": [
-                    "学术整活",
-                    "纯享脑洞"
-                ],
-                "title": "ArticleTag"
-            },
-            "BadgeBatchRequest": {
-                "properties": {
-                    "user_ids": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array",
-                        "title": "User Ids"
-                    },
-                    "sniffer_threshold": {
-                        "type": "integer",
-                        "title": "Sniffer Threshold",
-                        "default": 5
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "user_ids"
-                ],
-                "title": "BadgeBatchRequest"
-            },
-            "Body_reupload_article_file_api_articles__article_id__file_put": {
-                "properties": {
-                    "file": {
-                        "type": "string",
-                        "contentMediaType": "application/octet-stream",
-                        "title": "File"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "file"
-                ],
-                "title": "Body_reupload_article_file_api_articles__article_id__file_put"
-            },
-            "Body_review_article_api_admin_articles__article_id__review_put": {
-                "properties": {
-                    "status": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/ArticleStatus"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "description": "变更工作流状态"
-                    },
-                    "suggestions": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Suggestions",
-                        "description": "给作者的审稿意见/退回理由"
-                    }
-                },
-                "type": "object",
-                "title": "Body_review_article_api_admin_articles__article_id__review_put"
-            },
-            "Body_submit_feedback_api_feedback_submit_post": {
-                "properties": {
-                    "content": {
-                        "type": "string",
-                        "maxLength": 1000,
-                        "title": "Content"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "content"
-                ],
-                "title": "Body_submit_feedback_api_feedback_submit_post"
-            },
-            "Body_update_article_info_api_articles__article_id__info_put": {
-                "properties": {
-                    "title": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Title"
-                    },
-                    "tag": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/ArticleTag"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "discipline": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Discipline"
-                    },
-                    "co_authors": {
-                        "anyOf": [
-                            {
-                                "items": {},
-                                "type": "array"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Co Authors"
-                    }
-                },
-                "type": "object",
-                "title": "Body_update_article_info_api_articles__article_id__info_put"
-            },
-            "Body_update_my_profile_api_users_me_put": {
-                "properties": {
-                    "display_name": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 20
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Display Name"
-                    },
-                    "avatar_url": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Avatar Url"
-                    }
-                },
-                "type": "object",
-                "title": "Body_update_my_profile_api_users_me_put"
-            },
-            "Body_update_user_role_api_admin_users__user_id__role_put": {
-                "properties": {
-                    "new_role": {
-                        "$ref": "#/components/schemas/UserRole"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "new_role"
-                ],
-                "title": "Body_update_user_role_api_admin_users__user_id__role_put"
-            },
-            "Body_upload_article_api_articles_upload_post": {
-                "properties": {
-                    "title": {
-                        "type": "string",
-                        "title": "Title"
-                    },
-                    "tag": {
-                        "$ref": "#/components/schemas/ArticleTag",
-                        "default": "学术整活"
-                    },
-                    "discipline": {
-                        "type": "string",
-                        "title": "Discipline",
-                        "default": "interdisciplinary"
-                    },
-                    "file": {
-                        "type": "string",
-                        "contentMediaType": "application/octet-stream",
-                        "title": "File"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "title",
-                    "file"
-                ],
-                "title": "Body_upload_article_api_articles_upload_post"
-            },
-            "CommentRequest": {
-                "properties": {
-                    "article_id": {
-                        "type": "string",
-                        "title": "Article Id"
-                    },
-                    "content": {
-                        "type": "string",
-                        "maxLength": 100,
-                        "title": "Content"
-                    },
-                    "parent_id": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Parent Id"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "article_id",
-                    "content"
-                ],
-                "title": "CommentRequest"
-            },
-            "HTTPValidationError": {
-                "properties": {
-                    "detail": {
-                        "items": {
-                            "$ref": "#/components/schemas/ValidationError"
-                        },
-                        "type": "array",
-                        "title": "Detail"
-                    }
-                },
-                "type": "object",
-                "title": "HTTPValidationError"
-            },
-            "LoginRequest": {
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "title": "Email"
-                    },
-                    "password": {
-                        "type": "string",
-                        "title": "Password"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "email",
-                    "password"
-                ],
-                "title": "LoginRequest"
-            },
-            "RatingRequest": {
-                "properties": {
-                    "article_id": {
-                        "type": "string",
-                        "title": "Article Id"
-                    },
-                    "score": {
-                        "type": "integer",
-                        "maximum": 5.0,
-                        "minimum": 1.0,
-                        "title": "Score"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "article_id",
-                    "score"
-                ],
-                "title": "RatingRequest"
-            },
-            "RegisterRequest": {
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "title": "Email"
-                    },
-                    "password": {
-                        "type": "string",
-                        "title": "Password"
-                    },
-                    "display_name": {
-                        "type": "string",
-                        "title": "Display Name"
-                    },
-                    "verification_code": {
-                        "type": "string",
-                        "title": "Verification Code"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "email",
-                    "password",
-                    "display_name",
-                    "verification_code"
-                ],
-                "title": "RegisterRequest"
-            },
-            "ResetPasswordRequest": {
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "title": "Email"
-                    },
-                    "new_password": {
-                        "type": "string",
-                        "title": "New Password"
-                    },
-                    "verification_code": {
-                        "type": "string",
-                        "title": "Verification Code"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "email",
-                    "new_password",
-                    "verification_code"
-                ],
-                "title": "ResetPasswordRequest"
-            },
-            "SendCodeRequest": {
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "title": "Email"
-                    },
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "register",
-                            "reset"
-                        ],
-                        "title": "Type",
-                        "default": "register"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "email"
-                ],
-                "title": "SendCodeRequest"
-            },
-            "UserRole": {
-                "type": "string",
-                "enum": [
-                    "author",
-                    "reviewer",
-                    "community_guard",
-                    "editor",
-                    "admin"
-                ],
-                "title": "UserRole"
-            },
-            "ValidationError": {
-                "properties": {
-                    "loc": {
-                        "items": {
-                            "anyOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
-                        },
-                        "type": "array",
-                        "title": "Location"
-                    },
-                    "msg": {
-                        "type": "string",
-                        "title": "Message"
-                    },
-                    "type": {
-                        "type": "string",
-                        "title": "Error Type"
-                    },
-                    "input": {
-                        "title": "Input"
-                    },
-                    "ctx": {
-                        "type": "object",
-                        "title": "Context"
-                    }
-                },
-                "type": "object",
-                "required": [
-                    "loc",
-                    "msg",
-                    "type"
-                ],
-                "title": "ValidationError"
+    "/api/admin/articles/{article_id}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "获取文章详细信息",
+        "operationId": "get_article_detail_api_admin_articles__article_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
             }
-        },
-        "securitySchemes": {
-            "OAuth2PasswordBearer": {
-                "type": "oauth2",
-                "flows": {
-                    "password": {
-                        "scopes": {},
-                        "tokenUrl": "/api/auth/login"
-                    }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminArticleDetailResponse"
                 }
+              }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
         }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "删除(隐藏)文章",
+        "operationId": "delete_article_api_admin_articles__article_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/articles/{article_id}/review": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "审核文章并更改状态",
+        "operationId": "edit_article_api_admin_articles__article_id__review_put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_edit_article_api_admin_articles__article_id__review_put"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/comments/{comment_id}": {
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "屏蔽违规评论",
+        "operationId": "delete_comment_api_admin_comments__comment_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Comment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{user_id}/role": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "修改用户权限角色",
+        "operationId": "update_user_role_api_admin_users__user_id__role_put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_update_user_role_api_admin_users__user_id__role_put"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "获取用户反馈列表",
+        "operationId": "get_all_feedback_api_admin__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminFeedbackListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/comments": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "后台查看/管理评论池",
+        "operationId": "get_admin_comments_api_admin_comments_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "评论状态: active/deleted/hidden",
+              "default": "hidden",
+              "title": "Status"
+            },
+            "description": "评论状态: active/deleted/hidden"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCommentListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "查看所有注册用户",
+        "operationId": "list_users_api_admin_users_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "搜索邮箱或昵称",
+              "title": "Search"
+            },
+            "description": "搜索邮箱或昵称"
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "按角色过滤",
+              "title": "Role"
+            },
+            "description": "按角色过滤"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles/count": {
+      "get": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "获取文章总数",
+        "operationId": "get_total_article_count_api_articles_count_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles/": {
+      "get": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "分页获取分区文章列表",
+        "operationId": "get_articles_api_articles__get",
+        "parameters": [
+          {
+            "name": "zone",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "分区",
+              "default": "latrine",
+              "title": "Zone"
+            },
+            "description": "分区"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "排序",
+              "default": "newest",
+              "title": "Sort"
+            },
+            "description": "排序"
+          },
+          {
+            "name": "discipline",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "学科过滤",
+              "default": "all",
+              "title": "Discipline"
+            },
+            "description": "学科过滤"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicArticleListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles/{article_id}": {
+      "get": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "获取单个文章详情与评论",
+        "operationId": "get_article_detail_api_articles__article_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicArticleDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "作者软删除文章",
+        "operationId": "delete_my_article_api_articles__article_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles/upload": {
+      "post": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "上传新文章PDF",
+        "operationId": "upload_article_api_articles_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_article_api_articles_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/articles/{article_id}/info": {
+      "put": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "修改文章信息（仅限打回修改状态）",
+        "operationId": "update_article_info_api_articles__article_id__info_put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_update_article_info_api_articles__article_id__info_put"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles/{article_id}/file": {
+      "put": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "重新上传文章PDF",
+        "operationId": "reupload_article_file_api_articles__article_id__file_put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_reupload_article_file_api_articles__article_id__file_put"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/articles/{article_id}/report": {
+      "post": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "举报违规文章",
+        "operationId": "report_article_api_articles__article_id__report_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "article_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Article Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/send-code": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "发送邮箱验证码",
+        "description": "支持注册(register)和找回密码(reset)两种类型，有 60 秒冷却限制。",
+        "operationId": "send_code_api_auth_send_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "用户登录获取 Token",
+        "description": "验证邮箱密码，成功后返回 JWT Token 及用户基本信息。",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "用户注册",
+        "description": "需要先调用发送验证码接口获取 code。完成注册后默认权限为 author。",
+        "operationId": "register_api_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "忘记/重置密码",
+        "description": "通过邮箱验证码重置新密码。",
+        "operationId": "forgot_password_api_auth_forgot_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/feedback/me": {
+      "get": {
+        "tags": [
+          "Feedback"
+        ],
+        "summary": "检查当前用户是否已提交反馈",
+        "description": "由于每个用户只能提交一次反馈，前端在渲染输入框前可先调此接口判断。",
+        "operationId": "check_my_feedback_api_feedback_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackMeResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/feedback/submit": {
+      "post": {
+        "tags": [
+          "Feedback"
+        ],
+        "summary": "提交用户反馈",
+        "description": "用户提交意见反馈，会自动进行 XSS 净化。每个用户限提交一次。",
+        "operationId": "submit_feedback_api_feedback_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackSubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/interactions/rate": {
+      "post": {
+        "tags": [
+          "Interactions"
+        ],
+        "summary": "文章打分",
+        "description": "为文章打分（1-5分），一人只能打一次，自动触发防刷和升降级机制。",
+        "operationId": "submit_rating_api_interactions_rate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/interactions/comment": {
+      "post": {
+        "tags": [
+          "Interactions"
+        ],
+        "summary": "发表评论",
+        "description": "在文章下发表评论，支持楼层回复。带维护模式拦截和 XSS 过滤。",
+        "operationId": "submit_comment_api_interactions_comment_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentSubmitResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/interactions/comment/{comment_id}/like": {
+      "post": {
+        "tags": [
+          "Interactions"
+        ],
+        "summary": "评论点赞/取消点赞",
+        "description": "Toggle 逻辑，第一次调是点赞，再调一次是取消点赞。",
+        "operationId": "toggle_comment_like_api_interactions_comment__comment_id__like_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Comment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentLikeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/interactions/comments/{comment_id}": {
+      "delete": {
+        "tags": [
+          "Interactions"
+        ],
+        "summary": "删除评论",
+        "description": "作者自行删除评论（软删除）。",
+        "operationId": "delete_comment_api_interactions_comments__comment_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Comment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/interactions/comments/{comment_id}/report": {
+      "post": {
+        "tags": [
+          "Interactions"
+        ],
+        "summary": "举报评论",
+        "description": "实名举报恶意评论，达到阈值自动隐藏。",
+        "operationId": "report_comment_api_interactions_comments__comment_id__report_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Comment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/maintainance/": {
+      "get": {
+        "tags": [
+          "Maintainance"
+        ],
+        "summary": "获取系统维护状态",
+        "description": "前端在初始化应用时调用，用于决定是否显示注册按钮、评论框等。",
+        "operationId": "get_total_article_count_api_maintainance__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "获取我的通知列表",
+        "operationId": "get_my_notifications_api_notifications__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/read-all": {
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "全部标记为已读",
+        "operationId": "mark_all_as_read_api_notifications_read_all_put",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/notifications/{notif_id}/read": {
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "单条标记为已读",
+        "operationId": "mark_single_as_read_api_notifications__notif_id__read_put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "notif_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Notif Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/unread-count": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "获取未读消息总数",
+        "operationId": "get_unread_count_api_notifications_unread_count_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/search/article": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "全局综合搜索",
+        "description": "支持按文章标题(article)或作者昵称(author)进行模糊搜索，默认按时间倒序。",
+        "operationId": "global_search_api_search_article_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 50,
+              "description": "搜索关键字",
+              "title": "Q"
+            },
+            "description": "搜索关键字"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(article|author)$",
+              "default": "article",
+              "title": "Type"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 30,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "获取当前登录用户资料与徽章",
+        "operationId": "get_my_profile_api_users_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyProfileResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "修改个人资料",
+        "operationId": "update_my_profile_api_users_me_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_update_my_profile_api_users_me_put"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/users/badges/batch": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "批量查询用户徽章状态",
+        "operationId": "get_batch_badges_api_users_badges_batch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BadgeBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadgeBatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/me/articles": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "获取我投稿的所有文章",
+        "operationId": "get_my_articles_api_users_me_articles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyArticlesResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health Check",
+        "operationId": "health_check_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
     }
+  },
+  "components": {
+    "schemas": {
+      "AdminArticleAuthor": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "作者UUID"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "作者昵称"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "作者邮箱"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "email"
+        ],
+        "title": "AdminArticleAuthor"
+      },
+      "AdminArticleDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "文章UUID"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "文章标题"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name",
+            "description": "文件名"
+          },
+          "pdf_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pdf Url",
+            "description": "PDF下载链接"
+          },
+          "tag": {
+            "type": "string",
+            "title": "Tag",
+            "description": "分类"
+          },
+          "zones": {
+            "type": "string",
+            "title": "Zones",
+            "description": "分区"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态"
+          },
+          "discipline": {
+            "type": "string",
+            "title": "Discipline",
+            "description": "学科领域"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic",
+            "description": "主题"
+          },
+          "co_authors": {
+            "items": {},
+            "type": "array",
+            "title": "Co Authors",
+            "description": "共同作者列表",
+            "default": []
+          },
+          "suggestions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggestions",
+            "description": "给作者的审稿意见"
+          },
+          "rating_count": {
+            "type": "integer",
+            "title": "Rating Count",
+            "description": "打分人数",
+            "default": 0
+          },
+          "avg_score": {
+            "type": "number",
+            "title": "Avg Score",
+            "description": "平均分",
+            "default": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "发布时间"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AdminArticleDetailAuthor"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "作者详细信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "file_name",
+          "tag",
+          "zones",
+          "status",
+          "discipline",
+          "created_at"
+        ],
+        "title": "AdminArticleDetail"
+      },
+      "AdminArticleDetailAuthor": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "作者UUID"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "作者昵称"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "作者邮箱"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "头像"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution",
+            "description": "所属机构"
+          },
+          "social_media": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Media",
+            "description": "社交媒体链接"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "email"
+        ],
+        "title": "AdminArticleDetailAuthor"
+      },
+      "AdminArticleDetailResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "article": {
+            "$ref": "#/components/schemas/AdminArticleDetail",
+            "description": "文章详细数据"
+          }
+        },
+        "type": "object",
+        "required": [
+          "article"
+        ],
+        "title": "AdminArticleDetailResponse"
+      },
+      "AdminArticleListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "文章UUID"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "文章标题"
+          },
+          "tag": {
+            "type": "string",
+            "title": "Tag",
+            "description": "文章分类"
+          },
+          "zones": {
+            "type": "string",
+            "title": "Zones",
+            "description": "所属分区"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "当前状态"
+          },
+          "discipline": {
+            "type": "string",
+            "title": "Discipline",
+            "description": "学科领域"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic",
+            "description": "主题"
+          },
+          "co_authors": {
+            "items": {},
+            "type": "array",
+            "title": "Co Authors",
+            "description": "共同作者列表",
+            "default": []
+          },
+          "rating_count": {
+            "type": "integer",
+            "title": "Rating Count",
+            "description": "打分人数",
+            "default": 0
+          },
+          "avg_score": {
+            "type": "number",
+            "title": "Avg Score",
+            "description": "平均分",
+            "default": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "发布时间"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AdminArticleAuthor"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "作者信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "tag",
+          "zones",
+          "status",
+          "discipline",
+          "created_at"
+        ],
+        "title": "AdminArticleListItem"
+      },
+      "AdminArticleListResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AdminArticleListItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "文章列表数据"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "description": "总数量"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "当前页码"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages",
+            "description": "总页数"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "count",
+          "page",
+          "total_pages"
+        ],
+        "title": "AdminArticleListResponse"
+      },
+      "AdminCommentItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "评论UUID"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "评论内容"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "发布时间"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态"
+          },
+          "user_name": {
+            "type": "string",
+            "title": "User Name",
+            "description": "评论人昵称"
+          },
+          "article_id": {
+            "type": "string",
+            "title": "Article Id",
+            "description": "所属文章UUID"
+          },
+          "article_title": {
+            "type": "string",
+            "title": "Article Title",
+            "description": "所属文章标题"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content",
+          "created_at",
+          "status",
+          "user_name",
+          "article_id",
+          "article_title"
+        ],
+        "title": "AdminCommentItem"
+      },
+      "AdminCommentListResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AdminCommentItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "评论列表"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "总条数"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "当前页"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages",
+            "description": "总页数"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "total",
+          "page",
+          "total_pages"
+        ],
+        "title": "AdminCommentListResponse"
+      },
+      "AdminFeedbackItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "反馈UUID"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "反馈内容"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "提交时间"
+          },
+          "user": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AdminFeedbackUser"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "反馈人信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content",
+          "created_at"
+        ],
+        "title": "AdminFeedbackItem"
+      },
+      "AdminFeedbackListResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "总数"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AdminFeedbackItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "反馈列表"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "data"
+        ],
+        "title": "AdminFeedbackListResponse"
+      },
+      "AdminFeedbackUser": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "email"
+        ],
+        "title": "AdminFeedbackUser"
+      },
+      "AdminUserItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "用户UUID"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "用户昵称"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "邮箱"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "用户角色"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "注册时间"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "email",
+          "role",
+          "created_at"
+        ],
+        "title": "AdminUserItem"
+      },
+      "AdminUserListResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "总人数"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "当前页"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AdminUserItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "用户列表"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "page",
+          "data"
+        ],
+        "title": "AdminUserListResponse"
+      },
+      "ArticleDetailData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "文章UUID"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "文章标题"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name",
+            "description": "文件名"
+          },
+          "pdf_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pdf Url",
+            "description": "CDN的PDF下载直链"
+          },
+          "tag": {
+            "type": "string",
+            "title": "Tag",
+            "description": "分类"
+          },
+          "zones": {
+            "type": "string",
+            "title": "Zones",
+            "description": "分区"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态"
+          },
+          "discipline": {
+            "type": "string",
+            "title": "Discipline",
+            "description": "学科"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic",
+            "description": "主题"
+          },
+          "co_authors": {
+            "items": {},
+            "type": "array",
+            "title": "Co Authors",
+            "description": "共同作者列表",
+            "default": []
+          },
+          "suggestions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggestions",
+            "description": "审稿意见"
+          },
+          "rating_count": {
+            "type": "integer",
+            "title": "Rating Count",
+            "description": "打分人数",
+            "default": 0
+          },
+          "avg_score": {
+            "type": "number",
+            "title": "Avg Score",
+            "description": "平均分",
+            "default": 0
+          },
+          "my_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "My Score",
+            "description": "当前登录用户打的分数（未登录或未打分为null）"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "发布时间"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublicAuthor"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "作者详细信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "file_name",
+          "tag",
+          "zones",
+          "status",
+          "discipline",
+          "created_at"
+        ],
+        "title": "ArticleDetailData"
+      },
+      "ArticleStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "revisions",
+          "flushed",
+          "deleted",
+          "hidden",
+          "passed"
+        ],
+        "title": "ArticleStatus"
+      },
+      "ArticleTag": {
+        "type": "string",
+        "enum": [
+          "hardcore",
+          "meme"
+        ],
+        "title": "ArticleTag"
+      },
+      "BadgeBatchRequest": {
+        "properties": {
+          "user_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "User Ids"
+          },
+          "sniffer_threshold": {
+            "type": "integer",
+            "title": "Sniffer Threshold",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_ids"
+        ],
+        "title": "BadgeBatchRequest"
+      },
+      "BadgeBatchResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态",
+            "default": "success"
+          },
+          "data": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BadgeData"
+            },
+            "type": "object",
+            "title": "Data",
+            "description": "Key为User UUID，Value为对应的徽章数据"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "BadgeBatchResponse"
+      },
+      "BadgeData": {
+        "properties": {
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author",
+            "description": "创作者徽章"
+          },
+          "sniffer": {
+            "type": "boolean",
+            "title": "Sniffer",
+            "description": "是否拥有嗅探兽徽章",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "BadgeData"
+      },
+      "Body_edit_article_api_admin_articles__article_id__review_put": {
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ArticleStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "变更工作流状态"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic",
+            "description": "切换主题"
+          },
+          "tag": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ArticleTag"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "切换Tag"
+          },
+          "discipline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discipline",
+            "description": "变更学科"
+          },
+          "suggestions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggestions",
+            "description": "给作者的审稿意见/退回理由"
+          }
+        },
+        "type": "object",
+        "title": "Body_edit_article_api_admin_articles__article_id__review_put"
+      },
+      "Body_reupload_article_file_api_articles__article_id__file_put": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_reupload_article_file_api_articles__article_id__file_put"
+      },
+      "Body_update_article_info_api_articles__article_id__info_put": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "tag": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ArticleTag"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "discipline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discipline"
+          },
+          "co_authors": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Co Authors"
+          }
+        },
+        "type": "object",
+        "title": "Body_update_article_info_api_articles__article_id__info_put"
+      },
+      "Body_update_my_profile_api_users_me_put": {
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "social_media": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Media"
+          }
+        },
+        "type": "object",
+        "title": "Body_update_my_profile_api_users_me_put"
+      },
+      "Body_update_user_role_api_admin_users__user_id__role_put": {
+        "properties": {
+          "new_role": {
+            "$ref": "#/components/schemas/UserRole"
+          }
+        },
+        "type": "object",
+        "required": [
+          "new_role"
+        ],
+        "title": "Body_update_user_role_api_admin_users__user_id__role_put"
+      },
+      "Body_upload_article_api_articles_upload_post": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/ArticleTag",
+            "default": "meme"
+          },
+          "discipline": {
+            "type": "string",
+            "title": "Discipline",
+            "default": "interdisciplinary"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic",
+            "default": ""
+          },
+          "co_authors": {
+            "type": "string",
+            "title": "Co Authors",
+            "default": "[]"
+          },
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "file"
+        ],
+        "title": "Body_upload_article_api_articles_upload_post"
+      },
+      "CommentLikeResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态",
+            "default": "success"
+          },
+          "liked": {
+            "type": "boolean",
+            "title": "Liked",
+            "description": "操作后的状态：true为已点赞，false为取消点赞"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "提示信息"
+          },
+          "like_count": {
+            "type": "integer",
+            "title": "Like Count",
+            "description": "当前评论的最新总赞数"
+          }
+        },
+        "type": "object",
+        "required": [
+          "liked",
+          "message",
+          "like_count"
+        ],
+        "title": "CommentLikeResponse"
+      },
+      "CommentRequest": {
+        "properties": {
+          "article_id": {
+            "type": "string",
+            "title": "Article Id",
+            "description": "要评论的文章 UUID"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Content",
+            "description": "评论内容，最多100字"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id",
+            "description": "父评论UUID（如果是楼层回复则必填）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "article_id",
+          "content"
+        ],
+        "title": "CommentRequest"
+      },
+      "CommentSubmitResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态",
+            "default": "success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "提示信息"
+          },
+          "comment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment Id",
+            "description": "新发表的评论 UUID（维护模式下可能为空）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "CommentSubmitResponse"
+      },
+      "CommentUser": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "用户UUID（被清理显示deleted）"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "用户昵称"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "头像链接"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name"
+        ],
+        "title": "CommentUser"
+      },
+      "CountResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count",
+            "description": "文章总数"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_count"
+        ],
+        "title": "CountResponse"
+      },
+      "FeedbackMeResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "has_submitted": {
+            "type": "boolean",
+            "title": "Has Submitted",
+            "description": "当前登录用户是否已经提交过反馈"
+          }
+        },
+        "type": "object",
+        "required": [
+          "has_submitted"
+        ],
+        "title": "FeedbackMeResponse"
+      },
+      "FeedbackSubmitRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Content",
+            "description": "反馈的具体内容，最多1000字"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "FeedbackSubmitRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "LoginResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "access_token": {
+            "type": "string",
+            "title": "Access Token",
+            "description": "JWT 访问令牌 (给后端所有接口验证用的)"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "description": "令牌类型",
+            "default": "bearer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/LoginUserData",
+            "description": "当前登录的用户信息体"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "user"
+        ],
+        "title": "LoginResponse"
+      },
+      "LoginUserData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "用户UUID"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "用户邮箱"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "用户昵称"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "用户权限角色 (author, reviewer, admin 等)"
+          },
+          "karma": {
+            "type": "integer",
+            "title": "Karma",
+            "description": "用户的 Karma 积分"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "role",
+          "karma"
+        ],
+        "title": "LoginUserData"
+      },
+      "MaintenanceResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "registration": {
+            "type": "boolean",
+            "title": "Registration",
+            "description": "是否开放注册"
+          },
+          "comment_send": {
+            "type": "boolean",
+            "title": "Comment Send",
+            "description": "是否开放发表评论"
+          },
+          "submit": {
+            "type": "boolean",
+            "title": "Submit",
+            "description": "是否开放投稿文章"
+          },
+          "comment_show": {
+            "type": "boolean",
+            "title": "Comment Show",
+            "description": "是否在文章详情页显示评论区"
+          }
+        },
+        "type": "object",
+        "required": [
+          "registration",
+          "comment_send",
+          "submit",
+          "comment_show"
+        ],
+        "title": "MaintenanceResponse"
+      },
+      "MyArticleItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "文章UUID"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "文章标题"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "文章状态 (pending, passed 等)"
+          },
+          "zones": {
+            "type": "string",
+            "title": "Zones",
+            "description": "所在分区 (latrine, stone 等)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "发布时间"
+          },
+          "rating_count": {
+            "type": "integer",
+            "title": "Rating Count",
+            "description": "收到的打分总数",
+            "default": 0
+          },
+          "avg_score": {
+            "type": "number",
+            "title": "Avg Score",
+            "description": "目前的平均分",
+            "default": 0
+          },
+          "tag": {
+            "type": "string",
+            "title": "Tag",
+            "description": "分类 (hardcore, meme)"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic",
+            "description": "文章主题"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status",
+          "zones",
+          "created_at",
+          "tag"
+        ],
+        "title": "MyArticleItem"
+      },
+      "MyArticlesResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MyArticleItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "我发布的文章列表"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "MyArticlesResponse"
+      },
+      "MyProfileResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态",
+            "default": "success"
+          },
+          "user": {
+            "$ref": "#/components/schemas/MyProfileUserData",
+            "description": "我的个人详细信息与成就"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user"
+        ],
+        "title": "MyProfileResponse"
+      },
+      "MyProfileUserData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "用户UUID"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "邮箱"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "用户昵称"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "头像链接"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "当前角色 (如 author, admin 等)"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution",
+            "description": "所属机构"
+          },
+          "social_media": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Media",
+            "description": "社交媒体链接"
+          },
+          "karma": {
+            "type": "integer",
+            "title": "Karma",
+            "description": "用户的 Karma 积分"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "注册时间"
+          },
+          "author_badge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Badge",
+            "description": "创作者徽章 (stone, septic 或 null)"
+          },
+          "is_sniffer_today": {
+            "type": "boolean",
+            "title": "Is Sniffer Today",
+            "description": "今日是否达成嗅探兽成就"
+          },
+          "latrine_reviewed_today": {
+            "type": "integer",
+            "title": "Latrine Reviewed Today",
+            "description": "今日在旱厕(latrine)审稿的数量"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "role",
+          "karma",
+          "created_at",
+          "is_sniffer_today",
+          "latrine_reviewed_today"
+        ],
+        "title": "MyProfileUserData"
+      },
+      "NotificationActor": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "行为触发者UUID"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "行为触发者昵称"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "行为触发者头像链接"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name"
+        ],
+        "title": "NotificationActor"
+      },
+      "NotificationArticle": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "关联文章的UUID"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "关联文章的标题"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "NotificationArticle"
+      },
+      "NotificationComment": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "关联评论的UUID"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "关联评论的具体内容"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content"
+        ],
+        "title": "NotificationComment"
+      },
+      "NotificationItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "通知UUID"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "通知类型 (reply, like, new_comment)"
+          },
+          "is_read": {
+            "type": "boolean",
+            "title": "Is Read",
+            "description": "是否已读状态"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "通知产生的时间"
+          },
+          "actor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NotificationActor"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "触发此通知的用户信息"
+          },
+          "article": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NotificationArticle"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "相关文章信息"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NotificationComment"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "相关评论信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "is_read",
+          "created_at"
+        ],
+        "title": "NotificationItem"
+      },
+      "NotificationListResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "unread_count": {
+            "type": "integer",
+            "title": "Unread Count",
+            "description": "当前用户的总未读消息数量"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "通知列表详情"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "总记录数（用于分页）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unread_count",
+          "data",
+          "total"
+        ],
+        "title": "NotificationListResponse"
+      },
+      "PublicArticleDetailResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "article": {
+            "$ref": "#/components/schemas/ArticleDetailData",
+            "description": "文章详细数据"
+          },
+          "comments": {
+            "items": {
+              "$ref": "#/components/schemas/PublicCommentItem"
+            },
+            "type": "array",
+            "title": "Comments",
+            "description": "评论列表"
+          }
+        },
+        "type": "object",
+        "required": [
+          "article",
+          "comments"
+        ],
+        "title": "PublicArticleDetailResponse"
+      },
+      "PublicArticleListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "文章UUID"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "文章标题"
+          },
+          "tag": {
+            "type": "string",
+            "title": "Tag",
+            "description": "文章分类 (Enum)"
+          },
+          "zones": {
+            "type": "string",
+            "title": "Zones",
+            "description": "所属分区 (Enum)"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "当前状态 (Enum)"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic",
+            "description": "文章主题"
+          },
+          "discipline": {
+            "type": "string",
+            "title": "Discipline",
+            "description": "学科领域"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "发布时间"
+          },
+          "rating_count": {
+            "type": "integer",
+            "title": "Rating Count",
+            "description": "打分人数",
+            "default": 0
+          },
+          "avg_score": {
+            "type": "number",
+            "title": "Avg Score",
+            "description": "平均分",
+            "default": 0
+          },
+          "weighted_score": {
+            "type": "number",
+            "title": "Weighted Score",
+            "description": "威尔逊得分",
+            "default": 0
+          },
+          "comment_count": {
+            "type": "integer",
+            "title": "Comment Count",
+            "description": "评论数",
+            "default": 0
+          },
+          "author": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublicAuthor"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "作者信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "tag",
+          "zones",
+          "status",
+          "discipline",
+          "created_at"
+        ],
+        "title": "PublicArticleListItem"
+      },
+      "PublicArticleListResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PublicArticleListItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "文章列表数据"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "description": "总数量"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "当前页码"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages",
+            "description": "总页数"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "count",
+          "page",
+          "total_pages"
+        ],
+        "title": "PublicArticleListResponse"
+      },
+      "PublicAuthor": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "作者UUID"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "作者昵称"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "头像链接"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution",
+            "description": "所属机构"
+          },
+          "social_media": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Media",
+            "description": "社交媒体链接"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name"
+        ],
+        "title": "PublicAuthor"
+      },
+      "PublicCommentItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "评论UUID"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "评论内容"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id",
+            "description": "父评论UUID（楼层回复用）"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "发布时间"
+          },
+          "like_count": {
+            "type": "integer",
+            "title": "Like Count",
+            "description": "点赞数",
+            "default": 0
+          },
+          "is_liked_by_me": {
+            "type": "boolean",
+            "title": "Is Liked By Me",
+            "description": "当前登录用户是否已点赞",
+            "default": false
+          },
+          "user": {
+            "$ref": "#/components/schemas/CommentUser",
+            "description": "评论人信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content",
+          "created_at",
+          "user"
+        ],
+        "title": "PublicCommentItem"
+      },
+      "RatingRequest": {
+        "properties": {
+          "article_id": {
+            "type": "string",
+            "title": "Article Id",
+            "description": "要打分的文章 UUID"
+          },
+          "score": {
+            "type": "integer",
+            "maximum": 5,
+            "minimum": 1,
+            "title": "Score",
+            "description": "打分，范围 1-5"
+          }
+        },
+        "type": "object",
+        "required": [
+          "article_id",
+          "score"
+        ],
+        "title": "RatingRequest"
+      },
+      "RatingResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "状态",
+            "default": "success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "提示信息"
+          },
+          "new_zone": {
+            "type": "string",
+            "title": "New Zone",
+            "description": "打分后文章所属的最新分区 (latrine, septic 等)"
+          },
+          "new_avg": {
+            "type": "number",
+            "title": "New Avg",
+            "description": "打分后文章的最新平均分"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "new_zone",
+          "new_avg"
+        ],
+        "title": "RatingResponse"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "verification_code": {
+            "type": "string",
+            "title": "Verification Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "display_name",
+          "verification_code"
+        ],
+        "title": "RegisterRequest"
+      },
+      "ResetPasswordRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "new_password": {
+            "type": "string",
+            "title": "New Password"
+          },
+          "verification_code": {
+            "type": "string",
+            "title": "Verification Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "new_password",
+          "verification_code"
+        ],
+        "title": "ResetPasswordRequest"
+      },
+      "SearchResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PublicArticleListItem"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "搜索命中返回的文章列表"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "SearchResponse"
+      },
+      "SendCodeRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "register",
+              "reset"
+            ],
+            "title": "Type",
+            "default": "register"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "title": "SendCodeRequest"
+      },
+      "SimpleResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "提示信息"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "SimpleResponse"
+      },
+      "UnreadCountResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "description": "未读数量"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count"
+        ],
+        "title": "UnreadCountResponse"
+      },
+      "UpdateProfileResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "提示信息"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UpdateProfileUserData",
+            "description": "更新成功后的个人信息片段"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "user"
+        ],
+        "title": "UpdateProfileResponse"
+      },
+      "UpdateProfileUserData": {
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "title": "Display Name",
+            "description": "更新后的昵称"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "更新后的头像链接"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution",
+            "description": "更新后的机构"
+          },
+          "social_media": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Media",
+            "description": "更新后的社交媒体"
+          }
+        },
+        "type": "object",
+        "required": [
+          "display_name"
+        ],
+        "title": "UpdateProfileUserData"
+      },
+      "UploadResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "请求状态",
+            "default": "success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "提示信息"
+          },
+          "article_id": {
+            "type": "string",
+            "title": "Article Id",
+            "description": "新上传文章的 UUID"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "article_id"
+        ],
+        "title": "UploadResponse"
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "author",
+          "reviewer",
+          "community_guard",
+          "editor",
+          "admin"
+        ],
+        "title": "UserRole"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/auth/login"
+          }
+        }
+      }
+    }
+  }
 }

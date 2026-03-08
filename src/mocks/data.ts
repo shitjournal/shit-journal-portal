@@ -100,6 +100,63 @@ const isoFromNow = (daysAgo: number, hourOffset = 0) => {
 
 const LOCAL_DAIYU_PDF_PATH = '/探究林黛玉的真实武力值以及她长期被树立为弱不禁风形象的深层原因——由一系列网络meme视频所触发的思考.pdf';
 
+function createSearchPaginationArticle(index: number, tag: 'meme' | 'hardcore'): MockArticle {
+  const isMeme = tag === 'meme';
+  const zoneSeed = index % 4;
+  const ratingCount = zoneSeed < 2 ? 12 + index : 42 + index;
+  const avgScore = zoneSeed === 0
+    ? 4.15
+    : zoneSeed === 1
+      ? 4.32
+      : zoneSeed === 2
+        ? 4.46
+        : 3.46;
+  const weightedScore = zoneSeed === 0
+    ? 4.02
+    : zoneSeed === 1
+      ? 4.21
+      : zoneSeed === 2
+        ? 4.4
+        : 3.5;
+
+  return {
+    id: `art-search-${tag}-${index}`,
+    title: isMeme
+      ? `Search Pagination Meme Field Note ${String(index).padStart(2, '0')}`
+      : `Search Pagination Hardcore Study ${String(index).padStart(2, '0')}`,
+    manuscript_title: isMeme
+      ? `Search Pagination Meme Field Note ${String(index).padStart(2, '0')}`
+      : `Search Pagination Hardcore Study ${String(index).padStart(2, '0')}`,
+    tag,
+    discipline: isMeme ? 'humanities' : 'engineering',
+    status: 'passed',
+    created_at: isoFromNow(index % 6, index + 6),
+    topic: isMeme ? `纯享整活分页测试 ${index}` : `硬核学术分页测试 ${index}`,
+    avg_score: avgScore,
+    weighted_score: weightedScore,
+    rating_count: ratingCount,
+    co_authors: [],
+    author: {
+      id: isMeme ? 'user-kl' : 'user-commenter',
+      display_name: isMeme ? `分页整活测试员 ${index}` : `Prof. Fiber ${index}`,
+      institution: isMeme ? 'Mock Meme Archive' : 'Mock Hardcore Lab',
+      social_media: isMeme ? '@mockmeme' : '@mockhardcore',
+      email: isMeme ? 'bukolosier@gmail.com' : 'commenter@shitjournal.org',
+    },
+    pdf_url: '/mock-manuscript.pdf',
+    file_path: '/mock-manuscript.pdf',
+    file_name: isMeme
+      ? `search-pagination-meme-${index}.pdf`
+      : `search-pagination-hardcore-${index}.pdf`,
+    file_size_bytes: 180000 + index * 1377,
+  };
+}
+
+const searchPaginationArticles: MockArticle[] = [
+  ...Array.from({ length: 8 }, (_, index) => createSearchPaginationArticle(index + 1, 'meme')),
+  ...Array.from({ length: 8 }, (_, index) => createSearchPaginationArticle(index + 1, 'hardcore')),
+];
+
 export const DEMO_ACCOUNTS = [
   { email: 'bukolosier@gmail.com', password: 'mock123456', role: 'super_admin', label: 'Super Admin' },
   { email: 'editor@shitjournal.org', password: 'mock123456', role: 'editor', label: 'Editor' },
@@ -532,6 +589,7 @@ const articles: MockArticle[] = [
     file_name: 'hidden-article.pdf',
     file_size_bytes: 187000,
   },
+  ...searchPaginationArticles,
 ];
 
 const comments: MockComment[] = [

@@ -5,11 +5,13 @@ import { isEditor, isAdmin, isSuperAdmin } from '../../lib/roles';
 
 interface MainHeaderProps {
   onToggleMenu: () => void;
+  onToggleSearch: () => void;
+  searchOpen: boolean;
   unreadCount: number;
   setUnreadCount: (count: number) => void;
 }
 
-export const MainHeader: React.FC<MainHeaderProps> = ({ onToggleMenu, unreadCount, setUnreadCount }) => {
+export const MainHeader: React.FC<MainHeaderProps> = ({ onToggleMenu, onToggleSearch, searchOpen, unreadCount, setUnreadCount }) => {
   const { user, profile, signOut } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -57,7 +59,15 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ onToggleMenu, unreadCoun
         </Link>
 
         <div className="flex items-center justify-end gap-4">
-          <span className="material-symbols-outlined text-charcoal text-2xl cursor-pointer">search</span>
+          <button
+            type="button"
+            aria-label={searchOpen ? 'Close search panel' : 'Open search panel'}
+            aria-pressed={searchOpen}
+            onClick={onToggleSearch}
+            className="inline-flex cursor-pointer items-center justify-center text-charcoal transition-transform duration-300 hover:scale-110"
+          >
+            <span className="material-symbols-outlined text-2xl">search</span>
+          </button>
           <a className="px-5 py-2.5 bg-science-red text-white text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-red-700 transition-colors hidden sm:block whitespace-nowrap" href="#">
             Become a Member / 加入会员
           </a>
