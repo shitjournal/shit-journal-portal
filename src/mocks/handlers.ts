@@ -330,6 +330,7 @@ export const handlers = [
   http.get('*/api/articles/', async ({ request }) => {
     await delay(MOCK_DELAY_MS);
     const url = new URL(request.url);
+    const user = getUserFromAuth(request);
     const zone = url.searchParams.get('zone') ?? 'latrine';
     const sort = url.searchParams.get('sort') ?? 'newest';
     const discipline = url.searchParams.get('discipline') ?? 'all';
@@ -345,7 +346,7 @@ export const handlers = [
     );
 
     return json({
-      data: paginate(filtered.map(articleForResponse), page, limit),
+      data: paginate(filtered.map(article => articleForResponse(article, user)), page, limit),
       count: filtered.length,
       total: filtered.length,
     });

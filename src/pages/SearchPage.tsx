@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ZONE_LABELS } from '../lib/constants';
 import { API } from '../lib/api';
-import { QUICK_TAG_SEARCHES, SEARCH_SCOPE_OPTIONS, type SearchArticleItem, type SearchScope, createSearchParams } from '../lib/search';
+import { QUICK_TAG_SEARCHES, SEARCH_API_MAX_LIMIT, SEARCH_SCOPE_OPTIONS, type SearchArticleItem, type SearchScope, createSearchParams } from '../lib/search';
 import { PreprintCard } from './preprints/PreprintCard';
 
 const PAGE_SIZE = 10;
-const SEARCH_FETCH_LIMIT = 100;
+const SEARCH_FETCH_LIMIT = SEARCH_API_MAX_LIMIT;
 
 export const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
