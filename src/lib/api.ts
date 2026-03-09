@@ -1,8 +1,131 @@
 // src/lib/api.ts
 import type { SearchArticleItem, SearchScope } from './search';
-import { TAG_SEARCH_ALIASES, normalizeSearchKeyword } from './search';
+import { SEARCH_API_MAX_LIMIT, TAG_SEARCH_ALIASES, normalizeSearchKeyword } from './search';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || 'https://api.shitjournal.org';
+
+type ApiError = Error & {
+  status?: number;
+  data?: any;
+};
+
+const DASHBOARD_VISIBLE_ZONES = ['latrine', 'septic', 'stone', 'sediment'] as const;
+const DASHBOARD_VISIBLE_ZONE_SORT: Record<(typeof DASHBOARD_VISIBLE_ZONES)[number], string> = {
+  latrine: 'newest',
+  septic: 'newest',
+  stone: 'highest_rated',
+  sediment: 'newest',
+};
+const DASHBOARD_ZONE_PAGE_SIZE = 50;
+
+function normalizeCollectionResponse(response: any) {
+  if (Array.isArray(response)) return response;
+  return response?.data || response?.items || response?.articles || [];
+}
+
+function normalizeRatedArticleItem(item: any) {
+  if (!item) return null;
+
+  const article = item.article || item.paper || item.manuscript || item.article_data || item.preprint || null;
+  const flattened = article ? { ...article, ...item } : item;
+  const normalized = {
+    ...flattened,
+    id: flattened.id || article?.id || flattened.article_id,
+    title: flattened.title || article?.title || flattened.article_title,
+    tag: flattened.tag || article?.tag,
+    status: flattened.status || article?.status || 'passed',
+    topic: flattened.topic ?? article?.topic ?? null,
+    created_at: flattened.created_at || article?.created_at,
+    rated_at: flattened.rated_at || item.rated_at || item.created_at || item.updated_at || null,
+    my_score: flattened.my_score ?? item.my_score ?? item.score ?? article?.my_score ?? null,
+    author: flattened.author || article?.author || null,
+  };
+
+  return normalized.id ? normalized : null;
+}
+
+function normalizeRatedArticlesResponse(response: any) {
+  const candidates = Array.isArray(response)
+    ? response
+    : response?.ratings
+      || response?.rated_articles
+      || response?.results
+      || response?.data?.ratings
+      || response?.data?.rated_articles
+      || response?.data?.results
+      || response?.data
+      || response?.items
+      || response?.articles
+      || [];
+
+  if (!Array.isArray(candidates)) return [];
+
+  return candidates
+    .map(normalizeRatedArticleItem)
+    .filter(Boolean);
+}
+
+function dedupeItemsById<T extends { id: string }>(items: T[]) {
+  return items.filter((item, index, collection) => collection.findIndex(candidate => candidate.id === item.id) === index);
+}
+
+async function fetchVisibleZonePage(zone: (typeof DASHBOARD_VISIBLE_ZONES)[number], page: number) {
+  const params = new URLSearchParams({
+    zone,
+    sort: DASHBOARD_VISIBLE_ZONE_SORT[zone],
+    discipline: 'all',
+    page: String(page),
+    limit: String(DASHBOARD_ZONE_PAGE_SIZE),
+  });
+
+  return fetchAPI(`/api/articles/?${params.toString()}`);
+}
+
+async function fetchAllVisibleZoneArticles(zone: (typeof DASHBOARD_VISIBLE_ZONES)[number]) {
+  const firstPageResponse = await fetchVisibleZonePage(zone, 1);
+  const firstPageItems = normalizeCollectionResponse(firstPageResponse);
+  const totalCount = Number(firstPageResponse?.count || firstPageResponse?.total || firstPageItems.length || 0);
+  const totalPages = Math.max(1, Math.ceil(totalCount / DASHBOARD_ZONE_PAGE_SIZE));
+
+  if (totalPages === 1) {
+    return firstPageItems;
+  }
+
+  const remainingResponses = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, pageIndex) => fetchVisibleZonePage(zone, pageIndex + 2)),
+  );
+
+  return [
+    ...firstPageItems,
+    ...remainingResponses.flatMap(response => normalizeCollectionResponse(response)),
+  ];
+}
+
+async function fetchRatedArticlesFromVisibleZones() {
+  const visibleZoneArticles = await Promise.all(
+    DASHBOARD_VISIBLE_ZONES.map(zone => fetchAllVisibleZoneArticles(zone)),
+  );
+
+  return dedupeItemsById(
+    visibleZoneArticles
+      .flat()
+      .filter(article => Number.isFinite(Number(article?.my_score)) && Number(article.my_score) > 0),
+  ).sort((left, right) => {
+    const rightScore = Number(right?.my_score || 0);
+    const leftScore = Number(left?.my_score || 0);
+
+    if (rightScore !== leftScore) {
+      return rightScore - leftScore;
+    }
+
+    return String(right?.created_at || '').localeCompare(String(left?.created_at || ''));
+  });
+}
+
+function isMissingEndpointError(error: unknown) {
+  const status = (error as ApiError | undefined)?.status;
+  return status === 404 || status === 405;
+}
 
 /**
  * 核心拦截器：所有请求都要经过这个管道
@@ -43,8 +166,11 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     const errorMsg = errorData.detail 
       ? (typeof errorData.detail === 'string' ? errorData.detail : errorData.detail[0]?.msg)
       : '服务器开小差了，请稍后再试';
-      
-    throw new Error(errorMsg);
+
+    const error = new Error(errorMsg) as ApiError;
+    error.status = response.status;
+    error.data = errorData;
+    throw error;
   }
 
   return response.json();
@@ -233,15 +359,23 @@ export const API = {
     },
     getMyArticles: async () => {
       const res = await fetchAPI('/api/users/me/articles');
-      return res.data || res.items || res.articles || res;
+      return normalizeCollectionResponse(res);
     },
     getMyFavorites: async () => {
       const res = await fetchAPI('/api/users/me/favorites');
-      return res.data || res.items || res.articles || res;
+      return normalizeCollectionResponse(res);
     },
     getMyRatedArticles: async () => {
-      const res = await fetchAPI('/api/users/me/ratings');
-      return res.data || res.items || res.articles || res;
+      try {
+        const res = await fetchAPI('/api/users/me/ratings');
+        return normalizeRatedArticlesResponse(res);
+      } catch (error) {
+        if (!isMissingEndpointError(error)) {
+          throw error;
+        }
+
+        return fetchRatedArticlesFromVisibleZones();
+      }
     },
     updateProfile: async (displayName?: string, avatarUrl?: string, institution?: string, socialMedia?: string) => {
       const res = await fetchAPI('/api/users/me', {
@@ -294,12 +428,13 @@ export const API = {
     articles: async (query: string, scope: SearchScope = 'anywhere', limit = 10) => {
       const trimmed = query.trim();
       if (!trimmed) return { data: [] };
+      const normalizedLimit = Math.max(1, Math.min(limit, SEARCH_API_MAX_LIMIT));
 
       const request = async (type: 'article' | 'author') => {
         const params = new URLSearchParams({
           q: trimmed,
           type,
-          limit: String(limit),
+          limit: String(normalizedLimit),
         });
 
         const response = await fetchAPI(`/api/search/article?${params.toString()}`);
@@ -323,7 +458,7 @@ export const API = {
             }),
         )
           .sort((left, right) => right.created_at.localeCompare(left.created_at))
-          .slice(0, limit);
+          .slice(0, normalizedLimit);
       };
 
       if (scope === 'tag') {
@@ -341,7 +476,7 @@ export const API = {
 
       const deduped = dedupeSearchItems([...articleResults, ...authorResults])
         .sort((left, right) => right.created_at.localeCompare(left.created_at))
-        .slice(0, limit);
+        .slice(0, normalizedLimit);
 
       return { data: deduped };
     },

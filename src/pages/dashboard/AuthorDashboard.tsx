@@ -91,23 +91,26 @@ export const AuthorDashboard: React.FC = () => {
   const [ratedArticles, setRatedArticles] = useState<DashboardArticle[]>([]);
   const [activeTab, setActiveTab] = useState<DashboardTab>('submissions');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     if (!user) return;
 
     const fetchDashboardData = async () => {
       setLoading(true);
+      setLoadError('');
       try {
         const [submissionResponse, ratedResponse] = await Promise.all([
           API.users.getMyArticles(),
           API.users.getMyRatedArticles(),
         ]);
 
-        setSubmissions(submissionResponse.articles || submissionResponse.data || submissionResponse || []);
+        setSubmissions(Array.isArray(submissionResponse) ? submissionResponse : []);
         setFavorites([]);
-        setRatedArticles(ratedResponse.articles || ratedResponse.data || ratedResponse || []);
+        setRatedArticles(Array.isArray(ratedResponse) ? ratedResponse : []);
       } catch (error) {
         console.error('拉取仪表盘数据失败:', error);
+        setLoadError(error instanceof Error ? error.message : '加载失败，请稍后再试');
       } finally {
         setLoading(false);
       }
@@ -169,6 +172,11 @@ export const AuthorDashboard: React.FC = () => {
           {loading ? (
             <div className="text-center py-20">
               <img src="/LOGO2.png" alt="Loading" className="w-9 h-9 animate-pulse inline-block" />
+            </div>
+          ) : loadError ? (
+            <div className="border border-red-200 bg-red-50 px-6 py-10 text-center">
+              <p className="font-serif text-lg text-red-700 mb-2">Dashboard unavailable</p>
+              <p className="chinese-serif text-red-600">{loadError}</p>
             </div>
           ) : currentItems.length === 0 ? (
             <div className="text-center py-20 bg-white border border-gray-200">

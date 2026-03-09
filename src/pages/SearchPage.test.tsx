@@ -1,6 +1,8 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { server } from '../mocks/node';
 import { renderWithProviders } from '../test/renderWithProviders';
 import { SearchPage } from './SearchPage';
 
@@ -39,6 +41,51 @@ describe('SearchPage', () => {
     });
 
     expect(screen.getByText(/范围 作者昵称/)).toBeInTheDocument();
+  });
+
+  it('caps the live search request limit at the backend maximum', async () => {
+    server.use(
+      http.get('*/api/search/article', async ({ request }) => {
+        const url = new URL(request.url);
+        const limit = Number(url.searchParams.get('limit') ?? '0');
+
+        if (limit > 30) {
+          return HttpResponse.json({ detail: 'Input should be less than or equal to 30' }, { status: 422 });
+        }
+
+        return HttpResponse.json({
+          data: [
+            {
+              id: 'limit-check-result',
+              title: 'Limit Clamp Result',
+              tag: 'hardcore',
+              zones: 'latrine',
+              status: 'passed',
+              discipline: 'engineering',
+              created_at: '2026-03-09T00:00:00.000Z',
+              rating_count: 0,
+              avg_score: 0,
+              weighted_score: 0,
+              author: {
+                display_name: 'Clamp Tester',
+                institution: 'API Contract Lab',
+              },
+            },
+          ],
+        });
+      }),
+    );
+
+    renderWithProviders(<SearchPage />, {
+      initialEntries: ['/search?q=Clamp&type=article'],
+      routes: [{ path: '/search', element: <SearchPage /> }],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Limit Clamp Result')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('Input should be less than or equal to 30')).not.toBeInTheDocument();
   });
 
   it('supports tag search for meme and hardcore chips', async () => {

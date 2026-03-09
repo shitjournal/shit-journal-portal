@@ -1,5 +1,7 @@
 export type SearchScope = 'anywhere' | 'article' | 'author' | 'tag';
 
+export const SEARCH_API_MAX_LIMIT = 30;
+
 export interface SearchArticleItem {
   id: string;
   title: string;
