@@ -28,6 +28,14 @@ const DASHBOARD_TABS: Array<{ value: DashboardTab; en: string; cn: string }> = [
   { value: 'rated', en: 'Rated', cn: '我的评价' },
 ];
 
+const extractArray = (response: any): DashboardArticle[] => {
+  if (Array.isArray(response)) return response;
+  if (response?.data && Array.isArray(response.data)) return response.data;
+  if (response?.data?.data && Array.isArray(response.data.data)) return response.data.data;
+  if (response?.articles && Array.isArray(response.articles)) return response.articles;
+  return [];
+};
+
 const isValidText = (text: any): boolean => {
   if (!text) return false;
   if (typeof text !== 'string') return false;
@@ -103,9 +111,9 @@ export const AuthorDashboard: React.FC = () => {
           API.users.getMyRatedArticles(),
         ]);
 
-        setSubmissions(submissionResponse.articles || submissionResponse.data || submissionResponse || []);
+        setSubmissions(extractArray(submissionResponse));
         setFavorites([]);
-        setRatedArticles(ratedResponse.articles || ratedResponse.data || ratedResponse || []);
+        setRatedArticles(extractArray(ratedResponse));
       } catch (error) {
         console.error('拉取仪表盘数据失败:', error);
       } finally {
