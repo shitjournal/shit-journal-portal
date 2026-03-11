@@ -106,14 +106,23 @@ export const AuthorDashboard: React.FC = () => {
     const fetchDashboardData = async () => {
       setLoading(true);
       try {
-        const [submissionResponse, ratedResponse] = await Promise.all([
-          API.users.getMyArticles(),
-          API.users.getMyRatedArticles(),
-        ]);
+        try {
+          const submissionResponse = await API.users.getMyArticles();
+          setSubmissions(extractArray(submissionResponse));
+        } catch (error) {
+          console.error('拉取排泄物失败:', error);
+          setSubmissions([]);
+        }
 
-        setSubmissions(extractArray(submissionResponse));
+        try {
+          const ratedResponse = await API.users.getMyRatedArticles();
+          setRatedArticles(extractArray(ratedResponse));
+        } catch (error) {
+          console.error('拉取评价数据失败:', error);
+          setRatedArticles([]); 
+        }
+
         setFavorites([]);
-        setRatedArticles(extractArray(ratedResponse));
       } catch (error) {
         console.error('拉取仪表盘数据失败:', error);
       } finally {
