@@ -4,11 +4,17 @@ import { TAG_SEARCH_ALIASES, normalizeSearchKeyword } from './search';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || 'https://api.shitjournal.org';
 
+let memoryToken: string | null = null;
+
+export const syncTokenToMemory = (token: string | null) => {
+  memoryToken = token;
+};
+
 /**
  * 核心拦截器：所有请求都要经过这个管道
  */
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
-  const token = localStorage.getItem('access_token');
+  const token = memoryToken || localStorage.getItem('access_token');
   const headers: Record<string, string> = { ...options.headers as Record<string, string> };
 
   // 如果请求体是 JSON 字符串，且没有手动设置 Content-Type，则自动加上
@@ -85,6 +91,7 @@ export const API = {
       if (res.access_token) {
         localStorage.setItem('access_token', res.access_token);
         localStorage.setItem('user', JSON.stringify(res.user));
+        syncTokenToMemory(res.access_token);
       }
       return res;
     },
