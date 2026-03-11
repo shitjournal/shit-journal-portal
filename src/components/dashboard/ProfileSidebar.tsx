@@ -16,6 +16,12 @@ function getBadge(role: Profile['role']): { en: string; cn: string } {
 
 export const ProfileSidebar: React.FC<{ submissionCount: number }> = ({ submissionCount }) => {
   const { profile, refreshProfile } = useAuth();
+
+  React.useEffect(() => {
+    if (!profile) {
+      refreshProfile().catch(err => console.error("无法刷新个人信息:", err));
+    }
+  }, [profile, refreshProfile]);
   
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({ display_name: '', institution: '', social_media: '' });
